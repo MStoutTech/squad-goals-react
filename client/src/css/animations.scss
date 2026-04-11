@@ -1,0 +1,145 @@
+/* Required modern Sass imports */
+@use "sass:math";
+@use "sass:list";
+
+/* -----------------------------------------
+   COLOR VARIABLES
+------------------------------------------ */
+:root {
+  --c-deep-cerise: #D43D8A;
+  --c-deep-cerise-80: #ED6BAD;
+  --c-deep-cerise-60: #FF9ED0;
+  --c-deep-cerise-40: #FFC3E2;
+  --c-deep-cerise-20: #FFE5F3;
+
+  --c-light-coral-x3: #E7100C;
+  --c-light-coral-x2: #E5403D;
+  --c-light-coral: #F57371;
+  --c-light-coral-80: #FFA3A1;
+  --c-light-coral-60: #FFD9D9;
+
+  --c-green-sheen: #68ACA3;
+  --c-green-sheen-80: #75D9CB;
+  --c-green-sheen-60: #4DEAD5;
+  --c-green-sheen-40: #7DFFEE;
+  --c-green-sheen-20: #BDFFF6;
+
+  --c-purple-tech: #542A71;
+  --c-purple-tech-80: #7D4C9F;
+  --c-purple-tech-60: #AB7BCC;
+  --c-purple-tech-40: #D4ACF0;
+  --c-purple-tech-20: #F4E4FF;
+
+  --c-violet-void: #100830;
+  --c-violet-void-80: #1E0F5A;
+  --c-violet-void-60: #1E0F5A;
+  --c-violet-void-40: #644FB9;
+  --c-violet-void-20: #C2B2FF;
+
+}
+
+// -------------------------------
+// Customizable particle settings
+// -------------------------------
+$particle-count: 60;
+$particle-size-min: 4;
+$particle-size-max: 7;
+
+$particle-colors: (
+  var(--c-deep-cerise),
+  var(--c-deep-cerise-80),
+  var(--c-deep-cerise-60),
+  var(--c-deep-cerise-40),
+  var(--c-light-coral),
+  var(--c-light-coral-x2),
+  var(--c-light-coral-80),
+  var(--c-green-sheen-80),
+  var(--c-green-sheen-60),
+  var(--c-green-sheen-40),
+  var(--c-purple-tech),
+  var(--c-purple-tech-80),
+  var(--c-purple-tech-60),
+  var(--c-purple-tech-40)
+);
+
+// -------------------------------
+// Shared particle container
+// -------------------------------
+.particle,
+.particle-hover {
+  position: relative;
+  display: inline-block;
+  z-index: 1; // particles go behind with z-index -1 below
+
+  .particle-spot {
+    position: absolute;
+    border-radius: 100px;
+    opacity: 0;
+    z-index: -1; // ensures behind element
+    pointer-events: none;
+
+    // Random static styling
+    @for $i from 1 through $particle-count {
+      &:nth-of-type(#{$i}) {
+        // random size 4–7px
+        $size: $particle-size-min + math.random($particle-size-max - $particle-size-min);
+        width: #{$size}px;
+        height: #{$size}px;
+
+        // random color
+        background: list.nth($particle-colors, math.random(list.length($particle-colors)));
+
+        // place each particle AROUND the border in chaotic fixed spots
+        // This is the core behavior from the original snippet.
+        // They start *outside* the element and animate outward.
+        $randomX: math.random(200) - 100; // -100 to 100px
+        $randomY: math.random(200) - 100;
+
+        top: calc(50% + #{$randomY}px);
+        left: calc(50% + #{$randomX}px);
+
+        // random rotation origin similar to original
+        transform-origin: #{math.random(100)}px #{math.random(100)}px;
+
+        // base animation (paused until hover)
+        animation: particle-#{$i} 0.9s linear infinite;
+        animation-play-state: paused;
+      }
+    }
+  }
+
+  // SHOW DURING HOVER
+  &:hover .particle-spot {
+    animation-play-state: running;
+  }
+}
+
+// -------------------------------
+// .particle = always active
+// -------------------------------
+.particle {
+  .particle-spot {
+    animation-play-state: running;
+  }
+}
+
+// -------------------------------
+// Keyframes for all particles
+// (generated per particle like original)
+// -------------------------------
+@for $i from 1 through $particle-count {
+  @keyframes particle-#{$i} {
+    from {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    to {
+      // random outward drift - original behavior
+      transform: translate(
+        #{math.random(40) - 20}px,
+        #{math.random(40) - 20}px
+      );
+      opacity: 0.7;
+    }
+  }
+}
