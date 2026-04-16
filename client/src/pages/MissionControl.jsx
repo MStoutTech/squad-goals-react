@@ -590,11 +590,13 @@ function MissionDebriefButton({ openMissionDebrief, width }) {
 }
 function AddMissionModal({ closeModal, fetchMissions }) {
   const [selectedContact, setSelectedContact] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   function clearSelectedContact() {
     setSelectedContact(null);
   }
   async function addNewMission(event) {
+    setIsLoading(true);
     event.preventDefault();
     const formData = new FormData(event.target);
 
@@ -611,6 +613,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
     });
     if (response.status === 201) {
       fetchMissions();
+      setIsLoading(false);
       closeModal();
     }
   }
@@ -640,86 +643,90 @@ function AddMissionModal({ closeModal, fetchMissions }) {
                 >
                   Add New Mission
                 </h3>
-                <div className="mt-2 text-purple-300 text-sm">
-                  {/*form*/}
-                  <form id="add-mission-form" onSubmit={addNewMission}>
-                    <div className="flex flex-col">
-                      <p className="text-xs text-white">Mission Target</p>
-                      {selectedContact ? (
-                        <div
-                          id="selected-contact"
-                          className="flex justify-between mb-6 items-center p-2 border border-purple-300 rounded-md"
-                        >
-                          <img
-                            id="selected-contact-image"
-                            src={
-                              selectedContact
-                                ? selectedContact.url ||
-                                  "/imgs/Small-Friend-Icon.png"
-                                : ""
-                            }
-                            alt=""
-                            className="inline size-6"
-                          />
-                          <span id="selected-contact-name">
-                            {selectedContact?.firstName}{" "}
-                            {selectedContact?.lastName}
-                          </span>
-                          <button
-                            type="button"
-                            id="clear-selected-contact"
-                            className="text-(--c-violet-void) font-bold"
-                            onClick={clearSelectedContact}
+                {isLoading ? (
+                  <CircularProgress color="#7D4C9F" />
+                ) : (
+                  <div className="mt-2 text-purple-300 text-sm">
+                    {/*form*/}
+                    <form id="add-mission-form" onSubmit={addNewMission}>
+                      <div className="flex flex-col">
+                        <p className="text-xs text-white">Mission Target</p>
+                        {selectedContact ? (
+                          <div
+                            id="selected-contact"
+                            className="flex justify-between mb-6 items-center p-2 border border-purple-300 rounded-md"
                           >
-                            ✕
-                          </button>
+                            <img
+                              id="selected-contact-image"
+                              src={
+                                selectedContact
+                                  ? selectedContact.url ||
+                                    "/imgs/Small-Friend-Icon.png"
+                                  : ""
+                              }
+                              alt=""
+                              className="inline size-6"
+                            />
+                            <span id="selected-contact-name">
+                              {selectedContact?.firstName}{" "}
+                              {selectedContact?.lastName}
+                            </span>
+                            <button
+                              type="button"
+                              id="clear-selected-contact"
+                              className="text-(--c-violet-void) font-bold"
+                              onClick={clearSelectedContact}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <ContactSearch onSelect={setSelectedContact} />
+                        )}
+
+                        <input
+                          type="hidden"
+                          name="missionContact"
+                          id="mission-contact-id"
+                          value={selectedContact?._id || ""}
+                        />
+
+                        <label
+                          htmlFor="scheduledFor"
+                          className="text-xs text-white"
+                        >
+                          Schedule For
+                        </label>
+                        <input
+                          type="date"
+                          id="scheduledFor"
+                          name="scheduledFor"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          required
+                        />
+                        <p className="text-xs text-white">Mission Type</p>
+                        <div className="flex gap-2">
+                          <label>
+                            <input
+                              type="radio"
+                              name="missionType"
+                              value="contact"
+                            />
+                            Contact Mission
+                          </label>
+                          <label>
+                            <input
+                              type="radio"
+                              name="missionType"
+                              value="field"
+                            />
+                            Field Mission
+                          </label>
                         </div>
-                      ) : (
-                        <ContactSearch onSelect={setSelectedContact} />
-                      )}
-
-                      <input
-                        type="hidden"
-                        name="missionContact"
-                        id="mission-contact-id"
-                        value={selectedContact?._id || ""}
-                      />
-
-                      <label
-                        htmlFor="scheduledFor"
-                        className="text-xs text-white"
-                      >
-                        Schedule For
-                      </label>
-                      <input
-                        type="date"
-                        id="scheduledFor"
-                        name="scheduledFor"
-                        className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                        required
-                      />
-                      <p className="text-xs text-white">Mission Type</p>
-                      <div className="flex gap-2">
-                        <label>
-                          <input
-                            type="radio"
-                            name="missionType"
-                            value="contact"
-                          />
-                          Contact Mission
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            name="missionType"
-                            value="field"
-                          />
-                          Field Mission
-                        </label>
                       </div>
-                    </div>
-                  </form>
-                </div>
+                    </form>
+                  </div>
+                )}
               </div>
             </div>
           </div>

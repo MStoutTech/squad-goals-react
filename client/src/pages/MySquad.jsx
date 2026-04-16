@@ -1,7 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatedCallToAction, PrimaryButton } from "../components/Buttons";
+import CircularProgress from "@mui/material/CircularProgress";
 
-function FilterAndSearch({ fetchSquad }) {
+function FilterAndSearch({
+  fetchSquad,
+  activeFilter,
+  setActiveFilter,
+  searchValue,
+  setSearchValue,
+}) {
   const [isAddContactModalOpen, setIsContactModalOpen] = useState(false);
 
   function closeModal() {
@@ -10,30 +17,58 @@ function FilterAndSearch({ fetchSquad }) {
   function openModal() {
     setIsContactModalOpen(true);
   }
+
+  const handleChange = (event) => {
+    event.preventDefault();
+    setSearchValue(event.target.value.toLowerCase());
+  };
+
   return (
-    <div className="w-full">
+    <div className="w-full mb-10">
       <ul className="flex justify-between">
         <div className="flex gap-3">
           <li>
-            <PrimaryButton innerText="score" />
+            <PrimaryButton
+              innerText="score"
+              onClick={() => setActiveFilter("score")}
+              isActive={"score" == activeFilter}
+            />
           </li>
           <li>
-            <PrimaryButton innerText="first" />
+            <PrimaryButton
+              innerText="first"
+              onClick={() => setActiveFilter("first")}
+              isActive={"first" == activeFilter}
+            />
           </li>
           <li>
-            <PrimaryButton innerText="last" />
+            <PrimaryButton
+              innerText="last"
+              onClick={() => setActiveFilter("last")}
+              isActive={"last" == activeFilter}
+            />
           </li>
           <li>
-            <PrimaryButton innerText="date" />
+            <PrimaryButton
+              innerText="date"
+              onClick={() => setActiveFilter("date")}
+              isActive={"date" == activeFilter}
+            />
           </li>
           <li>
-            <PrimaryButton innerText="tag" />
+            <PrimaryButton
+              innerText="tag"
+              onClick={() => setActiveFilter("tag")}
+              isActive={"tag" == activeFilter}
+            />
           </li>
           <li>
             <input
               type="search"
               className="text-sm border border-inherit rounded-md px-3 py-2"
               placeholder="SEARCH CONTACTS"
+              onChange={handleChange}
+              value={searchValue}
             />
           </li>
         </div>
@@ -46,13 +81,15 @@ function FilterAndSearch({ fetchSquad }) {
           )}
         </div>
       </ul>
-      <input type="search" />
     </div>
   );
 }
 
 function AddContactModal({ closeModal, fetchSquad }) {
+  const [isLoading, setIsLoading] = useState(false);
+
   async function createContact(event) {
+    setIsLoading(true);
     event.preventDefault();
     const formData = new FormData(event.target);
 
@@ -71,6 +108,7 @@ function AddContactModal({ closeModal, fetchSquad }) {
     });
     if (response.status === 201) {
       fetchSquad();
+      setIsLoading(false);
       closeModal();
     }
   }
@@ -97,83 +135,87 @@ function AddContactModal({ closeModal, fetchSquad }) {
                 >
                   Add New Contact
                 </h3>
-                <div className="mt-2 text-purple-300 text-sm">
-                  {/*form*/}
-                  <form id="add-contact-form" onSubmit={createContact}>
-                    <div className="flex flex-col">
-                      <label
-                        htmlFor="contactFirstName"
-                        className="text-xs text-white"
-                      >
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        id="contactFirstName"
-                        name="firstName"
-                        className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                        required
-                      />
-                      <label
-                        htmlFor="contactLastName"
-                        className="text-xs text-white"
-                      >
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        id="contactLastName"
-                        name="lastName"
-                        className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                        required
-                      />
-                      <label
-                        htmlFor="contactNickname"
-                        className="text-xs text-white"
-                      >
-                        Nickname
-                      </label>
-                      <input
-                        type="text"
-                        id="contactNickname"
-                        name="nickname"
-                        className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                      />
-                      <label
-                        htmlFor="connection-instinct"
-                        className="text-xs text-white"
-                      >
-                        How close are you?
-                      </label>
-                      <select
-                        name="connectionInstinct"
-                        id="connection-instinct"
-                        className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
-                        required
-                      >
-                        <option value="heartCore">Super close</option>
-                        <option value="rayLiables">Pretty close</option>
-                        <option value="buddies">Casual</option>
-                      </select>
-                      <label
-                        htmlFor="method-preference"
-                        className="text-xs text-white"
-                      >
-                        What is THEIR preferred contact method?
-                      </label>
-                      <select
-                        name="preferredMethod"
-                        id="method-preference"
-                        className="bg-(--c-violet-void) rounded-md px-3 py-2"
-                        required
-                      >
-                        <option value="socialMedia">Social media</option>
-                        <option value="textMessage">Text message</option>
-                        <option value="phoneCall">Phone call</option>
-                      </select>
-                    </div>
-                  </form>
-                </div>
+                {isLoading ? (
+                  <CircularProgress color="#7D4C9F" />
+                ) : (
+                  <div className="mt-2 text-purple-300 text-sm">
+                    {/*form*/}
+                    <form id="add-contact-form" onSubmit={createContact}>
+                      <div className="flex flex-col">
+                        <label
+                          htmlFor="contactFirstName"
+                          className="text-xs text-white"
+                        >
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          id="contactFirstName"
+                          name="firstName"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          required
+                        />
+                        <label
+                          htmlFor="contactLastName"
+                          className="text-xs text-white"
+                        >
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          id="contactLastName"
+                          name="lastName"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          required
+                        />
+                        <label
+                          htmlFor="contactNickname"
+                          className="text-xs text-white"
+                        >
+                          Nickname
+                        </label>
+                        <input
+                          type="text"
+                          id="contactNickname"
+                          name="nickname"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                        />
+                        <label
+                          htmlFor="connection-instinct"
+                          className="text-xs text-white"
+                        >
+                          How close are you?
+                        </label>
+                        <select
+                          name="connectionInstinct"
+                          id="connection-instinct"
+                          className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
+                          required
+                        >
+                          <option value="heartCore">Super close</option>
+                          <option value="rayLiables">Pretty close</option>
+                          <option value="buddies">Casual</option>
+                        </select>
+                        <label
+                          htmlFor="method-preference"
+                          className="text-xs text-white"
+                        >
+                          What is THEIR preferred contact method?
+                        </label>
+                        <select
+                          name="preferredMethod"
+                          id="method-preference"
+                          className="bg-(--c-violet-void) rounded-md px-3 py-2"
+                          required
+                        >
+                          <option value="socialMedia">Social media</option>
+                          <option value="textMessage">Text message</option>
+                          <option value="phoneCall">Phone call</option>
+                        </select>
+                      </div>
+                    </form>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -207,6 +249,8 @@ function ContactList({
   img,
   setFeaturedContact,
   featuredContact,
+  searchTerm,
+  searchList,
 }) {
   function toggleSelect(contact) {
     if (featuredContact == contact) {
@@ -215,8 +259,8 @@ function ContactList({
       setFeaturedContact(contact);
     }
   }
-
-  const styledContacts = contactList.map((contact) => (
+  const activeList = searchTerm != "" ? searchList : contactList;
+  const styledContacts = activeList.map((contact) => (
     <li
       key={contact._id}
       className={`${contact._id == featuredContact._id ? "bg-(--c-violet-void-60) text-white" : "bg-(--c-violet-void)"} px-3 py-2 rounded-lg flex gap-2 hover:bg-(--c-violet-void-60) hover:text-white cursor-pointer`}
@@ -264,8 +308,18 @@ function ContactList({
         className={` rounded-lg p-3  text-xs justify-center `}
         style={{ backgroundColor: `var(${themeColor})` }}
       >
-        <div className="flex flex-col gap-2 lg:max-h-[640px] lg: overflow-auto">
-          {styledContacts}
+        <div className="flex flex-col gap-2 lg:h-[640px] lg: overflow-auto">
+          {activeList.length > 0 ? (
+            styledContacts
+          ) : (
+            <li className="bg-(--c-violet-void) px-3 py-2 rounded-lg w-[388px] h-[156px] flex-column justify-center">
+              <h3 className="h-[60px]">
+                {searchTerm != ""
+                  ? "No contact matches to search"
+                  : "List empty, add more contacts!"}
+              </h3>
+            </li>
+          )}
         </div>
       </ul>
     </section>
@@ -277,6 +331,14 @@ export default function MySquad() {
   const [rayLiablesList, setRayLiablesList] = useState([]);
   const [buddiesList, setBuddiesList] = useState([]);
   const [featuredContact, setFeaturedContact] = useState({});
+  const [activeFilter, setActiveFilter] = useState("score");
+  const [searchValue, setSearchValue] = useState("");
+  const [searchHeartCoreList, setSearchHeartCoreList] = useState([]);
+  const [searchRayLiablesList, setSearchRayLiablesList] = useState([]);
+  const [searchBuddiesList, setSearchBuddiesList] = useState([]);
+
+  const query = searchValue.trim();
+  const searchTimeout = useRef(null);
 
   const fetchSquad = async () => {
     const response = await fetch("/api/contact/getSquad");
@@ -284,44 +346,338 @@ export default function MySquad() {
     setHeartCoreList(data.heartCoreList);
     setRayLiablesList(data.rayLiablesList);
     setBuddiesList(data.buddiesList);
+    filterContacts(data.heartCoreList, data.rayLiablesList, data.buddiesList);
   };
-
+  function filterContacts(heartCore, rayLiables, buddies) {
+    if (activeFilter == "score") {
+      setHeartCoreList(() =>
+        heartCore.slice().sort((a, b) => a.evalScore - b.evalScore),
+      );
+      setRayLiablesList(() =>
+        rayLiables.slice().sort((a, b) => a.evalScore - b.evalScore),
+      );
+      setBuddiesList(() =>
+        buddies.slice().sort((a, b) => a.evalScore - b.evalScore),
+      );
+    } else if (activeFilter == "first") {
+      setHeartCoreList(() =>
+        heartCore
+          .slice()
+          .sort((a, b) => a.firstName.localeCompare(b.firstName)),
+      );
+      setRayLiablesList(() =>
+        rayLiables
+          .slice()
+          .sort((a, b) => a.firstName.localeCompare(b.firstName)),
+      );
+      setBuddiesList(() =>
+        buddies.slice().sort((a, b) => a.firstName.localeCompare(b.firstName)),
+      );
+    } else if (activeFilter == "last") {
+      setHeartCoreList(() =>
+        heartCore.slice().sort((a, b) => a.lastName.localeCompare(b.lastName)),
+      );
+      setRayLiablesList(() =>
+        rayLiables.slice().sort((a, b) => a.lastName.localeCompare(b.lastName)),
+      );
+      setBuddiesList(() =>
+        buddies.slice().sort((a, b) => a.lastName.localeCompare(b.lastName)),
+      );
+    } else if (activeFilter == "date") {
+      setHeartCoreList(() =>
+        heartCore
+          .slice()
+          .sort(
+            (a, b) =>
+              (a.lastContact ? new Date(a.lastContact) : new Date(2025, 1, 1)) -
+              (b.lastContact ? new Date(b.lastContact) : new Date(2025, 1, 1)),
+          ),
+      );
+      setRayLiablesList(() =>
+        rayLiables
+          .slice()
+          .sort(
+            (a, b) =>
+              (a.lastContact ? new Date(a.lastContact) : new Date(2025, 1, 1)) -
+              (b.lastContact ? new Date(b.lastContact) : new Date(2025, 1, 1)),
+          ),
+      );
+      setBuddiesList(() =>
+        buddies
+          .slice()
+          .sort(
+            (a, b) =>
+              (a.lastContact ? new Date(a.lastContact) : new Date(2025, 1, 1)) -
+              (b.lastContact ? new Date(b.lastContact) : new Date(2025, 1, 1)),
+          ),
+      );
+    }
+  }
   useEffect(() => {
     fetchSquad();
   }, []);
 
+  useEffect(() => {
+    filterContacts(heartCoreList, rayLiablesList, buddiesList);
+  }, [activeFilter]);
+
+  useEffect(() => {
+    if (!query) {
+      setSearchHeartCoreList([]);
+      setSearchRayLiablesList([]);
+      setSearchBuddiesList([]);
+      return;
+    }
+    clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => {
+      setSearchHeartCoreList(
+        heartCoreList.filter(
+          (contact) =>
+            contact.firstName.toLowerCase().includes(query) ||
+            contact.lastName.toLowerCase().includes(query) ||
+            contact.nickname?.toLowerCase().includes(query),
+        ),
+      );
+      setSearchRayLiablesList(
+        rayLiablesList.filter(
+          (contact) =>
+            contact.firstName.toLowerCase().includes(query) ||
+            contact.lastName.toLowerCase().includes(query) ||
+            contact.nickname?.toLowerCase().includes(query),
+        ),
+      );
+      setSearchBuddiesList(
+        buddiesList.filter(
+          (contact) =>
+            contact.firstName.toLowerCase().includes(query) ||
+            contact.lastName.toLowerCase().includes(query) ||
+            contact.nickname?.toLowerCase().includes(query),
+        ),
+      );
+    }, 200);
+
+    return () => clearTimeout(searchTimeout.current);
+  }, [searchValue]);
+
   return (
     <div class="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:p-12 flex flex-col">
-      <FilterAndSearch fetchSquad={fetchSquad} />
-      {/*Inner Circle or "Heart" core friends*/}
+      <FilterAndSearch
+        fetchSquad={fetchSquad}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+      />
+
       <main className="flex gap-6">
-        <ContactList
-          title="Heart-Core Friends"
-          themeColor="--c-deep-cerise"
-          contactList={heartCoreList}
-          img="/imgs/icons/pink-clock.png"
-          setFeaturedContact={setFeaturedContact}
-          featuredContact={featuredContact}
-        />
+        {/*Inner Circle or "Heart" core friends*/}
+        {(!featuredContact._id ||
+          featuredContact.friendList === "heartCore" ||
+          featuredContact.connectionInstinct === "heartCore") && (
+          <ContactList
+            title="Heart-Core Friends"
+            themeColor="--c-deep-cerise"
+            contactList={heartCoreList}
+            searchList={searchHeartCoreList}
+            searchTerm={query}
+            img="/imgs/icons/pink-clock.png"
+            setFeaturedContact={setFeaturedContact}
+            featuredContact={featuredContact}
+          />
+        )}
+
         {/*Close Friends or "Ray"liables*/}
-        <ContactList
-          title="Ray-liables"
-          themeColor="--c-light-coral"
-          contactList={rayLiablesList}
-          img="/imgs/icons/coral-clock.png"
-          setFeaturedContact={setFeaturedContact}
-          featuredContact={featuredContact}
-        />
+        {(!featuredContact._id ||
+          featuredContact.friendList === "rayLiables" ||
+          featuredContact.connectionInstinct === "rayLiables") && (
+          <ContactList
+            title="Ray-liables"
+            themeColor="--c-light-coral"
+            contactList={rayLiablesList}
+            searchList={searchRayLiablesList}
+            searchTerm={query}
+            img="/imgs/icons/coral-clock.png"
+            setFeaturedContact={setFeaturedContact}
+            featuredContact={featuredContact}
+          />
+        )}
+
         {/*Casual Friends or "Bud"dies*/}
-        <ContactList
-          title="Bud-dies"
-          themeColor="--c-green-sheen"
-          contactList={buddiesList}
-          img="/imgs/icons/green-clock.png"
-          setFeaturedContact={setFeaturedContact}
-          featuredContact={featuredContact}
-        />
+        {(!featuredContact._id ||
+          featuredContact.friendList === "buddies" ||
+          featuredContact.connectionInstinct === "buddies") && (
+          <ContactList
+            title="Bud-dies"
+            themeColor="--c-green-sheen"
+            contactList={buddiesList}
+            searchList={searchBuddiesList}
+            searchTerm={query}
+            img="/imgs/icons/green-clock.png"
+            setFeaturedContact={setFeaturedContact}
+            featuredContact={featuredContact}
+          />
+        )}
+
+        {featuredContact._id && (
+          <FeaturedContact featuredContact={featuredContact} />
+        )}
       </main>
+    </div>
+  );
+}
+
+function FeaturedContact({ featuredContact }) {
+  const [contactHistory, setContactHistory] = useState([]);
+  const [isMissionHistoryLoading, setIsMissionHistoryLoading] = useState(false);
+
+  const fetchMissionHistory = async (contactId) => {
+    setIsMissionHistoryLoading(true);
+    const response = await fetch(`/api/contact/${contactId}/history`);
+    const data = await response.json();
+    setIsMissionHistoryLoading(false);
+    setContactHistory(data);
+  };
+
+  const themeColor = {
+    heartCore: "--c-deep-cerise",
+    rayLiables: "--c-light-coral",
+    buddies: "--c-green-sheen",
+  };
+
+  const contactTheme =
+    themeColor[
+      featuredContact.friendList
+        ? featuredContact.friendList
+        : featuredContact.connectionInstinct
+    ];
+
+  const missionHistoryList = contactHistory.map((entry) => (
+    <li>
+      <div className="flex items-center">
+        <div className="flex flex-col">
+          <span>
+            {new Date(entry.createdAt).toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "2-digit",
+            })}
+          </span>
+          <span>
+            {new Date(entry.createdAt).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+            })}
+          </span>
+        </div>
+        <h4 className="text-sm pl-3">
+          {entry.missionType == "field" ? "Field Mission" : "Contact Mission"}
+        </h4>
+      </div>
+
+      <p className="pl-3 py-2 border-l-2 border-dashed border-(--c-violet-void) ml-3">
+        {entry.noteText}
+      </p>
+    </li>
+  ));
+
+  useEffect(() => {
+    fetchMissionHistory(featuredContact._id);
+  }, [featuredContact]);
+
+  return (
+    <div
+      className="mt-8 rounded-lg lg:h-[663px] min-w-[1000px] w-[100%] p-2"
+      style={{ backgroundColor: `var(${contactTheme})` }}
+    >
+      <div className="bg-(--c-violet-void) rounded">
+        {/*Top Section*/}
+        <div className="flex gap-4 p-3">
+          <img
+            src={featuredContact.image || "imgs/mission-friend.png"}
+            alt={`${featuredContact.firstName} ${featuredContact.lastName}`}
+            className="size-24"
+            id="featured-image"
+          />
+          <div className="w-[100%]">
+            <div className="flex justify-between">
+              <div>
+                <h3 className="text-3xl">{`${featuredContact.nickname ? featuredContact.nickname : featuredContact.firstName}`}</h3>
+                <p className="text-l">{`${featuredContact.firstName} ${featuredContact.lastName}`}</p>
+              </div>
+              <div className="text-sm">
+                <p>
+                  <img
+                    src="/imgs/icons/coral-clock.png"
+                    alt="clock-icon"
+                    className="inline"
+                  />{" "}
+                  Contact Frequency: {featuredContact.contactFrequency}
+                </p>
+                <p>Preferred Time: None</p>
+              </div>
+              <div className="text-sm">
+                <p>
+                  Previous Contact:{" "}
+                  {featuredContact.lastContact
+                    ? new Date(featuredContact.lastContact).toLocaleDateString()
+                    : "N/A"}
+                </p>
+                <p>
+                  Next Mission:{" "}
+                  {featuredContact.nextMission
+                    ? new Date(
+                        featuredContact.nextMission.scheduledFor,
+                      ).toLocaleDateString()
+                    : "N/A"}
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <h4 className="text-2xl">
+                Eval Score: {featuredContact.evalScore}
+              </h4>
+              <p>Questions Answered: 0/125</p>
+            </div>
+          </div>
+        </div>
+        {/*Main Area*/}
+        <div className="flex p-3 gap-6">
+          {/*History */}
+          <div className="w-[75%]">
+            <h4>Mission History</h4>
+            <ul
+              className="text-xs lg:max-h-[354px] overflow-auto"
+              style={{ width: "100%" }}
+            >
+              {isMissionHistoryLoading && <CircularProgress color="#7D4C9F" />}
+              {!isMissionHistoryLoading &&
+                (missionHistoryList.length > 0 ? (
+                  missionHistoryList
+                ) : (
+                  <li style={{ minWidth: "100%" }}>
+                    <h4 className="text-sm pl-3">No Mission History</h4>
+                  </li>
+                ))}
+            </ul>
+          </div>
+          {/*Contact details */}
+          <div className="border rounded p-2">
+            <h4>Details</h4>
+            <p>Phone number: ###-###-####</p>
+            <p>Email: contact@contactemail.com</p>
+            <p>Social Media:</p>
+            <ul>
+              <li>BlueSky: handle@bsky.social</li>
+            </ul>
+            <p>Preferred Contact Method: {featuredContact.preferredMethod}</p>
+            <h5>Tags</h5>
+            <h5>Important Notes</h5>
+            <p>Birthday: --/--</p>
+            <p>Sign: Aries</p>
+            <p>No more notes to show.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

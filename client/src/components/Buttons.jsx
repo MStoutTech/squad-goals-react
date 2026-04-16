@@ -51,15 +51,17 @@ export function IconButton({ svg, onClick, text }) {
   );
 }
 
-export function PrimaryButton({ innerText, onClick }) {
+export function PrimaryButton({ innerText, onClick, isActive }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="text-sm p-2 border border-inherit rounded-lg hover:bg-(--c-violet-void-60) hover:text-white"
-    >
-      {innerText.toUpperCase()}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={onClick}
+        className={`${isActive == true ? "border-white text-white drop-shadow-white" : "border-inherit hover:bg-(--c-violet-void-60) hover:text-white"} text-sm p-2 border rounded-lg`}
+      >
+        {innerText.toUpperCase()}
+      </button>
+    </>
   );
 }
 

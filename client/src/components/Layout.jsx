@@ -2,6 +2,25 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
+export function PageTab({ pageTitle, pageName, link, icon, iconAlt, text }) {
+  const active = pageTitle === pageName;
+
+  return (
+    <li
+      className={
+        active
+          ? "text-white border-b-1 border-white p-2"
+          : "hover:rounded-md hover:bg-(--c-violet-void-80) hover:text-white border-b-1 border-(--c-violet-void) p-2"
+      }
+    >
+      <Link to={link}>
+        <img src={icon} alt={iconAlt} className="inline mr-3" />
+        {text || pageName}
+      </Link>
+    </li>
+  );
+}
+
 export default function AuthLayout() {
   document.body.classList.add("bg-(--c-violet-void)");
   const locationPath = useLocation().pathname;
@@ -51,48 +70,37 @@ export default function AuthLayout() {
         </ul>
       </header>
       <div className="pt-16 flex">
-        <aside className="text-purple-300 min-h-[calc(100vh-4rem)] hidden lg:flex flex-col w-[240px] shrink-0 border-r-1 border-inherit justify-between pb-16">
+        <aside className="text-purple-300 min-h-[calc(100vh-4rem)] hidden lg:flex flex-col w-[240px] pr-6 shrink-0 border-r-1 border-inherit justify-between pb-16">
           <ul className="flex flex-col gap-12 pl-12 my-12">
-            <li>
-              <Link to="/mission-control">
-                <img
-                  src="/imgs/icons/mission-control.png"
-                  alt="mission control icon"
-                  className="inline mr-3"
-                />
-                Missions
-              </Link>
-            </li>
-            <li>
-              <Link to="/my-squad">
-                <img
-                  src="/imgs/icons/my-squad.png"
-                  alt=""
-                  className="inline mr-3"
-                />
-                My Squad
-              </Link>
-            </li>
-            <li>
-              <Link to="/evaluation">
-                <img
-                  src="/imgs/icons/evaluation.png"
-                  alt="evaluation icon"
-                  className="inline mr-3"
-                />
-                Evaluation
-              </Link>
-            </li>
-            <li>
-              <Link to="/train">
-                <img
-                  src="/imgs/icons/train.png"
-                  alt="train icon"
-                  className="inline mr-3 -translate-y-1"
-                />
-                Train
-              </Link>
-            </li>
+            <PageTab
+              pageTitle={pageTitle}
+              pageName="Mission Control"
+              link="/mission-control"
+              icon="/imgs/icons/mission-control.png"
+              iconAlt="mission control icon"
+              text="Missions"
+            />
+            <PageTab
+              pageTitle={pageTitle}
+              pageName="My Squad"
+              link="/my-squad"
+              icon="/imgs/icons/my-squad.png"
+              iconAlt="my squad icon"
+            />
+            <PageTab
+              pageTitle={pageTitle}
+              pageName="Evaluation"
+              link="/evaluation"
+              icon="/imgs/icons/evaluation.png"
+              iconAlt="evaluation icon"
+            />
+            <PageTab
+              pageTitle={pageTitle}
+              pageName="Train"
+              link="/train"
+              icon="/imgs/icons/train.png"
+              iconAlt="train icon"
+            />
           </ul>
           <img
             src="/imgs/SGShield.svg"

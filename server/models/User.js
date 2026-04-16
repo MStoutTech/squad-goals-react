@@ -10,7 +10,14 @@ const UserSchema = new mongoose.Schema({
     streak:{type: Number, default: 0,},
     longestStreak:{type: Number, default:0,},
     lastCompletedDate:{type: Date, default:null,},
-  }
+  },
+  squadRecalcPending:{type: Boolean},
+  lastSquadRecalcAt: {type: Date},
+  friendshipValuesWeight: {
+    type: Map,
+    of: Number,
+    default: {},
+  },
 });
 
 // Password hash middleware.

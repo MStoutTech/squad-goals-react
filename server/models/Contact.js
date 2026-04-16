@@ -38,7 +38,9 @@ const ContactSchema = new mongoose.Schema({
         socials: {
             facebook: { type: String },
             instagram: { type: String },
-            bluesky: { type: String }
+            bluesky: { type: String }, 
+            whatsapp: {type: String},
+            snapchat: {type: String}
         }
     },
     preferredMethod:{
@@ -70,6 +72,14 @@ const ContactSchema = new mongoose.Schema({
     tags: [{
         type: String,
     }],
+    evaluation: [{
+        questionId: {type: mongoose.Schema.Types.ObjectId, ref: "Evaluation"},
+        questionOption: {type: String},
+        questionScore: {type: Number},
+    }],
+    evalComplete: {type: Boolean},
+    evalCompleteDate: {type: Date},
+    friendshipRole: {type: String},
 });
 
 module.exports = mongoose.model("Contact", ContactSchema);
