@@ -1,6 +1,9 @@
 const Contact = require("../models/Contact");
 const HistoryNote = require("../models/HistoryNote");
+const User = require("../models/User")
 const { scheduleNextMission } = require("../utils/scheduleNextMission");
+const { calculateContactScores } = require("../utils/calculateContactScores");
+const { ConnectionClosedEvent } = require("mongodb");
 
 module.exports = {
   getSquad: async (req, res) => {
@@ -10,7 +13,15 @@ module.exports = {
       const rayLiablesList = contacts.filter(contact => contact.connectionInstinct === "rayLiables");
       const buddiesList = contacts.filter(contact => contact.connectionInstinct === "buddies");
       
-      res.status(200).json({heartCoreList: heartCoreList, rayLiablesList: rayLiablesList, buddiesList: buddiesList})
+      let userQuery = User.findById(req.user.id);
+      for (const role of Object.keys(req.user.friendshipRoles)) {
+        userQuery = userQuery.populate(`friendshipRoles.${role}`, "firstName lastName image");
+      }
+      
+      const populatedUser = await userQuery.lean();
+
+
+      res.status(200).json({heartCoreList: heartCoreList, rayLiablesList: rayLiablesList, buddiesList: buddiesList, friendshipRoles: populatedUser.friendshipRoles})
     } catch (err) {
       console.log(err);
     }
@@ -50,6 +61,41 @@ module.exports = {
       
       res.status(200).json(contactHistory)
     } catch (err) {
+      console.log(err);
+    }
+  },
+  setFriendshipRoles: async (req, res) => {
+    try{
+      //store new roles from req on user
+      const newRoles = req.body;
+
+      const userUpdate = {};
+      for (const role of Object.keys(req.body)){
+        userUpdate[`friendshipRoles.${role}`] = newRoles[role] || null;
+      }
+
+      await User.findByIdAndUpdate(
+              req.user.id,
+              userUpdate,
+              {new: true}
+            );
+
+      //before assigning a roles, verify no other contact has that role on the user and clean up.
+      await Contact.updateMany(
+        {user: req.user.id, friendshipRole: {$ne: null}},
+        {friendshipRole: null}
+      )
+
+      //add new roles to specified contacts that were added to user
+    for(const role of Object.keys(req.body)){
+        if(req.body[role]){ 
+          await Contact.findByIdAndUpdate(req.body[role], {friendshipRole: role});
+        }
+    }
+      await calculateContactScores(req.user.id);
+      
+      res.status(200).json({message: "Friendship Roles Saved!"});
+    }catch(err){
       console.log(err);
     }
   }

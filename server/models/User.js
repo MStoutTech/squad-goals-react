@@ -11,6 +11,35 @@ const UserSchema = new mongoose.Schema({
     longestStreak:{type: Number, default:0,},
     lastCompletedDate:{type: Date, default:null,},
   },
+  friendshipRoles:{
+    nonJudgementalBestie: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Contact",
+      },
+    brutallyHonestFriend: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Contact",
+      },
+    careerMentor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Contact",
+      },
+    tirelessCheerleader: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Contact",
+      },
+    inCaseOfEmergency: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Contact",
+      },
+    healthcareProfessional: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Contact",
+      },
+    stylist:{
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Contact",
+      },},
   squadRecalcPending:{type: Boolean},
   lastSquadRecalcAt: {type: Date},
   friendshipValuesWeight: {

@@ -72,6 +72,7 @@ const ContactSchema = new mongoose.Schema({
     tags: [{
         type: String,
     }],
+    preferredDay: {type: String},
     evaluation: [{
         questionId: {type: mongoose.Schema.Types.ObjectId, ref: "Evaluation"},
         questionOption: {type: String},
@@ -79,7 +80,7 @@ const ContactSchema = new mongoose.Schema({
     }],
     evalComplete: {type: Boolean},
     evalCompleteDate: {type: Date},
-    friendshipRole: {type: String},
+    friendshipRole: {type: String, enum:["nonJudgementalBestie", "brutallyHonestFriend", "careerMentor", "tirelessCheerleader", "inCaseOfEmergency", "healthcareProfessional", "stylist", null], default: null},
 });
 
 module.exports = mongoose.model("Contact", ContactSchema);

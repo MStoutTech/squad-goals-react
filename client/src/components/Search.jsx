@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function ContactSearch({ onSelect }) {
+export default function ContactSearch({ onSelect, excludeIds }) {
   const [searchInput, setSearchInput] = useState("");
   const [contactSearchResults, setContactSearchResults] = useState([]);
 
@@ -19,7 +19,13 @@ export default function ContactSearch({ onSelect }) {
     searchTimeout.current = setTimeout(async () => {
       const res = await fetch(`api/mission/searchContacts?query=${query}`);
       const contacts = await res.json();
-      setContactSearchResults(contacts);
+      if (excludeIds) {
+        setContactSearchResults(
+          contacts.filter((contact) => !excludeIds.includes(contact._id)),
+        );
+      } else {
+        setContactSearchResults(contacts);
+      }
     }, 200);
 
     return () => clearTimeout(searchTimeout.current);
