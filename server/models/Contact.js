@@ -35,13 +35,13 @@ const ContactSchema = new mongoose.Schema({
             primary: { type: String },
             backup: { type: String }
         },
-        socials: {
-            facebook: { type: String },
-            instagram: { type: String },
-            bluesky: { type: String }, 
-            whatsapp: {type: String},
-            snapchat: {type: String}
-        }
+        socials: [{
+            platform: {type: String},
+            handle: {type: String},
+        }],
+        myersBriggsType: {type: String},
+        loveLanguages: [{type: String}],
+        additionalNotes: {type: String}
     },
     preferredMethod:{
         type: String,
@@ -72,7 +72,7 @@ const ContactSchema = new mongoose.Schema({
     tags: [{
         type: String,
     }],
-    preferredDay: {type: String},
+    preferredDay: [{type: String},],
     evaluation: [{
         questionId: {type: mongoose.Schema.Types.ObjectId, ref: "Evaluation"},
         questionOption: {type: String},

@@ -19,9 +19,9 @@ module.exports = {
       }
       
       const populatedUser = await userQuery.lean();
+      const userTags = req.user.tags || [];
 
-
-      res.status(200).json({heartCoreList: heartCoreList, rayLiablesList: rayLiablesList, buddiesList: buddiesList, friendshipRoles: populatedUser.friendshipRoles})
+      res.status(200).json({heartCoreList: heartCoreList, rayLiablesList: rayLiablesList, buddiesList: buddiesList, friendshipRoles: populatedUser.friendshipRoles, tags: userTags})
     } catch (err) {
       console.log(err);
     }
@@ -95,6 +95,37 @@ module.exports = {
       await calculateContactScores(req.user.id);
       
       res.status(200).json({message: "Friendship Roles Saved!"});
+    }catch(err){
+      console.log(err);
+    }
+  },
+  editContact: async (req, res) => {
+    try{
+      await Contact.findByIdAndUpdate(req.params.id, {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        nickname: req.body.nickname,
+        preferredDay: req.body.preferredDay,
+        preferredMethod: req.body.preferredMethod,
+        details:{
+          phone: {
+            mobile: req.body.mobilePhone,
+            home: req.body.homePhone,
+            work: req.body.workPhone,
+          },
+          email: {
+            primary: req.body.primaryEmail,
+            backup: req.body.backupEmail,
+          },
+          socials: req.body.socials,
+          myersBriggsType: req.body.myersBriggsType,
+          loveLanguages: req.body.loveLanguages,
+          additionalNotes: req.body.additionalNotes,
+        },
+        tags: req.body.tags,
+        birthday: req.body.birthday
+      })
+      res.status(200).json({message: "Contact details saved!"});
     }catch(err){
       console.log(err);
     }

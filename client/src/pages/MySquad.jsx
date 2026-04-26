@@ -517,6 +517,7 @@ export default function MySquad() {
   const [searchRayLiablesList, setSearchRayLiablesList] = useState([]);
   const [searchBuddiesList, setSearchBuddiesList] = useState([]);
   const [friendshipRoles, setFriendshipRoles] = useState({});
+  const [tags, setTags] = useState([]);
 
   const query = searchValue.trim();
   const searchTimeout = useRef(null);
@@ -528,6 +529,7 @@ export default function MySquad() {
     setRayLiablesList(data.rayLiablesList);
     setBuddiesList(data.buddiesList);
     setFriendshipRoles(data.friendshipRoles);
+    setTags(data.tags);
     filterContacts(data.heartCoreList, data.rayLiablesList, data.buddiesList);
   };
   function filterContacts(heartCore, rayLiables, buddies) {
@@ -642,7 +644,7 @@ export default function MySquad() {
   }, [searchValue]);
 
   return (
-    <div class="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:p-12 flex flex-col">
+    <div className="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:p-12 flex flex-col">
       <FilterAndSearch
         fetchSquad={fetchSquad}
         activeFilter={activeFilter}
@@ -702,16 +704,20 @@ export default function MySquad() {
         )}
 
         {featuredContact._id && (
-          <FeaturedContact featuredContact={featuredContact} />
+          <FeaturedContact
+            featuredContact={featuredContact}
+            fetchSquad={fetchSquad}
+          />
         )}
       </main>
     </div>
   );
 }
 
-function FeaturedContact({ featuredContact }) {
+function FeaturedContact({ featuredContact, fetchSquad }) {
   const [contactHistory, setContactHistory] = useState([]);
   const [isMissionHistoryLoading, setIsMissionHistoryLoading] = useState(false);
+  const [isEditContactOpen, setIsEditContactOpen] = useState(false);
 
   const fetchMissionHistory = async (contactId) => {
     setIsMissionHistoryLoading(true);
@@ -766,6 +772,10 @@ function FeaturedContact({ featuredContact }) {
   useEffect(() => {
     fetchMissionHistory(featuredContact._id);
   }, [featuredContact]);
+
+  function closeEditModal() {
+    setIsEditContactOpen(false);
+  }
 
   return (
     <div
@@ -823,7 +833,10 @@ function FeaturedContact({ featuredContact }) {
                 </p>
               </div>
               <div className="flex flex-col items-end">
-                <PrimaryButton innerText="edit" />
+                <PrimaryButton
+                  innerText="edit"
+                  onClick={() => setIsEditContactOpen(true)}
+                />
                 <h4 className="text-2xl self-start">
                   Eval Score: {featuredContact.evalScore}
                 </h4>
@@ -831,6 +844,13 @@ function FeaturedContact({ featuredContact }) {
               </div>
             </div>
           </div>
+          {isEditContactOpen && (
+            <EditContactModal
+              featuredContact={featuredContact}
+              closeModal={closeEditModal}
+              fetchSquad={fetchSquad}
+            />
+          )}
         </div>
         {/*Main Area*/}
         <div className="flex p-3 gap-6">
@@ -959,6 +979,948 @@ function FeaturedContact({ featuredContact }) {
                 No more notes to show.
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [contactDetails, setContactDetails] = useState({
+    firstName: featuredContact.firstName,
+    lastName: featuredContact.lastName,
+    nickname: featuredContact.nickname || "",
+    preferredDay: featuredContact.preferredDay || [],
+    preferredMethod: featuredContact.preferredMethod,
+    mobilePhone: featuredContact.details?.phone?.mobile || "",
+    homePhone: featuredContact.details?.phone?.home || "",
+    workPhone: featuredContact.details?.phone?.work || "",
+    primaryEmail: featuredContact.details?.email?.primary || "",
+    backupEmail: featuredContact.details?.email?.backup || "",
+    socials: featuredContact.details?.socials || [
+      { platform: "facebook", handle: "" },
+      { platform: "bluesky", handle: "" },
+      { platform: "instagram", handle: "" },
+      { platform: "snapchat", handle: "" },
+    ],
+    myersBriggsType: featuredContact.details?.myersBriggsType || "",
+    loveLanguages: featuredContact.details?.loveLanguages || [],
+    additionalNotes: featuredContact.details?.additionalNotes || "",
+    tags: featuredContact.tags || [],
+    birthday: featuredContact.birthday || "",
+  });
+  const [userTags, setUserTags] = useState(tags || []);
+  const [showTagInput, setShowTagInput] = useState(false);
+  const [tagInputValue, setTagInputValue] = useState("");
+
+  const tagList =
+    userTags && userTags.length > 0 ? (
+      userTags.map((tag) => <option value={tag}>{tag}</option>)
+    ) : (
+      <option value="">no tags</option>
+    );
+
+  const contactTags = contactDetails.tags.map((tag, i) => (
+    <li
+      key={tag}
+      className="text-xs font-bold rounded m-1 py-1 px-2 text-(--c-violet-void-80) bg-(--c-purple-tech-80)"
+    >
+      {tag}
+      <button
+        type="button"
+        className="cursor-pointer pl-2"
+        onClick={() => removeTag(i)}
+      >
+        x
+      </button>
+    </li>
+  ));
+
+  const socialsList = contactDetails.socials.map((entry, index) => (
+    <li className="flex" key={index}>
+      <label
+        htmlFor={`edit${entry.platform}platform`}
+        className="text-xs text-white"
+      >
+        Platform
+        <input
+          name={`edit${entry.platform}platform`}
+          type="text"
+          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+          value={entry.platform}
+          onChange={(e) =>
+            setContactDetails((prev) => {
+              const updatedSocials = prev.socials.map((old, i) =>
+                i === index
+                  ? { ...old, platform: e.target.value.toLowerCase() }
+                  : old,
+              );
+              return { ...prev, socials: updatedSocials };
+            })
+          }
+        />
+      </label>
+      <label
+        htmlFor={`edit${entry.platform}handle`}
+        className="text-xs text-white"
+      >
+        Handle
+        <input
+          name={`edit${entry.platform}handle`}
+          type="text"
+          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+          value={entry.handle}
+          onChange={(e) =>
+            setContactDetails((prev) => {
+              const updatedSocials = prev.socials.map((old, i) =>
+                i === index ? { ...old, handle: e.target.value } : old,
+              );
+              return { ...prev, socials: updatedSocials };
+            })
+          }
+        />
+      </label>
+    </li>
+  ));
+
+  function addSocials() {
+    const lastSocial =
+      contactDetails.socials[contactDetails.socials.length - 1];
+    if (lastSocial && lastSocial.platform === "") return;
+    setContactDetails((prev) => ({
+      ...prev,
+      socials: [...prev.socials, { platform: "", handle: "" }],
+    }));
+  }
+
+  async function addTag() {
+    if (
+      !userTags.includes(tagInputValue.toLowerCase()) &&
+      tagInputValue.trim() !== ""
+    ) {
+      const response = await fetch("/api/user/addTag", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tag: tagInputValue.toLowerCase() }),
+      });
+      if (response.status === 200) {
+        setTagInputValue("");
+        setShowTagInput(false);
+        setContactDetails((prev) => ({
+          ...prev,
+          tags: [...prev.tags, tagInputValue.toLowerCase()],
+        }));
+        setUserTags((prev) => [...prev, tagInputValue.toLowerCase()]);
+      }
+    }
+  }
+
+  function removeTag(i) {
+    const updatedTags = contactDetails.tags.filter(
+      (item, index) => index !== i,
+    );
+
+    setContactDetails((prev) => ({ ...prev, tags: updatedTags }));
+  }
+
+  async function saveUserDetails(event) {
+    setIsLoading(true);
+    event.preventDefault;
+
+    const trimmedSocials = contactDetails.socials.filter(
+      (entry) => entry.platform.trim() !== "" || entry.handle.trim() !== "",
+    );
+    const cleanedContact = { ...contactDetails, socials: trimmedSocials };
+
+    const response = await fetch(`/api/contact/${featuredContact._id}/edit`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(cleanedContact),
+    });
+
+    if (response.status === 200) {
+      fetchSquad();
+      setIsLoading(false);
+      closeModal();
+    }
+  }
+
+  return (
+    <div
+      id="edit-contact"
+      aria-labelledby="edit-contact"
+      className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
+    >
+      <div className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></div>
+
+      <div
+        tabIndex="0"
+        className="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0"
+      >
+        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+          <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div className="sm:flex sm:items-start">
+              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left ">
+                {/*Window title*/}
+                <h3
+                  id="dialog-title"
+                  className="text-base font-semibold text-gray-900"
+                >
+                  Edit Contact Details
+                </h3>
+                {isLoading ? (
+                  <CircularProgress color="#7D4C9F" />
+                ) : (
+                  <div className="mt-2 text-purple-300 text-sm max-h-[500px] overflow-auto">
+                    {/*form*/}
+                    <form id="edit-contact-form">
+                      <div className="flex flex-col">
+                        <label
+                          htmlFor="contactFirstName"
+                          className="text-xs text-white"
+                        >
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          name="contactFirstName"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.firstName}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              firstName: e.target.value,
+                            }))
+                          }
+                          required
+                        />
+                        <label
+                          htmlFor="contactLastName"
+                          className="text-xs text-white"
+                        >
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          name="contactLastName"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.lastName}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              lastName: e.target.value,
+                            }))
+                          }
+                          required
+                        />
+                        <label
+                          htmlFor="contactNickname"
+                          className="text-xs text-white"
+                        >
+                          Nickname
+                        </label>
+                        <input
+                          type="text"
+                          name="contactNickname"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.nickname}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              nickname: e.target.value,
+                            }))
+                          }
+                        />
+                        <fieldset className="flex flex-wrap max-w-[400px] mb-6">
+                          <legend className="text-xs text-white">
+                            Preferred Contact Days
+                          </legend>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="preferredMonday"
+                              name="preferredDays"
+                              value="monday"
+                              checked={contactDetails.preferredDay?.includes(
+                                "monday",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: [
+                                      ...prev.preferredDay,
+                                      "monday",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: prev.preferredDay.filter(
+                                      (day) => day !== "monday",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="preferredMonday">Monday</label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="preferredTuesday"
+                              name="preferredDays"
+                              value="tuesday"
+                              checked={contactDetails.preferredDay?.includes(
+                                "tuesday",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: [
+                                      ...prev.preferredDay,
+                                      "tuesday",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: prev.preferredDay.filter(
+                                      (day) => day !== "tuesday",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="preferredTuesday">Tuesday</label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="preferredWednesday"
+                              name="preferredDays"
+                              value="wednesday"
+                              checked={contactDetails.preferredDay?.includes(
+                                "wednesday",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: [
+                                      ...prev.preferredDay,
+                                      "wednesday",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: prev.preferredDay.filter(
+                                      (day) => day !== "wednesday",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="preferredWednesday">
+                              Wednesday
+                            </label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="preferredThursday"
+                              name="preferredDays"
+                              value="thursday"
+                              checked={contactDetails.preferredDay?.includes(
+                                "thursday",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: [
+                                      ...prev.preferredDay,
+                                      "thursday",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: prev.preferredDay.filter(
+                                      (day) => day !== "thursday",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="preferredThursday">Thursday</label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="preferredFriday"
+                              name="preferredDays"
+                              value="friday"
+                              checked={contactDetails.preferredDay?.includes(
+                                "friday",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: [
+                                      ...prev.preferredDay,
+                                      "friday",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: prev.preferredDay.filter(
+                                      (day) => day !== "friday",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="preferredFriday">Friday</label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="preferredSaturday"
+                              name="preferredDays"
+                              value="saturday"
+                              checked={contactDetails.preferredDay?.includes(
+                                "saturday",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: [
+                                      ...prev.preferredDay,
+                                      "saturday",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: prev.preferredDay.filter(
+                                      (day) => day !== "saturday",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="preferredSaturday">Saturday</label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="preferredSunday"
+                              name="preferredDays"
+                              value="sunday"
+                              checked={contactDetails.preferredDay?.includes(
+                                "sunday",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: [
+                                      ...prev.preferredDay,
+                                      "sunday",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    preferredDay: prev.preferredDay.filter(
+                                      (day) => day !== "sunday",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="preferredSunday">Sunday</label>
+                          </div>
+                        </fieldset>
+                        <label
+                          htmlFor="editPreferredMethod"
+                          className="text-xs text-white"
+                        >
+                          Preferred Contact Method
+                        </label>
+                        <select
+                          name="preferredMethod"
+                          id="editPreferredMethod"
+                          className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.preferredMethod}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              preferredMethod: e.target.value,
+                            }))
+                          }
+                          required
+                        >
+                          <option value="socialMedia">Social media</option>
+                          <option value="textMessage">Text message</option>
+                          <option value="phoneCall">Phone call</option>
+                        </select>
+                        <label
+                          htmlFor="editMobile"
+                          className="text-xs text-white"
+                        >
+                          Mobile Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          id="editMobile"
+                          name="mobilePhone"
+                          pattern="[0-9]{3}-[0-9]{3}-[0-9{4}"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.mobilePhone}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              mobilePhone: e.target.value,
+                            }))
+                          }
+                        />
+                        <label
+                          htmlFor="editHomePhone"
+                          className="text-xs text-white"
+                        >
+                          Home Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          id="editHomePhone"
+                          name="homePhone"
+                          pattern="[0-9]{3}-[0-9]{3}-[0-9{4}"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.homePhone}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              homePhone: e.target.value,
+                            }))
+                          }
+                        />
+                        <label
+                          htmlFor="editWorkPhone"
+                          className="text-xs text-white"
+                        >
+                          Work Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          id="editWorkPhone"
+                          name="workPhone"
+                          pattern="[0-9]{3}-[0-9]{3}-[0-9{4}"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.workPhone}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              workPhone: e.target.value,
+                            }))
+                          }
+                        />
+                        <label
+                          htmlFor="editPrimaryEmail"
+                          className="text-xs text-white"
+                        >
+                          Primary Email
+                        </label>
+                        <input
+                          type="email"
+                          id="editPrimaryEmail"
+                          pattern=".+@example\.com"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.primaryEmail}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              primaryEmail: e.target.value,
+                            }))
+                          }
+                        />
+                        <label
+                          htmlFor="editBackupEmail"
+                          className="text-xs text-white"
+                        >
+                          Backup Email
+                        </label>
+                        <input
+                          type="email"
+                          id="editBackupEmail"
+                          pattern=".+@example\.com"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.backupEmail}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              backupEmail: e.target.value,
+                            }))
+                          }
+                        />
+                        <div className="flex flex-col">
+                          <p className="text-base text-white">Socials</p>
+                          <ul>{socialsList}</ul>
+                          {contactDetails.socials.length < 8 && (
+                            <button
+                              type="button"
+                              className="text-sm hover:text-white cursor-pointer"
+                              onClick={addSocials}
+                            >
+                              Other +
+                            </button>
+                          )}
+                        </div>
+                        <label
+                          htmlFor="editMyersBriggs"
+                          className="text-xs text-white mt-6"
+                        >
+                          Myers Briggs Type
+                        </label>
+                        <select
+                          name="myersBriggsType"
+                          id="editMyersBriggs"
+                          className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.myersBriggsType || ""}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              myersBriggsType: e.target.value,
+                            }))
+                          }
+                        >
+                          <option value="">-none-</option>
+                          <option value="intja">INTJ-A Architect</option>
+                          <option value="intjt">INTJ-T Architect</option>
+                          <option value="intpa">INTP-A Logician</option>
+                          <option value="intpt">INTP-T Logician</option>
+                          <option value="entja">ENTJ-A Commander</option>
+                          <option value="entjt">ENTJ-T Commander</option>
+                          <option value="entpa">ENTP-A Debater</option>
+                          <option value="entpt">ENTP-T Debater</option>
+                          <option value="infja">INFJ-A Advocate</option>
+                          <option value="infjt">INFJ-T Advocate</option>
+                          <option value="infpa">INFP-A Mediator</option>
+                          <option value="infpt">INFP-T Mediator</option>
+                          <option value="enfja">ENFJ-A Protagonist</option>
+                          <option value="enfjt">ENFJ-T Protagonist</option>
+                          <option value="enfpa">ENFP-A Campaigner</option>
+                          <option value="enfpt">ENFP-T Campaigner</option>
+                          <option value="istja">ISTJ-A Logistician</option>
+                          <option value="istjt">ISTJ-T Logistician</option>
+                          <option value="isfja">ISFJ-A Defender</option>
+                          <option value="isfjt">ISFJ-T Defender</option>
+                          <option value="estja">ESTJ-A Executive</option>
+                          <option value="estjt">ESTJ-T Executive</option>
+                          <option value="esfja">ESFJ-A Consul</option>
+                          <option value="esfjt">ESFJ-T Consul</option>
+                          <option value="istpa">ISTP-A Virtuoso</option>
+                          <option value="istpt">ISTP-T Virtuoso</option>
+                          <option value="isfpa">ISFP-A Advanturer</option>
+                          <option value="isfpt">ISFP-T Advanturer</option>
+                          <option value="estpa">ESTP-A Entrepreneur</option>
+                          <option value="estpt">ESTP-T Entrepreneur</option>
+                          <option value="esfpa">ESFP-A Entertainer</option>
+                          <option value="esfpt">ESFP-T Entertainer</option>
+                        </select>
+                        <fieldset className="flex flex-wrap max-w-[400px] mb-6">
+                          <legend className="text-xs text-white">
+                            Love Languages
+                          </legend>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="wordsOfAffirmation"
+                              name="wordsOfAffirmation"
+                              value="wordsOfAffirmation"
+                              checked={contactDetails.loveLanguages?.includes(
+                                "wordsOfAffirmation",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: [
+                                      ...prev.loveLanguages,
+                                      "wordsOfAffirmation",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: prev.loveLanguages.filter(
+                                      (ll) => ll !== "wordsOfAffirmation",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="wordsOfAffirmation">
+                              Words of Affirmation
+                            </label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="qualityTime"
+                              name="qualityTime"
+                              value="qualityTime"
+                              checked={contactDetails.loveLanguages?.includes(
+                                "qualityTime",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: [
+                                      ...prev.loveLanguages,
+                                      "qualityTime",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: prev.loveLanguages.filter(
+                                      (ll) => ll !== "qualityTime",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="qualityTime">Quality Time</label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="receivingGifts"
+                              name="receivingGifts"
+                              value="receivingGifts"
+                              checked={contactDetails.loveLanguages?.includes(
+                                "receivingGifts",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: [
+                                      ...prev.loveLanguages,
+                                      "receivingGifts",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: prev.loveLanguages.filter(
+                                      (ll) => ll !== "receivingGifts",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="receivingGifts">
+                              Receiving Gifts
+                            </label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="actsOfService"
+                              name="actsOfService"
+                              value="actsOfService"
+                              checked={contactDetails.loveLanguages?.includes(
+                                "actsOfService",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: [
+                                      ...prev.loveLanguages,
+                                      "actsOfService",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: prev.loveLanguages.filter(
+                                      (ll) => ll !== "actsOfService",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="actsOfService">
+                              Acts of Service
+                            </label>
+                          </div>
+                          <div className="flex gap-1 px-2 items-center">
+                            <input
+                              type="checkbox"
+                              id="physicalTouch"
+                              name="physicalTouch"
+                              value="physicalTouch"
+                              checked={contactDetails.loveLanguages?.includes(
+                                "physicalTouch",
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: [
+                                      ...prev.loveLanguages,
+                                      "physicalTouch",
+                                    ],
+                                  }));
+                                } else {
+                                  setContactDetails((prev) => ({
+                                    ...prev,
+                                    loveLanguages: prev.loveLanguages.filter(
+                                      (ll) => ll !== "physicalTouch",
+                                    ),
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="physicalTouch">
+                              Physical Touch
+                            </label>
+                          </div>
+                        </fieldset>
+                        <label
+                          htmlFor="editAdditionalNotes"
+                          className="text-xs text-white"
+                        >
+                          Additional Notes
+                        </label>
+                        <textarea
+                          name="editAdditionalNotes"
+                          id="editAdditionalNotes"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.additionalNotes}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              additionalNotes: e.target.value,
+                            }))
+                          }
+                        ></textarea>
+                        <label
+                          htmlFor="editTags"
+                          className="text-xs text-white"
+                        >
+                          Tags
+                        </label>
+                        <ul className="flex">{contactTags}</ul>
+                        <select
+                          name="editTags"
+                          id="editTags"
+                          className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
+                          onChange={(e) => {
+                            if (!contactDetails.tags.includes(e.target.value)) {
+                              setContactDetails((prev) => ({
+                                ...prev,
+                                tags: [...prev.tags, e.target.value],
+                              }));
+                            }
+                          }}
+                        >
+                          {tagList}
+                        </select>
+
+                        {!showTagInput && (
+                          <button
+                            type="button"
+                            className="text-sm hover:text-white cursor-pointer"
+                            onClick={() => setShowTagInput(true)}
+                          >
+                            Add Tag +
+                          </button>
+                        )}
+                        {showTagInput && (
+                          <>
+                            <label
+                              htmlFor="addTagInput"
+                              className="text-xs text-white"
+                            >
+                              Add tag
+                            </label>
+                            <div className="flex items-center mb-6">
+                              <input
+                                name="addTagInput"
+                                className="border border-purple-300 rounded-md px-3 py-2 "
+                                value={tagInputValue}
+                                onChange={(e) =>
+                                  setTagInputValue(e.target.value)
+                                }
+                              />
+                              <button
+                                className="border-inherit hover:bg-(--c-violet-void-60) hover:text-white text-sm ml-3 px-2 border rounded-lg h-[38px]"
+                                type="button"
+                                onClick={addTag}
+                              >
+                                ADD
+                              </button>
+                            </div>
+                          </>
+                        )}
+                        <label
+                          htmlFor="editBirthday"
+                          className="text-xs text-white mt-6"
+                        >
+                          Birthday
+                        </label>
+                        <input
+                          type="date"
+                          name="editBirthday"
+                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          value={contactDetails.birthday}
+                          onChange={(e) =>
+                            setContactDetails((prev) => ({
+                              ...prev,
+                              birthday: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          {/*Window buttons*/}
+          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <button
+              type="button"
+              onClick={saveUserDetails}
+              className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
+            >
+              SAVE DETAILS
+            </button>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="mt-3 inline-flex w-full justify-center rounded-md bg-(--c-violet-void-40) px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) sm:mt-0 sm:w-auto"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>

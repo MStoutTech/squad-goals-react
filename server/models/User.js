@@ -47,6 +47,7 @@ const UserSchema = new mongoose.Schema({
     of: Number,
     default: {},
   },
+  tags:[{type: String}],
 });
 
 // Password hash middleware.

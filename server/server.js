@@ -23,6 +23,7 @@ const blogRoutes = require("./routes/blogs");
 const missionRoutes = require("./routes/missions");
 const contactRoutes = require("./routes/contacts");
 const lessonRoutes = require("./routes/lessons");
+const userRoutes = require("./routes/user");
 
 
 
@@ -62,6 +63,7 @@ app.use("/api/blog", blogRoutes);
 app.use("/api/mission", missionRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/lesson", lessonRoutes);
+app.use("/api/user", userRoutes);
 
 
 //Server Running
