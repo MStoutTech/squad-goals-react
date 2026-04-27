@@ -4,6 +4,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { CategoryTag, RoleTag } from "../components/Tags";
 import ContactSearch from "../components/Search";
 import { roleLabels } from "../utils/roleHelpers";
+import { formatPhoneNumber } from "../utils/formatPhoneNumber";
 
 function FilterAndSearch({
   fetchSquad,
@@ -531,6 +532,15 @@ export default function MySquad() {
     setFriendshipRoles(data.friendshipRoles);
     setTags(data.tags);
     filterContacts(data.heartCoreList, data.rayLiablesList, data.buddiesList);
+    if (featuredContact._id) {
+      const updatedFeaturedContact = [
+        ...data.heartCoreList,
+        ...data.rayLiablesList,
+        ...data.buddiesList,
+      ].find((obj) => obj._id === featuredContact._id);
+
+      setFeaturedContact(updatedFeaturedContact);
+    }
   };
   function filterContacts(heartCore, rayLiables, buddies) {
     if (activeFilter == "score") {
@@ -707,6 +717,7 @@ export default function MySquad() {
           <FeaturedContact
             featuredContact={featuredContact}
             fetchSquad={fetchSquad}
+            tags={tags}
           />
         )}
       </main>
@@ -714,7 +725,7 @@ export default function MySquad() {
   );
 }
 
-function FeaturedContact({ featuredContact, fetchSquad }) {
+function FeaturedContact({ featuredContact, fetchSquad, tags }) {
   const [contactHistory, setContactHistory] = useState([]);
   const [isMissionHistoryLoading, setIsMissionHistoryLoading] = useState(false);
   const [isEditContactOpen, setIsEditContactOpen] = useState(false);
@@ -739,6 +750,44 @@ function FeaturedContact({ featuredContact, fetchSquad }) {
         ? featuredContact.friendList
         : featuredContact.connectionInstinct
     ];
+
+  const daysAbbrev = {
+    monday: "M",
+    tuesday: "T",
+    wednesday: "W",
+    thursday: "Th",
+    friday: "F",
+    saturday: "Sat",
+    sunday: "Sun",
+  };
+
+  const loveLangFormat = {
+    wordsOfAffirmation: "Words of Affirmation",
+    qualityTime: "Quality Time",
+    receivingGifts: "Receiving Gifts",
+    actsOfService: "Acts of Service",
+    physicalTouch: "Physical Touch",
+  };
+  const socialsList =
+    featuredContact.details &&
+    featuredContact.details.socials &&
+    featuredContact.details.socials.filter((entry) => entry.handle !== "")
+      .length >= 1 ? (
+      featuredContact.details.socials
+        .filter((entry) => entry.handle !== "")
+        .map((entry) => (
+          <li>
+            {entry.platform}:{" "}
+            <span className="text-(--c-purple-tech-40)">{entry.handle}</span>
+          </li>
+        ))
+    ) : (
+      <li>Edit contact to add socials</li>
+    );
+
+  const tagsList = featuredContact.tags.map((tag) => (
+    <CategoryTag text={tag} />
+  ));
 
   const missionHistoryList = contactHistory.map((entry) => (
     <li>
@@ -816,7 +865,14 @@ function FeaturedContact({ featuredContact, fetchSquad }) {
                   />{" "}
                   Contact Frequency: {featuredContact.contactFrequency}
                 </p>
-                <p>Preferred Time: {featuredContact.preferredDay || "None"}</p>
+                <p>
+                  Preferred Days:{" "}
+                  {(featuredContact.preferredDay &&
+                    featuredContact.preferredDay
+                      .map((day) => daysAbbrev[day])
+                      .join(" ")) ||
+                    "None"}
+                </p>
                 <p>
                   Previous Contact:{" "}
                   {featuredContact.lastContact
@@ -849,6 +905,7 @@ function FeaturedContact({ featuredContact, fetchSquad }) {
               featuredContact={featuredContact}
               closeModal={closeEditModal}
               fetchSquad={fetchSquad}
+              tags={tags}
             />
           )}
         </div>
@@ -884,99 +941,119 @@ function FeaturedContact({ featuredContact, fetchSquad }) {
               </p>
               <h5 className="text-xs py-2">Phone Number</h5>
               <ul className="border-b-1 py-2">
-                <li>
-                  Mobile:{" "}
-                  <span className="text-(--c-purple-tech-40)">
-                    ###-###-####
-                  </span>
-                </li>
-                <li>
-                  Home:{" "}
-                  <span className="text-(--c-purple-tech-40)">
-                    ###-###-####
-                  </span>
-                </li>
-                <li>
-                  Work:{" "}
-                  <span className="text-(--c-purple-tech-40)">
-                    ###-###-####
-                  </span>
-                </li>
+                {!featuredContact.details ||
+                !featuredContact.details.phone ||
+                Object.keys(featuredContact.details.phone).length < 1 ||
+                (featuredContact.details.phone.mobile === "" &&
+                  featuredContact.details.phone.home === "" &&
+                  featuredContact.details.phone.work === "") ? (
+                  <li>Edit contact to add phone number</li>
+                ) : (
+                  <>
+                    {featuredContact.details.phone.mobile !== "" && (
+                      <li>
+                        Mobile:{" "}
+                        <span className="text-(--c-purple-tech-40)">
+                          {featuredContact.details?.phone?.mobile}
+                        </span>
+                      </li>
+                    )}
+                    {featuredContact.details.phone.home !== "" && (
+                      <li>
+                        Home:{" "}
+                        <span className="text-(--c-purple-tech-40)">
+                          {featuredContact.details?.phone?.home}
+                        </span>
+                      </li>
+                    )}
+                    {featuredContact.details.phone.work !== "" && (
+                      <li>
+                        Work:{" "}
+                        <span className="text-(--c-purple-tech-40)">
+                          {featuredContact.details?.phone?.work}
+                        </span>
+                      </li>
+                    )}
+                  </>
+                )}
               </ul>
               <h5 className="text-xs py-2">Email</h5>
               <ul className="border-b-1 py-2">
-                <li>
-                  Primary:{" "}
-                  <span className="text-(--c-purple-tech-40)">
-                    contact@contactemail.com
-                  </span>
-                </li>
-                <li>
-                  Backup:{" "}
-                  <span className="text-(--c-purple-tech-40)">
-                    contact@contactemail.com
-                  </span>
-                </li>
+                {!featuredContact.details ||
+                !featuredContact.details.email ||
+                Object.keys(featuredContact.details.email).length < 1 ||
+                (featuredContact.details.email.primary === "" &&
+                  featuredContact.details.email.backup === "") ? (
+                  <li>Edit contact to add email</li>
+                ) : (
+                  <>
+                    {featuredContact.details.email.primary !== "" && (
+                      <li>
+                        Primary:{" "}
+                        <span className="text-(--c-purple-tech-40)">
+                          {featuredContact.details?.email?.primary}
+                        </span>
+                      </li>
+                    )}
+                    {featuredContact.details.email.backup !== "" && (
+                      <li>
+                        Backup:{" "}
+                        <span className="text-(--c-purple-tech-40)">
+                          {featuredContact.details?.email?.backup}
+                        </span>
+                      </li>
+                    )}
+                  </>
+                )}
               </ul>
               <h5 className="text-xs py-2">Socials</h5>
-              <ul className="border-b-1 py-2">
-                <li>
-                  Facebook:{" "}
-                  <span className="text-(--c-purple-tech-40)">
-                    facebook.com/something
-                  </span>
-                </li>
-                <li>
-                  Instagram:{" "}
-                  <span className="text-(--c-purple-tech-40)">@something</span>
-                </li>
-                <li>
-                  BlueSky:{" "}
-                  <span className="text-(--c-purple-tech-40)">
-                    handle@bsky.social
-                  </span>
-                </li>
-                <li>
-                  Whatsapp:{" "}
-                  <span className="text-(--c-purple-tech-40)">
-                    handle@bsky.social
-                  </span>
-                </li>
-                <li>
-                  Snapchat:{" "}
-                  <span className="text-(--c-purple-tech-40)">
-                    handle@bsky.social
-                  </span>
-                </li>
-              </ul>
+              <ul className="border-b-1 py-2">{socialsList}</ul>
 
               <h5 className="text-xs py-2">Tags</h5>
               <div className="flex gap-1">
-                <CategoryTag text="family" />
-                <CategoryTag text="basketball" />
-                <CategoryTag text="high school" />
-                <CategoryTag text="work" />
+                {tagsList.length > 0 ? (
+                  tagsList
+                ) : (
+                  <p>Edit contact to add tags</p>
+                )}
               </div>
               <h5 className="text-xs py-2">Important Notes</h5>
               <p>
                 Birthday:{" "}
-                <span className="text-(--c-purple-tech-40)">--/--</span>
+                <span className="text-(--c-purple-tech-40)">
+                  {featuredContact.birthday
+                    ? new Date(featuredContact.birthday).toLocaleDateString()
+                    : "N/A"}
+                </span>
               </p>
               <p>
                 Sign: <span className="text-(--c-purple-tech-40)">Aries</span>
               </p>
-              <p>
-                Myers-Briggs Type:{" "}
-                <span className="text-(--c-purple-tech-40)">ENFJ</span>
-              </p>
-              <p>
-                Love Languages:{" "}
-                <span className="text-(--c-purple-tech-40)">
-                  Gifts, acts of service
-                </span>
-              </p>
+              {featuredContact.details &&
+                featuredContact.details.myersBriggsType !== "" && (
+                  <p>
+                    Myers-Briggs Type:{" "}
+                    <span className="text-(--c-purple-tech-40)">
+                      {featuredContact.details.myersBriggsType.toUpperCase()}
+                    </span>
+                  </p>
+                )}
+              {featuredContact.details &&
+                featuredContact.details.loveLanguages.length > 0 && (
+                  <p>
+                    Love Languages:{" "}
+                    <span className="text-(--c-purple-tech-40)">
+                      {featuredContact.details.loveLanguages
+                        .map((lang) => loveLangFormat[lang])
+                        .join(", ")}
+                    </span>
+                  </p>
+                )}
               <p className="min-h-[50px] border-1 rounded-sm mt-2 p-2">
-                No more notes to show.
+                {featuredContact.details &&
+                featuredContact.details.additionalNotes !== ""
+                  ? featuredContact.details.additionalNotes
+                  : "No more notes to show."}
               </p>
             </div>
           </div>
@@ -1009,9 +1086,10 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
     loveLanguages: featuredContact.details?.loveLanguages || [],
     additionalNotes: featuredContact.details?.additionalNotes || "",
     tags: featuredContact.tags || [],
-    birthday: featuredContact.birthday || "",
+    birthday: featuredContact.birthday?.slice(0, 10) || "",
   });
   const [userTags, setUserTags] = useState(tags || []);
+  const [tagSelector, setTagSelector] = useState("");
   const [showTagInput, setShowTagInput] = useState(false);
   const [tagInputValue, setTagInputValue] = useState("");
 
@@ -1019,7 +1097,9 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
     userTags && userTags.length > 0 ? (
       userTags.map((tag) => <option value={tag}>{tag}</option>)
     ) : (
-      <option value="">no tags</option>
+      <option value="none" disabled>
+        no tags
+      </option>
     );
 
   const contactTags = contactDetails.tags.map((tag, i) => (
@@ -1129,12 +1209,19 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
 
   async function saveUserDetails(event) {
     setIsLoading(true);
-    event.preventDefault;
+    event.preventDefault();
 
     const trimmedSocials = contactDetails.socials.filter(
       (entry) => entry.platform.trim() !== "" || entry.handle.trim() !== "",
     );
-    const cleanedContact = { ...contactDetails, socials: trimmedSocials };
+
+    const cleanedBirthday =
+      contactDetails.birthday === "" ? null : contactDetails.birthday;
+    const cleanedContact = {
+      ...contactDetails,
+      socials: trimmedSocials,
+      birthday: cleanedBirthday,
+    };
 
     const response = await fetch(`/api/contact/${featuredContact._id}/edit`, {
       method: "PUT",
@@ -1487,15 +1574,14 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
                           type="tel"
                           id="editMobile"
                           name="mobilePhone"
-                          pattern="[0-9]{3}-[0-9]{3}-[0-9{4}"
                           className="border border-purple-300 rounded-md px-3 py-2 mb-6"
                           value={contactDetails.mobilePhone}
-                          onChange={(e) =>
+                          onChange={(e) => {
                             setContactDetails((prev) => ({
                               ...prev,
-                              mobilePhone: e.target.value,
-                            }))
-                          }
+                              mobilePhone: formatPhoneNumber(e.target.value),
+                            }));
+                          }}
                         />
                         <label
                           htmlFor="editHomePhone"
@@ -1507,13 +1593,12 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
                           type="tel"
                           id="editHomePhone"
                           name="homePhone"
-                          pattern="[0-9]{3}-[0-9]{3}-[0-9{4}"
                           className="border border-purple-300 rounded-md px-3 py-2 mb-6"
                           value={contactDetails.homePhone}
                           onChange={(e) =>
                             setContactDetails((prev) => ({
                               ...prev,
-                              homePhone: e.target.value,
+                              homePhone: formatPhoneNumber(e.target.value),
                             }))
                           }
                         />
@@ -1527,13 +1612,12 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
                           type="tel"
                           id="editWorkPhone"
                           name="workPhone"
-                          pattern="[0-9]{3}-[0-9]{3}-[0-9{4}"
                           className="border border-purple-300 rounded-md px-3 py-2 mb-6"
                           value={contactDetails.workPhone}
                           onChange={(e) =>
                             setContactDetails((prev) => ({
                               ...prev,
-                              workPhone: e.target.value,
+                              workPhone: formatPhoneNumber(e.target.value),
                             }))
                           }
                         />
@@ -1832,8 +1916,12 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
                           name="editTags"
                           id="editTags"
                           className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
+                          value={tagSelector}
                           onChange={(e) => {
-                            if (!contactDetails.tags.includes(e.target.value)) {
+                            if (
+                              !contactDetails.tags.includes(e.target.value) &&
+                              e.target.value !== ""
+                            ) {
                               setContactDetails((prev) => ({
                                 ...prev,
                                 tags: [...prev.tags, e.target.value],
@@ -1841,6 +1929,7 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
                             }
                           }}
                         >
+                          <option value="">--Select a tag --</option>
                           {tagList}
                         </select>
 
@@ -1886,6 +1975,7 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
                         >
                           Birthday
                         </label>
+
                         <input
                           type="date"
                           name="editBirthday"

@@ -101,6 +101,15 @@ module.exports = {
   },
   editContact: async (req, res) => {
     try{
+      const [year, month, day] = req.body.birthday ? req.body.birthday.split("-").map(Number) : [];
+
+const safeDate = req.body.birthday ? new Date(Date.UTC(
+  year,
+  month - 1, // JS months are 0-based
+  day,
+  12, 0, 0   // noon UTC
+)) : req.body.birthday;
+
       await Contact.findByIdAndUpdate(req.params.id, {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -123,7 +132,7 @@ module.exports = {
           additionalNotes: req.body.additionalNotes,
         },
         tags: req.body.tags,
-        birthday: req.body.birthday
+        birthday: safeDate
       })
       res.status(200).json({message: "Contact details saved!"});
     }catch(err){
