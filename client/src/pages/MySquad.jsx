@@ -13,9 +13,28 @@ function FilterAndSearch({
   searchValue,
   setSearchValue,
   friendshipRolesStart,
+  tags,
+  tagFilter,
+  setTagFilter,
 }) {
   const [isAddContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
+  const [showTagsList, setShowTagsList] = useState(false);
+
+  const userTagsList = tags.map((tag) => (
+    <li
+      key={tag}
+      onClick={() => selectTag(tag)}
+      className="p-2 hover:bg-purple-400 cursor-pointer"
+    >
+      {tag}
+    </li>
+  ));
+
+  function selectTag(tag) {
+    setTagFilter(tag);
+    setShowTagsList(false);
+  }
 
   function closeModal() {
     setIsContactModalOpen(false);
@@ -32,6 +51,10 @@ function FilterAndSearch({
     event.preventDefault();
     setSearchValue(event.target.value.toLowerCase());
   };
+
+  function toggleShowTags() {
+    setShowTagsList((showTagsList) => !showTagsList);
+  }
 
   return (
     <div className="w-full mb-10">
@@ -67,10 +90,18 @@ function FilterAndSearch({
           </li>
           <li>
             <PrimaryButton
-              innerText="tag"
-              onClick={() => setActiveFilter("tag")}
+              innerText={tagFilter !== "" ? `tag: ${tagFilter}` : "tag"}
+              onClick={() => {
+                setActiveFilter("tag");
+                toggleShowTags();
+              }}
               isActive={"tag" == activeFilter}
             />
+            {showTagsList && (
+              <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-1 text-white max-h-40 overflow-y-auto text-sm">
+                {userTagsList}
+              </ul>
+            )}
           </li>
           <li>
             <input
@@ -432,6 +463,7 @@ function ContactList({
   featuredContact,
   searchTerm,
   searchList,
+  activeFilter,
 }) {
   function toggleSelect(contact) {
     if (featuredContact == contact) {
@@ -440,7 +472,9 @@ function ContactList({
       setFeaturedContact(contact);
     }
   }
-  const activeList = searchTerm != "" ? searchList : contactList;
+
+  const activeList =
+    searchTerm == "" && activeFilter != "tag" ? contactList : searchList;
   const styledContacts = activeList.map((contact) => (
     <li
       key={contact._id}
@@ -519,6 +553,7 @@ export default function MySquad() {
   const [searchBuddiesList, setSearchBuddiesList] = useState([]);
   const [friendshipRoles, setFriendshipRoles] = useState({});
   const [tags, setTags] = useState([]);
+  const [tagFilter, setTagFilter] = useState("");
 
   const query = searchValue.trim();
   const searchTimeout = useRef(null);
@@ -543,6 +578,9 @@ export default function MySquad() {
     }
   };
   function filterContacts(heartCore, rayLiables, buddies) {
+    if (activeFilter !== "tag") {
+      setTagFilter("");
+    }
     if (activeFilter == "score") {
       setHeartCoreList(() =>
         heartCore.slice().sort((a, b) => b.evalScore - a.evalScore),
@@ -616,6 +654,18 @@ export default function MySquad() {
   }, [activeFilter]);
 
   useEffect(() => {
+    if (activeFilter == "tag" && tagFilter != "") {
+      setSearchHeartCoreList(
+        heartCoreList.filter((contact) => contact.tags.includes(tagFilter)),
+      );
+      setSearchRayLiablesList(
+        rayLiablesList.filter((contact) => contact.tags.includes(tagFilter)),
+      );
+      setSearchBuddiesList(
+        buddiesList.filter((contact) => contact.tags.includes(tagFilter)),
+      );
+      return;
+    }
     if (!query) {
       setSearchHeartCoreList([]);
       setSearchRayLiablesList([]);
@@ -651,7 +701,7 @@ export default function MySquad() {
     }, 200);
 
     return () => clearTimeout(searchTimeout.current);
-  }, [searchValue]);
+  }, [searchValue, activeFilter, tagFilter]);
 
   return (
     <div className="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:p-12 flex flex-col">
@@ -662,6 +712,9 @@ export default function MySquad() {
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         friendshipRolesStart={friendshipRoles}
+        tags={tags}
+        tagFilter={tagFilter}
+        setTagFilter={setTagFilter}
       />
 
       <main className="flex gap-6">
@@ -678,6 +731,7 @@ export default function MySquad() {
             img="/imgs/icons/pink-clock.png"
             setFeaturedContact={setFeaturedContact}
             featuredContact={featuredContact}
+            activeFilter={activeFilter}
           />
         )}
 
@@ -694,6 +748,7 @@ export default function MySquad() {
             img="/imgs/icons/coral-clock.png"
             setFeaturedContact={setFeaturedContact}
             featuredContact={featuredContact}
+            activeFilter={activeFilter}
           />
         )}
 
@@ -710,6 +765,7 @@ export default function MySquad() {
             img="/imgs/icons/green-clock.png"
             setFeaturedContact={setFeaturedContact}
             featuredContact={featuredContact}
+            activeFilter={activeFilter}
           />
         )}
 
@@ -825,7 +881,37 @@ function FeaturedContact({ featuredContact, fetchSquad, tags }) {
   function closeEditModal() {
     setIsEditContactOpen(false);
   }
+  function getZodiacSign(birthDate) {
+    const zodiacSigns = [
+      { sign: "Capricorn", start: [12, 22], end: [1, 19] },
+      { sign: "Aquarius", start: [1, 20], end: [2, 18] },
+      { sign: "Pisces", start: [2, 19], end: [3, 20] },
+      { sign: "Aries", start: [3, 21], end: [4, 19] },
+      { sign: "Taurus", start: [4, 20], end: [5, 20] },
+      { sign: "Gemini", start: [5, 21], end: [6, 20] },
+      { sign: "Cancer", start: [6, 21], end: [7, 22] },
+      { sign: "Leo", start: [7, 23], end: [8, 22] },
+      { sign: "Virgo", start: [8, 23], end: [9, 22] },
+      { sign: "Libra", start: [9, 23], end: [10, 22] },
+      { sign: "Scorpio", start: [10, 23], end: [11, 21] },
+      { sign: "Sagittarius", start: [11, 22], end: [12, 21] },
+    ];
 
+    const month = birthDate.getMonth() + 1; // JavaScript months are 0-indexed
+    const day = birthDate.getDate();
+
+    for (let zodiac of zodiacSigns) {
+      const [startMonth, startDay] = zodiac.start;
+      const [endMonth, endDay] = zodiac.end;
+
+      if (
+        (month === startMonth && day >= startDay) ||
+        (month === endMonth && day <= endDay)
+      ) {
+        return zodiac.sign;
+      }
+    }
+  }
   return (
     <div
       className="mt-8 rounded-lg lg:h-[663px] min-w-[1000px] w-[100%] p-2"
@@ -1026,9 +1112,14 @@ function FeaturedContact({ featuredContact, fetchSquad, tags }) {
                     : "N/A"}
                 </span>
               </p>
-              <p>
-                Sign: <span className="text-(--c-purple-tech-40)">Aries</span>
-              </p>
+              {featuredContact.birthday && (
+                <p>
+                  Sign:{" "}
+                  <span className="text-(--c-purple-tech-40)">
+                    {getZodiacSign(new Date(featuredContact.birthday))}
+                  </span>
+                </p>
+              )}
               {featuredContact.details &&
                 featuredContact.details.myersBriggsType !== "" && (
                   <p>

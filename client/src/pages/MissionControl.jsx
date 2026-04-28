@@ -448,7 +448,10 @@ export default function MissionControl() {
                           width="w-[100%]"
                         />
                       ) : !missionStarted ? (
-                        <ContactMissionForm missionStart={missionStart} />
+                        <ContactMissionForm
+                          missionStart={missionStart}
+                          contact={featuredMission.contact}
+                        />
                       ) : (
                         <TimerDisplay
                           missionTimer={missionTimer}
@@ -487,7 +490,18 @@ export default function MissionControl() {
   );
 }
 
-function ContactMissionForm({ missionStart }) {
+function ContactMissionForm({ missionStart, contact }) {
+  const socialOptions =
+    contact.details?.socials && contact.details?.socials.length > 0 ? (
+      contact.details.socials.map((social) => (
+        <>
+          <option value={social.platform}>{social.platform}</option>
+        </>
+      ))
+    ) : (
+      <option value="social media">social media</option>
+    );
+
   return (
     <form
       onSubmit={missionStart}
@@ -515,9 +529,7 @@ function ContactMissionForm({ missionStart }) {
         id="method-select"
         className="bg-(--c-violet-void) rounded-md px-3 py-2"
       >
-        <option value="facebook">facebook</option>
-        <option value="text">text message</option>
-        <option value="bluesky">bluesky</option>
+        {socialOptions}
         <option value="phone">phone call</option>
       </select>
       <div className="flex justify-center my-3">
