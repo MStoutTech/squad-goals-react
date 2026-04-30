@@ -1,4 +1,5 @@
 import { PrimaryButton } from "../components/Buttons";
+import AddQuestion from "../components/AddQuestion";
 
 function InfoSection({ children }) {
   return (
@@ -43,6 +44,7 @@ export default function Evaluation() {
             </ul>
           </div>
         </InfoSection>
+        <AddQuestion />
       </div>
       {/*Questionnaire */}
       <div className="rounded-xl bg-(--c-purple-tech-20) w-[1000px] py-7 px-15">

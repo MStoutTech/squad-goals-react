@@ -75,7 +75,7 @@ const ContactSchema = new mongoose.Schema({
     preferredDay: [{type: String},],
     evaluation: [{
         questionId: {type: mongoose.Schema.Types.ObjectId, ref: "Evaluation"},
-        questionOption: {type: String},
+        questionOption: [{type: String}],
         questionScore: {type: Number},
     }],
     evalComplete: {type: Boolean},
