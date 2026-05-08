@@ -214,7 +214,11 @@ export default function MissionControl() {
     rayLiables: "--c-light-coral",
     buddies: "--c-green-sheen",
   };
-  const contactTheme = themeColor[featuredMission.contact?.connectionInstinct];
+  const contactTheme =
+    themeColor[
+      featuredMission.contact?.friendList ||
+        featuredMission.contact.connectionInstinct
+    ];
 
   const activeMissions = missionList.map((mission) => (
     <li

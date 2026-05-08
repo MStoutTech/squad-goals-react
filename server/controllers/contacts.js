@@ -1,6 +1,7 @@
 const Contact = require("../models/Contact");
 const HistoryNote = require("../models/HistoryNote");
-const User = require("../models/User")
+const User = require("../models/User");
+const Evaluation = require("../models/Evaluation");
 const { scheduleNextMission } = require("../utils/scheduleNextMission");
 const { calculateContactScores } = require("../utils/calculateContactScores");
 const { ConnectionClosedEvent } = require("mongodb");
@@ -9,10 +10,10 @@ module.exports = {
   getSquad: async (req, res) => {
     try {
       const contacts = await Contact.find({ user: req.user.id }).populate("nextMission").lean();
-      const heartCoreList = contacts.filter(contact => contact.connectionInstinct === "heartCore");
-      const rayLiablesList = contacts.filter(contact => contact.connectionInstinct === "rayLiables");
-      const buddiesList = contacts.filter(contact => contact.connectionInstinct === "buddies");
-      
+      const heartCoreList = contacts.filter(contact => contact.friendList ? contact.friendList === "heartCore" : contact.connectionInstinct === "heartCore");
+      const rayLiablesList = contacts.filter(contact => contact.friendList ? contact.friendList === "rayLiables" : contact.connectionInstinct === "rayLiables");
+      const buddiesList = contacts.filter(contact => contact.friendList ? contact.friendList === "buddies" : contact.connectionInstinct === "buddies");
+      const evalQuestionCount = await Evaluation.countDocuments({isActive: true});
       let userQuery = User.findById(req.user.id);
       for (const role of Object.keys(req.user.friendshipRoles)) {
         userQuery = userQuery.populate(`friendshipRoles.${role}`, "firstName lastName image");
@@ -21,7 +22,7 @@ module.exports = {
       const populatedUser = await userQuery.lean();
       const userTags = req.user.tags || [];
 
-      res.status(200).json({heartCoreList: heartCoreList, rayLiablesList: rayLiablesList, buddiesList: buddiesList, friendshipRoles: populatedUser.friendshipRoles, tags: userTags})
+      res.status(200).json({heartCoreList: heartCoreList, rayLiablesList: rayLiablesList, buddiesList: buddiesList, friendshipRoles: populatedUser.friendshipRoles, tags: userTags, evalQuestionCount: evalQuestionCount})
     } catch (err) {
       console.log(err);
     }

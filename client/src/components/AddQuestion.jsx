@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import { PrimaryButton } from "./Buttons";
 
 export default function AddQuestion() {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +17,7 @@ export default function AddQuestion() {
     min: "",
     max: "",
   });
-  console.log(newQuestion.questionType);
+  //Todo: remove option button
   const answerOptions = newQuestion.options.map((entry, index) => (
     <li className="flex gap-3" key={index}>
       <label htmlFor={`option${index}text`} className="text-xs text-white">
@@ -107,6 +108,44 @@ export default function AddQuestion() {
     return scoreMap;
   }
 
+  async function submitQuestion() {
+    setIsLoading(true);
+    const scoreMap = newQuestion.sliderConfig ? buildScoreMap() : [];
+
+    const formattedQuestion = {
+      question: newQuestion.question,
+      questionType: newQuestion.questionType,
+      displayType: newQuestion.displayType,
+      topic: newQuestion.topic.length > 0 ? newQuestion.topic : null,
+      isActive: true,
+      options: newQuestion.options,
+      sliderConfig: newQuestion.sliderConfig
+        ? { ...newQuestion.sliderConfig, scoreMap: scoreMap }
+        : null,
+    };
+    const response = await fetch(`/api/evaluation/addQuestion`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formattedQuestion),
+    });
+
+    if (response.status === 201) {
+      setNewQuestion({
+        question: "",
+        questionType: null,
+        displayType: null,
+        topic: [],
+        options: [],
+        sliderConfig: null,
+      });
+      setIsLoading(false);
+      setIsTrueSlider("false");
+      setSliderBaseScore({ min: "", max: "" });
+    }
+  }
+
   return (
     <div className="border border-white rounded-lg p-3">
       <h3 className="text-base font-semibold text-white">Add New Question</h3>
@@ -117,8 +156,7 @@ export default function AddQuestion() {
           <label htmlFor="questionText" className="text-xs text-white">
             Question Text
           </label>
-          <input
-            type="text"
+          <textarea
             name="questionText"
             className="border border-purple-300 rounded-md px-3 py-2 mb-6"
             value={newQuestion.question}
@@ -448,7 +486,7 @@ export default function AddQuestion() {
 
               <button
                 type="button"
-                className="text-sm hover:text-white cursor-pointer"
+                className="text-sm hover:text-white cursor-pointer mb-6"
                 onClick={addOption}
               >
                 Add Option +
@@ -574,6 +612,15 @@ export default function AddQuestion() {
               />
             </div>
           )}
+          {newQuestion.question !== "" &&
+            newQuestion.questionType &&
+            newQuestion.displayType &&
+            (newQuestion.options.length > 0 || newQuestion.sliderConfig) && (
+              <PrimaryButton
+                innerText="Save Question"
+                onClick={submitQuestion}
+              />
+            )}
         </div>
       )}
     </div>

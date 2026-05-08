@@ -24,6 +24,7 @@ const missionRoutes = require("./routes/missions");
 const contactRoutes = require("./routes/contacts");
 const lessonRoutes = require("./routes/lessons");
 const userRoutes = require("./routes/user");
+const evalRoutes = require("./routes/evaluation");
 
 
 
@@ -64,6 +65,7 @@ app.use("/api/mission", missionRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/lesson", lessonRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/evaluation", evalRoutes);
 
 
 //Server Running

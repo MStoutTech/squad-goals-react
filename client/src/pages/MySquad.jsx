@@ -554,6 +554,7 @@ export default function MySquad() {
   const [friendshipRoles, setFriendshipRoles] = useState({});
   const [tags, setTags] = useState([]);
   const [tagFilter, setTagFilter] = useState("");
+  const [evalTotal, setEvalTotal] = useState(0);
 
   const query = searchValue.trim();
   const searchTimeout = useRef(null);
@@ -566,6 +567,7 @@ export default function MySquad() {
     setBuddiesList(data.buddiesList);
     setFriendshipRoles(data.friendshipRoles);
     setTags(data.tags);
+    setEvalTotal(data.evalQuestionCount);
     filterContacts(data.heartCoreList, data.rayLiablesList, data.buddiesList);
     if (featuredContact._id) {
       const updatedFeaturedContact = [
@@ -774,6 +776,7 @@ export default function MySquad() {
             featuredContact={featuredContact}
             fetchSquad={fetchSquad}
             tags={tags}
+            evalTotal={evalTotal}
           />
         )}
       </main>
@@ -781,7 +784,7 @@ export default function MySquad() {
   );
 }
 
-function FeaturedContact({ featuredContact, fetchSquad, tags }) {
+function FeaturedContact({ featuredContact, fetchSquad, tags, evalTotal }) {
   const [contactHistory, setContactHistory] = useState([]);
   const [isMissionHistoryLoading, setIsMissionHistoryLoading] = useState(false);
   const [isEditContactOpen, setIsEditContactOpen] = useState(false);
@@ -842,11 +845,11 @@ function FeaturedContact({ featuredContact, fetchSquad, tags }) {
     );
 
   const tagsList = featuredContact.tags.map((tag) => (
-    <CategoryTag text={tag} />
+    <CategoryTag text={tag} key={tag} />
   ));
 
-  const missionHistoryList = contactHistory.map((entry) => (
-    <li>
+  const missionHistoryList = contactHistory.map((entry, index) => (
+    <li key={index}>
       <div className="flex items-center">
         <div className="flex flex-col">
           <span>
@@ -982,7 +985,10 @@ function FeaturedContact({ featuredContact, fetchSquad, tags }) {
                 <h4 className="text-2xl self-start">
                   Eval Score: {featuredContact.evalScore}
                 </h4>
-                <p className="self-start">Questions Answered: 0/125</p>
+                <p className="self-start">
+                  Questions Answered:{" "}
+                  {featuredContact.evaluation?.length || "0"}/{evalTotal}
+                </p>
               </div>
             </div>
           </div>
@@ -1125,7 +1131,7 @@ function FeaturedContact({ featuredContact, fetchSquad, tags }) {
                   <p>
                     Myers-Briggs Type:{" "}
                     <span className="text-(--c-purple-tech-40)">
-                      {featuredContact.details.myersBriggsType.toUpperCase()}
+                      {featuredContact.details.myersBriggsType?.toUpperCase()}
                     </span>
                   </p>
                 )}

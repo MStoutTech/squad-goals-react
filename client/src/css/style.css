@@ -85,7 +85,10 @@ button {
     background-image: url('/imgs/icons/bluesky-solid.svg');
 }
 
-
+input[type="range"] {
+  width: 400px;
+  margin: 0;
+}
 
 
 

@@ -17,7 +17,13 @@ module.exports = {
         //Calculate score, initial instinct + score for role TODO: + evaluation scores, bulkwrite?
         //Store score in contact
         for(const contact of contacts){
-            const newScore= instinctMap[contact.connectionInstinct] + (contact.friendshipRole ? 50 : 0)
+            let evalTotal= 0
+            if (contact.evaluation){
+                contact.evaluation.forEach(question=>
+                    {if(question.questionScore){ evalTotal += question.questionScore}}
+                )
+            }
+            const newScore= instinctMap[contact.connectionInstinct] + (contact.friendshipRole ? 50 : 0) + evalTotal
             await Contact.findByIdAndUpdate(contact._id, {evalScore: newScore})
         }
         console.log("scores calculated")
