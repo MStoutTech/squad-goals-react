@@ -16,6 +16,7 @@ function FilterAndSearch({
   tags,
   tagFilter,
   setTagFilter,
+  squadTotal,
 }) {
   const [isAddContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
@@ -121,7 +122,11 @@ function FilterAndSearch({
             <PrimaryButton innerText="add" onClick={openAddContactModal} />
           </li>
           {isAddContactModalOpen && (
-            <AddContactModal closeModal={closeModal} fetchSquad={fetchSquad} />
+            <AddContactModal
+              closeModal={closeModal}
+              fetchSquad={fetchSquad}
+              squadTotal={squadTotal}
+            />
           )}
           {isRolesModalOpen && (
             <RolesModal
@@ -136,9 +141,8 @@ function FilterAndSearch({
   );
 }
 
-function AddContactModal({ closeModal, fetchSquad }) {
+function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
   const [isLoading, setIsLoading] = useState(false);
-
   async function createContact(event) {
     setIsLoading(true);
     event.preventDefault();
@@ -191,80 +195,84 @@ function AddContactModal({ closeModal, fetchSquad }) {
                 ) : (
                   <div className="mt-2 text-purple-300 text-sm">
                     {/*form*/}
-                    <form id="add-contact-form" onSubmit={createContact}>
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="contactFirstName"
-                          className="text-xs text-white"
-                        >
-                          First Name
-                        </label>
-                        <input
-                          type="text"
-                          id="contactFirstName"
-                          name="firstName"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          required
-                        />
-                        <label
-                          htmlFor="contactLastName"
-                          className="text-xs text-white"
-                        >
-                          Last Name
-                        </label>
-                        <input
-                          type="text"
-                          id="contactLastName"
-                          name="lastName"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          required
-                        />
-                        <label
-                          htmlFor="contactNickname"
-                          className="text-xs text-white"
-                        >
-                          Nickname
-                        </label>
-                        <input
-                          type="text"
-                          id="contactNickname"
-                          name="nickname"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                        />
-                        <label
-                          htmlFor="connection-instinct"
-                          className="text-xs text-white"
-                        >
-                          How close are you?
-                        </label>
-                        <select
-                          name="connectionInstinct"
-                          id="connection-instinct"
-                          className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
-                          required
-                        >
-                          <option value="heartCore">Super close</option>
-                          <option value="rayLiables">Pretty close</option>
-                          <option value="buddies">Casual</option>
-                        </select>
-                        <label
-                          htmlFor="method-preference"
-                          className="text-xs text-white"
-                        >
-                          What is THEIR preferred contact method?
-                        </label>
-                        <select
-                          name="preferredMethod"
-                          id="method-preference"
-                          className="bg-(--c-violet-void) rounded-md px-3 py-2"
-                          required
-                        >
-                          <option value="socialMedia">Social media</option>
-                          <option value="textMessage">Text message</option>
-                          <option value="phoneCall">Phone call</option>
-                        </select>
-                      </div>
-                    </form>
+                    {squadTotal < 150 ? (
+                      <form id="add-contact-form" onSubmit={createContact}>
+                        <div className="flex flex-col">
+                          <label
+                            htmlFor="contactFirstName"
+                            className="text-xs text-white"
+                          >
+                            First Name
+                          </label>
+                          <input
+                            type="text"
+                            id="contactFirstName"
+                            name="firstName"
+                            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                            required
+                          />
+                          <label
+                            htmlFor="contactLastName"
+                            className="text-xs text-white"
+                          >
+                            Last Name
+                          </label>
+                          <input
+                            type="text"
+                            id="contactLastName"
+                            name="lastName"
+                            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                            required
+                          />
+                          <label
+                            htmlFor="contactNickname"
+                            className="text-xs text-white"
+                          >
+                            Nickname
+                          </label>
+                          <input
+                            type="text"
+                            id="contactNickname"
+                            name="nickname"
+                            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+                          />
+                          <label
+                            htmlFor="connection-instinct"
+                            className="text-xs text-white"
+                          >
+                            How close are you?
+                          </label>
+                          <select
+                            name="connectionInstinct"
+                            id="connection-instinct"
+                            className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
+                            required
+                          >
+                            <option value="heartCore">Super close</option>
+                            <option value="rayLiables">Pretty close</option>
+                            <option value="buddies">Casual</option>
+                          </select>
+                          <label
+                            htmlFor="method-preference"
+                            className="text-xs text-white"
+                          >
+                            What is THEIR preferred contact method?
+                          </label>
+                          <select
+                            name="preferredMethod"
+                            id="method-preference"
+                            className="bg-(--c-violet-void) rounded-md px-3 py-2"
+                            required
+                          >
+                            <option value="socialMedia">Social media</option>
+                            <option value="textMessage">Text message</option>
+                            <option value="phoneCall">Phone call</option>
+                          </select>
+                        </div>
+                      </form>
+                    ) : (
+                      <p>Squad Limit Reached</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -272,13 +280,15 @@ function AddContactModal({ closeModal, fetchSquad }) {
           </div>
           {/*Window buttons*/}
           <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-            <button
-              form="add-contact-form"
-              type="submit"
-              className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
-            >
-              ADD CONTACT
-            </button>
+            {squadTotal < 150 && (
+              <button
+                form="add-contact-form"
+                type="submit"
+                className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
+              >
+                ADD CONTACT
+              </button>
+            )}
             <button
               type="button"
               onClick={closeModal}
@@ -556,6 +566,8 @@ export default function MySquad() {
   const [tagFilter, setTagFilter] = useState("");
   const [evalTotal, setEvalTotal] = useState(0);
 
+  const squadTotal =
+    heartCoreList.length + rayLiablesList.length + buddiesList.length;
   const query = searchValue.trim();
   const searchTimeout = useRef(null);
 
@@ -717,13 +729,15 @@ export default function MySquad() {
         tags={tags}
         tagFilter={tagFilter}
         setTagFilter={setTagFilter}
+        squadTotal={squadTotal}
       />
 
       <main className="flex gap-6">
         {/*Inner Circle or "Heart" core friends*/}
         {(!featuredContact._id ||
           featuredContact.friendList === "heartCore" ||
-          featuredContact.connectionInstinct === "heartCore") && (
+          (!featuredContact.friendList &&
+            featuredContact.connectionInstinct === "heartCore")) && (
           <ContactList
             title="Heart-Core Friends"
             themeColor="--c-deep-cerise"
@@ -740,7 +754,8 @@ export default function MySquad() {
         {/*Close Friends or "Ray"liables*/}
         {(!featuredContact._id ||
           featuredContact.friendList === "rayLiables" ||
-          featuredContact.connectionInstinct === "rayLiables") && (
+          (!featuredContact.friendList &&
+            featuredContact.connectionInstinct === "rayLiables")) && (
           <ContactList
             title="Ray-liables"
             themeColor="--c-light-coral"
@@ -757,7 +772,8 @@ export default function MySquad() {
         {/*Casual Friends or "Bud"dies*/}
         {(!featuredContact._id ||
           featuredContact.friendList === "buddies" ||
-          featuredContact.connectionInstinct === "buddies") && (
+          (!featuredContact.friendList &&
+            featuredContact.connectionInstinct === "buddies")) && (
           <ContactList
             title="Bud-dies"
             themeColor="--c-green-sheen"

@@ -30,6 +30,11 @@ module.exports = {
   },
   createContact: async (req, res) => {
     try{
+      const contacts = await Contact.find({ user: req.user.id }).lean();
+      if (contacts.length >= 150){
+        console.log("Contact limit reached!");
+        res.status(400).json({message: "Contact limit reached!"});
+      } else {
       const instinct = req.body.connectionInstinct;
       const instinctMap = {
         heartCore: { evalScore: 100, contactFrequency: 'weekly'},
@@ -51,6 +56,7 @@ module.exports = {
       await scheduleNextMission(req.user.id, newContact._id)
       console.log("Contact added!");
       res.status(201).json({message: "Contact added!"});
+      }
     } catch (err) {
       console.log(err);
     }

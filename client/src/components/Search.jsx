@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function ContactSearch({ onSelect, excludeIds }) {
+export default function ContactSearch({ onSelect, excludeIds, clearOnSelect }) {
   const [searchInput, setSearchInput] = useState("");
   const [contactSearchResults, setContactSearchResults] = useState([]);
 
@@ -35,7 +35,12 @@ export default function ContactSearch({ onSelect, excludeIds }) {
     <li
       key={contact._id}
       className="p-2 hover:bg-purple-400 cursor-pointer"
-      onClick={() => onSelect(contact)}
+      onClick={() => {
+        onSelect(contact);
+        if (clearOnSelect) {
+          setSearchInput("");
+        }
+      }}
     >
       {contact.nickname
         ? `${contact.firstName} "${contact.nickname}" ${contact.lastName}`
@@ -43,7 +48,7 @@ export default function ContactSearch({ onSelect, excludeIds }) {
     </li>
   ));
   return (
-    <div class="mb-6 relative">
+    <div className="mb-6 relative">
       <input
         id="contact-search-input"
         type="search"

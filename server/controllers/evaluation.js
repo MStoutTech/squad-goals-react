@@ -19,7 +19,18 @@ module.exports = {
     try{
       const evaluation = await Evaluation.find({isActive: true}).lean()
       const contacts = await Contact.find({ user: req.user.id }).lean();
-      res.status(200).json({evaluation: evaluation, contacts: contacts})
+      const answerCount = {}
+      evaluation.forEach(question => {
+        contacts.forEach(contact => {
+          if (contact.evaluation?.find(q=> q.questionId.toString() == question._id.toString())?.questionOption?.length > 0){
+            answerCount[question._id.toString()] ? answerCount[question._id.toString()] +=1 : answerCount[question._id.toString()] =1
+          }
+        })
+      })
+
+      const sortedEval = evaluation.slice().sort((a,b)=> (answerCount[a._id.toString()] || 0) - (answerCount[b._id.toString()] || 0))
+
+      res.status(200).json({evaluation: sortedEval, contacts: contacts})
     }catch (err){
       console.log(err);
       res.status(500).json({message: `Error: ${err}`});
@@ -27,7 +38,7 @@ module.exports = {
   },
   saveAnswers: async(req, res) => {
     try{
-      await Promise.all(req.body.answers.map( async(contact) => {
+       const updatedContacts = await Promise.all(req.body.answers.map( async(contact) => {
         const found = await Contact.findById(contact.id)
         const questionIndex = found.evaluation.findIndex(entry => entry.questionId == contact.question.questionId)
         if (questionIndex !== -1) {
@@ -36,12 +47,14 @@ module.exports = {
           found.evaluation.push(contact.question);
         }
         await found.save()
+        return found
       }))
 
       await calculateContactScores(req.user.id);
-      await sortSquad(req.user.id);
+     await sortSquad(req.user.id);
+
       
-      res.status(200).json({message: "Answers Saved!"});
+      res.status(200).json({message: "Answers Saved!", updatedContacts: updatedContacts});
     }catch (err){
       console.log(err);
       res.status(500).json({message: `Error: ${err}`});

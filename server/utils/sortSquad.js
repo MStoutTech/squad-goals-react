@@ -8,7 +8,7 @@ module.exports = {
         let heartCoreCount = 0
         let rayLiablesCount = 0
 
-        await Promise.all(sortedContacts.map(async(contact) => {
+         await Promise.all(sortedContacts.map(async(contact) => {
             if(heartCoreCount < 15 && contact.evalScore >= 100){
                 await Contact.findByIdAndUpdate(contact._id, {friendList: "heartCore"});
                 heartCoreCount ++;

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { PrimaryButton } from "../components/Buttons";
+import ContactSearch from "../components/Search";
 
 function InfoSection({ children }) {
   return (
@@ -9,28 +10,15 @@ function InfoSection({ children }) {
   );
 }
 
-function Questionnaire() {
-  const [questionnaireType, setQuestionnaireType] = useState("allQuestions");
+function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
   const [allQuestions, setAllQuestions] = useState([]);
   const [questionsByTopic, setQuestionsByTopic] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [allContactsAnswers, setAllContactsAnswers] = useState([]);
+  const [singleContactAnswers, setSingleContactAnswers] = useState([]);
   const [pageContactSubject, setPageContactSubject] = useState({});
   const [pageQuestionSubject, setPageQuestionSubject] = useState({});
   const [isSaving, setIsSaving] = useState(false);
-
-  const topics = [
-    { _id: "emotionalSafety", topic: "Emotional Safety and Depth" },
-    { _id: "support", topic: "Support and Loyalty" },
-    {
-      _id: "authenticity",
-      topic: "Authenticity (Trust, Integrity, Accountability",
-    },
-    { _id: "effort", topic: "Effort and Communication" },
-    { _id: "personality", topic: "Personality and Enjoyment" },
-    { _id: "growth", topic: "Growth and Inspiration" },
-    { _id: "boundaries", topic: "Boundaries" },
-  ];
 
   const pageTitle =
     questionnaireType == "contacts"
@@ -46,7 +34,14 @@ function Questionnaire() {
       array: contacts,
       display: (entry) => `${entry.firstName} ${entry.lastName}`,
     },
-    topic: { array: topics, display: (entry) => entry.topic },
+    topic: {
+      array: questionsByTopic,
+      display: (entry) => entry.question.split("\n")[0],
+    },
+    custom: {
+      array: allQuestions,
+      display: (entry) => entry.question.split("\n")[0],
+    },
   };
   const questionOptions = typeMap[questionnaireType].array.map((entry) => (
     //on select change page question subject
@@ -60,6 +55,7 @@ function Questionnaire() {
   function getAnswerInput(question, contact, index) {
     switch (question.displayType) {
       case "checkbox": {
+        if (!allContactsAnswers[index]) return null;
         return question.options.map((option) => (
           <div
             className="flex gap-1 px-2 items-center"
@@ -112,6 +108,7 @@ function Questionnaire() {
         ));
       }
       case "radio": {
+        if (!allContactsAnswers[index]) return null;
         return question.options.map((option) => (
           <div
             className="flex gap-1 px-2 items-center"
@@ -167,12 +164,12 @@ function Questionnaire() {
                 max={`${Math.max(...question.options.map((op) => op.baseScore))}`}
                 list="sliderValues"
                 value={
-                  allContactsAnswers[index].questionOption
+                  allContactsAnswers[index]?.questionOption
                     ? question.options
                         ?.find(
                           (o) =>
                             o.text ==
-                            allContactsAnswers[index].questionOption[0],
+                            allContactsAnswers[index]?.questionOption[0],
                         )
                         ?.baseScore.toString()
                     : question.options[Math.floor(question.options.length / 2)]
@@ -219,8 +216,8 @@ function Questionnaire() {
               max={`${question.sliderConfig.max}`}
               step={`${question.sliderConfig.step}`}
               value={
-                allContactsAnswers[index].questionOption
-                  ? allContactsAnswers[index].questionOption[0]
+                allContactsAnswers[index]?.questionOption
+                  ? allContactsAnswers[index]?.questionOption[0]
                   : question.sliderConfig.scoreMap[
                       Math.floor(question.sliderConfig.scoreMap.length / 2)
                     ].value
@@ -254,8 +251,9 @@ function Questionnaire() {
       }
     }
   }
-  if (questionnaireType == "allQuestions" && contacts.length > 0) {
-    answerInput = contacts.map((contact, index) => (
+  if (questionnaireType != "contacts" && contacts.length > 0) {
+    const contactList = questionnaireType == "custom" ? customGroup : contacts;
+    answerInput = contactList.map((contact, index) => (
       <li key={contact._id} className="mb-6">
         <fieldset>
           <legend className="flex gap-2 text-lg items-center">
@@ -313,22 +311,51 @@ function Questionnaire() {
         };
       } else return question;
     });
+
+    const selectedQuestion =
+      Object.keys(pageQuestionSubject).length < 1
+        ? sortedAnswers[0]
+        : pageQuestionSubject;
+    const selectedContact =
+      Object.keys(pageContactSubject).length < 1
+        ? data.contacts[0]
+        : pageContactSubject;
     setAllQuestions(sortedAnswers);
-    setPageQuestionSubject(sortedAnswers[0]);
+    if (Object.keys(pageQuestionSubject).length < 1) {
+      setPageQuestionSubject(sortedAnswers[0]);
+    }
     setContacts(data.contacts);
     setAllContactsAnswers(
       data.contacts.map(
         (contact) =>
           contact.evaluation?.find(
-            (question) => question.questionId == data.evaluation[0]._id,
+            (question) => question.questionId == selectedQuestion._id,
           ) ||
-          (data.evaluation[0].displayType == "checkbox"
+          (selectedQuestion.displayType == "checkbox"
             ? {
-                questionId: data.evaluation[0]._id,
+                questionId: selectedQuestion._id,
                 questionOption: null,
               }
             : {
-                questionId: data.evaluation[0]._id,
+                questionId: selectedQuestion._id,
+                questionOption: null,
+                questionScore: null,
+              }),
+      ),
+    );
+    setSingleContactAnswers(
+      sortedAnswers.map(
+        (question) =>
+          selectedContact.evaluation?.find(
+            (entry) => entry.questionId == question._id,
+          ) ||
+          (question.displayType == "checkbox"
+            ? {
+                questionId: question._id,
+                questionOption: null,
+              }
+            : {
+                questionId: question._id,
                 questionOption: null,
                 questionScore: null,
               }),
@@ -341,9 +368,11 @@ function Questionnaire() {
       const newQuestion = allQuestions.find(
         (question) => question._id == e.target.value,
       );
+      const contactList =
+        questionnaireType == "custom" ? customGroup : contacts;
       setPageQuestionSubject(newQuestion);
       setAllContactsAnswers(
-        contacts.map(
+        contactList.map(
           (contact) =>
             contact.evaluation?.find(
               (question) => question.questionId == newQuestion._id,
@@ -382,29 +411,139 @@ function Questionnaire() {
 
   const saveAnswers = async () => {
     setIsSaving(true);
+    const contactList = questionnaireType == "custom" ? customGroup : contacts;
     const response = await fetch("/api/evaluation/saveAnswers", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        answers: contacts.map((contact, i) => {
+        answers: contactList.map((contact, i) => {
           return { id: contact._id, question: allContactsAnswers[i] };
         }),
       }),
     });
     if (response.status === 200) {
+      const data = await response.json();
+      setContacts((prev) =>
+        prev.map(
+          (contact) =>
+            data.updatedContacts.find(
+              (updated) => updated._id == contact._id,
+            ) || contact,
+        ),
+      );
       setIsSaving(false);
     }
   };
+
+  async function saveAndNext() {
+    await saveAnswers();
+
+    const questionList =
+      questionnaireType == "topic" ? questionsByTopic : allQuestions;
+    const questionIndex = questionList.findIndex(
+      (question) => question._id == pageQuestionSubject._id,
+    );
+    if (questionIndex < questionList.length - 1) {
+      setPageQuestionSubject(questionList[questionIndex + 1]);
+    } else {
+      setPageQuestionSubject(questionList[0]);
+    }
+  }
 
   useEffect(() => {
     fetchEvaluation();
   }, []);
 
+  useEffect(() => {
+    if (selectedTopic != "") {
+      const filteredQuestions =
+        allQuestions.filter((question) =>
+          question.topic?.includes(selectedTopic),
+        ) || [];
+      setQuestionsByTopic(filteredQuestions);
+      setPageQuestionSubject(filteredQuestions[0] || {});
+      setAllContactsAnswers(
+        filteredQuestions[0]
+          ? contacts.map(
+              (contact) =>
+                contact.evaluation?.find(
+                  (question) => question.questionId == filteredQuestions[0]._id,
+                ) ||
+                (filteredQuestions[0].displayType == "checkbox"
+                  ? {
+                      questionId: filteredQuestions[0]._id,
+                      questionOption: null,
+                    }
+                  : {
+                      questionId: filteredQuestions[0]._id,
+                      questionOption: null,
+                      questionScore: null,
+                    }),
+            )
+          : [],
+      );
+    }
+  }, [selectedTopic]);
+
+  useEffect(() => {
+    if (
+      questionnaireType == "custom" &&
+      customGroup.length > 0 &&
+      Object.keys(pageQuestionSubject).length > 0
+    ) {
+      setAllContactsAnswers(
+        customGroup.map(
+          (contact) =>
+            contact.evaluation?.find(
+              (question) => question.questionId == pageQuestionSubject._id,
+            ) ||
+            (pageQuestionSubject.displayType == "checkbox"
+              ? {
+                  questionId: pageQuestionSubject._id,
+                  questionOption: null,
+                }
+              : {
+                  questionId: pageQuestionSubject._id,
+                  questionOption: null,
+                  questionScore: null,
+                }),
+        ),
+      );
+    }
+  }, [customGroup]);
+
+  useEffect(() => {
+    if (
+      questionnaireType == "allQuestions" &&
+      contacts.length > 0 &&
+      Object.keys(pageQuestionSubject).length > 0
+    ) {
+      setAllContactsAnswers(
+        contacts.map(
+          (contact) =>
+            contact.evaluation?.find(
+              (question) => question.questionId == pageQuestionSubject._id,
+            ) ||
+            (pageQuestionSubject.displayType == "checkbox"
+              ? {
+                  questionId: pageQuestionSubject._id,
+                  questionOption: null,
+                }
+              : {
+                  questionId: pageQuestionSubject._id,
+                  questionOption: null,
+                  questionScore: null,
+                }),
+        ),
+      );
+    }
+  }, [questionnaireType]);
+
   return (
     <div
-      className={`${isSaving && "pointer-events-none cursor-progress"} rounded-xl bg-(--c-purple-tech-20) w-[1000px] py-7 px-15 flex flex-col max-h-[820px]`}
+      className={`${isSaving && "cursor-progress"} rounded-xl bg-(--c-purple-tech-20) w-[1000px] py-7 px-15 flex flex-col max-h-[820px]`}
     >
       <div className="flex items-center justify-end">
         <label htmlFor="questionChange" className="text-xs mr-2">
@@ -444,13 +583,51 @@ function Questionnaire() {
 
       <div className="flex justify-between">
         <PrimaryButton innerText="save" onClick={saveAnswers} />
-        <PrimaryButton innerText="save and next" />
+        <PrimaryButton innerText="save and next" onClick={saveAndNext} />
       </div>
     </div>
   );
 }
 
 export default function Evaluation() {
+  const [questionnaireType, setQuestionnaireType] = useState("allQuestions");
+  const [selectedTopic, setSelectedTopic] = useState("");
+  const [showTopicsList, setShowTopicsList] = useState(false);
+  const [customGroup, setCustomGroup] = useState([]);
+  const [isCustomSelectModalOpen, setIsCustomSelectModalOpen] = useState(false);
+
+  const topics = {
+    emotionalSafety: "Emotional Safety and Depth",
+    support: "Support and Loyalty",
+    authenticity: "Authenticity",
+    effort: "Effort and Communication",
+    personality: "Personality and Enjoyment",
+    growth: "Growth and Inspiration",
+    boundaries: "Boundaries",
+  };
+
+  const topicsList = Object.keys(topics).map((topic) => (
+    <li
+      key={topic}
+      onClick={() => selectTopic(topic)}
+      className="p-2 hover:bg-purple-400 cursor-pointer"
+    >
+      {topics[topic]}
+    </li>
+  ));
+
+  function selectTopic(topic) {
+    setSelectedTopic(topic);
+    setQuestionnaireType("topic");
+    setShowTopicsList(false);
+  }
+  function toggleShowTopics() {
+    setShowTopicsList((showTopicsList) => !showTopicsList);
+  }
+
+  function closeModal() {
+    setIsCustomSelectModalOpen(false);
+  }
   return (
     <main className="flex gap-5 p-4">
       {/*Side section */}
@@ -468,10 +645,45 @@ export default function Evaluation() {
         </InfoSection>
         <div className="border-3 rounded-lg flex flex-col gap-4 p-3 text-(--c-purple-tech-40) text-xl">
           <h2>SETTINGS</h2>
-          <PrimaryButton innerText="full evaluation" />
-          <PrimaryButton innerText="one friend at a time" />
-          <PrimaryButton innerText="topic specific" />
-          <PrimaryButton innerText="custom friend group" />
+          <PrimaryButton
+            innerText="full evaluation"
+            onClick={() => {
+              setQuestionnaireType("allQuestions");
+              setSelectedTopic("");
+            }}
+            isActive={"allQuestions" == questionnaireType}
+          />
+          <PrimaryButton
+            innerText="one friend at a time"
+            onClick={() => {
+              setQuestionnaireType("contacts");
+              setSelectedTopic("");
+            }}
+            isActive={"contacts" == questionnaireType}
+          />
+          <PrimaryButton
+            innerText={
+              selectedTopic !== ""
+                ? `topic: ${topics[selectedTopic].split(" ")[0]}`
+                : "topic specific"
+            }
+            onClick={() => {
+              toggleShowTopics();
+            }}
+            isActive={"topic" == questionnaireType}
+          />
+          {showTopicsList && (
+            <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-1 text-white max-h-40 overflow-y-auto text-sm">
+              {topicsList}
+            </ul>
+          )}
+          <PrimaryButton
+            innerText="custom friend group"
+            onClick={() => {
+              setIsCustomSelectModalOpen(true);
+            }}
+            isActive={"custom" == questionnaireType}
+          />
         </div>
         <InfoSection>
           <h3 className="text-center mb-2">Notes</h3>
@@ -487,7 +699,108 @@ export default function Evaluation() {
           </div>
         </InfoSection>
       </div>
-      <Questionnaire />
+      <Questionnaire
+        selectedTopic={selectedTopic}
+        questionnaireType={questionnaireType}
+        customGroup={customGroup}
+      />
+      {isCustomSelectModalOpen && (
+        <CustomSelectionModal
+          closeModal={closeModal}
+          customGroup={customGroup}
+          setCustomGroup={setCustomGroup}
+          setQuestionnaireType={setQuestionnaireType}
+          setSelectedTopic={setSelectedTopic}
+        />
+      )}
     </main>
+  );
+}
+
+function CustomSelectionModal({
+  closeModal,
+  customGroup,
+  setCustomGroup,
+  setQuestionnaireType,
+  setSelectedTopic,
+}) {
+  function startEvaluation() {
+    setQuestionnaireType("custom");
+    setSelectedTopic("");
+    closeModal();
+  }
+
+  const selectedList = customGroup.map((contact) => (
+    <div className="flex mb-2" key={contact._id}>
+      <span className="mr-3">{`${contact.firstName} ${contact.lastName}`}</span>
+      <span
+        className="cursor-pointer border-1 rounded px-2"
+        onClick={() =>
+          setCustomGroup((prev) => prev.filter((c) => c._id != contact._id))
+        }
+      >
+        X
+      </span>
+    </div>
+  ));
+
+  return (
+    <div
+      id="custom-selection-modal"
+      aria-labelledby="custom-list-selection"
+      className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
+    >
+      <div
+        className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+        onClick={closeModal}
+      ></div>
+
+      <div
+        tabIndex="0"
+        className="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0"
+      >
+        <div className="relative transform border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+          <div className="bg-(--c-purple-tech-40)/40 min-h-[200px] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left ">
+              {/*Window title*/}
+              <h3
+                id="dialog-title"
+                className="text-base font-semibold text-gray-900"
+              >
+                Custom List Selection
+              </h3>
+
+              <div className="mt-2 text-purple-300 text-sm ">
+                {customGroup.length < 15 ? (
+                  <ContactSearch
+                    onSelect={(contact) =>
+                      setCustomGroup((prev) => [...prev, contact])
+                    }
+                    excludeIds={customGroup.map((contact) => contact._id)}
+                    clearOnSelect={true}
+                  />
+                ) : (
+                  <p>Custom List Limit Reached</p>
+                )}
+                <div className="flex flex-col max-h-[500px] overflow-auto">
+                  {selectedList}
+                </div>
+              </div>
+            </div>
+          </div>
+          {/*Window buttons*/}
+          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <button
+              form="add-contact-form"
+              type="button"
+              onClick={startEvaluation}
+              className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
+            >
+              START EVALUATION
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

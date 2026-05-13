@@ -133,7 +133,7 @@ function CompletedMissions({ completedList }) {
         {completedMissions.length > 0 ? (
           completedMissions
         ) : (
-          <li>No Completed Missions!</li>
+          <li key={"noMissions"}>No Completed Missions!</li>
         )}
       </ul>
     </section>
@@ -217,7 +217,7 @@ export default function MissionControl() {
   const contactTheme =
     themeColor[
       featuredMission.contact?.friendList ||
-        featuredMission.contact.connectionInstinct
+        featuredMission.contact?.connectionInstinct
     ];
 
   const activeMissions = missionList.map((mission) => (
@@ -256,8 +256,8 @@ export default function MissionControl() {
     </li>
   ));
 
-  const missionHistoryList = featuredMissionHistory.map((entry) => (
-    <li>
+  const missionHistoryList = featuredMissionHistory.map((entry, index) => (
+    <li key={index}>
       <div className="flex items-center">
         <div className="flex flex-col">
           <span>
@@ -645,7 +645,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
       ></div>
 
       <div
-        tabindex="0"
+        tabIndex="0"
         className="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0"
       >
         <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
@@ -812,7 +812,7 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
       ></div>
 
       <div
-        tabindex="0"
+        tabIndex="0"
         className="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0"
       >
         {showConfirmation ? (
