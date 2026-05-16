@@ -47,15 +47,29 @@ switch(contact.contactFrequency){
 		break;
 	}
 }
+let mostAvailableDay = new Date(now);
 
+const birthday = contact.birthday ? new Date(contact.birthday) : null
 
+const startRangeBirthday = contact.birthday ? new Date(birthday): null
+startRangeBirthday?.setFullYear(daysStart.getFullYear())
+const endRangeBirthday = contact.birthday ? new Date(birthday) : null
+endRangeBirthday?.setFullYear(daysEnd.getFullYear())
 
+if(startRangeBirthday >= daysStart && startRangeBirthday <= daysEnd){ mostAvailableDay = startRangeBirthday}
+else if (endRangeBirthday >= daysStart && endRangeBirthday <= daysEnd){mostAvailableDay = endRangeBirthday}
+else{
+
+const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
 const countDays = {}
 
 const current = new Date(daysStart);
 while (current <= daysEnd) {
-  countDays[current.toLocaleDateString()] = 0;
-  current.setDate(current.getDate() + 1);
+	if((contact.preferredDay?.length > 0 && contact.preferredDay.includes(days[current.getDay()])) || (!contact.preferredDay || contact.preferredDay?.length == 0)){
+		countDays[current.toLocaleDateString()] = 0;
+	}
+  
+  	current.setDate(current.getDate() + 1);
 }
 
 const constraints ={$gte: daysStart, $lte: daysEnd}
@@ -71,7 +85,7 @@ scheduledMissions.forEach(mission => (
 ))
 
 let leastMissions = Infinity;
-let mostAvailableDay = new Date(now);
+
 
 for (const day in countDays){
 	if (countDays[day] < leastMissions){
@@ -80,7 +94,7 @@ for (const day in countDays){
 	};
 
 };
-
+}
 //then schedule new contact mission for the mostAvailableDay
 
 const newMission = await Mission.create({

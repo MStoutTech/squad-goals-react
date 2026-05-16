@@ -21,8 +21,9 @@ module.exports = {
       
       const populatedUser = await userQuery.lean();
       const userTags = req.user.tags || [];
+      const evalTags = (await Evaluation.find({questionType: "categorical"}).lean()).flatMap(q=> q.options.map(o=>o.text))
 
-      res.status(200).json({heartCoreList: heartCoreList, rayLiablesList: rayLiablesList, buddiesList: buddiesList, friendshipRoles: populatedUser.friendshipRoles, tags: userTags, evalQuestionCount: evalQuestionCount})
+      res.status(200).json({heartCoreList: heartCoreList, rayLiablesList: rayLiablesList, buddiesList: buddiesList, friendshipRoles: populatedUser.friendshipRoles, tags: userTags, evalTags: evalTags, evalQuestionCount: evalQuestionCount})
     } catch (err) {
       console.log(err);
     }

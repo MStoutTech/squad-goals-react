@@ -14,6 +14,7 @@ function FilterAndSearch({
   setSearchValue,
   friendshipRolesStart,
   tags,
+  evalTags,
   tagFilter,
   setTagFilter,
   squadTotal,
@@ -22,7 +23,7 @@ function FilterAndSearch({
   const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
   const [showTagsList, setShowTagsList] = useState(false);
 
-  const userTagsList = tags.map((tag) => (
+  const userTagsList = [...tags, ...evalTags].map((tag) => (
     <li
       key={tag}
       onClick={() => selectTag(tag)}
@@ -563,6 +564,7 @@ export default function MySquad() {
   const [searchBuddiesList, setSearchBuddiesList] = useState([]);
   const [friendshipRoles, setFriendshipRoles] = useState({});
   const [tags, setTags] = useState([]);
+  const [evalTags, setEvalTags] = useState([]);
   const [tagFilter, setTagFilter] = useState("");
   const [evalTotal, setEvalTotal] = useState(0);
 
@@ -579,6 +581,7 @@ export default function MySquad() {
     setBuddiesList(data.buddiesList);
     setFriendshipRoles(data.friendshipRoles);
     setTags(data.tags);
+    setEvalTags(data.evalTags);
     setEvalTotal(data.evalQuestionCount);
     filterContacts(data.heartCoreList, data.rayLiablesList, data.buddiesList);
     if (featuredContact._id) {
@@ -670,13 +673,49 @@ export default function MySquad() {
   useEffect(() => {
     if (activeFilter == "tag" && tagFilter != "") {
       setSearchHeartCoreList(
-        heartCoreList.filter((contact) => contact.tags.includes(tagFilter)),
+        heartCoreList.filter(
+          (contact) =>
+            contact.tags.includes(tagFilter) ||
+            contact.evaluation
+              .filter(
+                (q) =>
+                  (q.questionScore === null ||
+                    !Object.keys(q).includes("questionScore")) &&
+                  q.questionOption?.length > 0,
+              )
+              .flatMap((q) => q.questionOption)
+              .includes(tagFilter),
+        ),
       );
       setSearchRayLiablesList(
-        rayLiablesList.filter((contact) => contact.tags.includes(tagFilter)),
+        rayLiablesList.filter(
+          (contact) =>
+            contact.tags.includes(tagFilter) ||
+            contact.evaluation
+              .filter(
+                (q) =>
+                  (q.questionScore === null ||
+                    !Object.keys(q).includes("questionScore")) &&
+                  q.questionOption?.length > 0,
+              )
+              .flatMap((q) => q.questionOption)
+              .includes(tagFilter),
+        ),
       );
       setSearchBuddiesList(
-        buddiesList.filter((contact) => contact.tags.includes(tagFilter)),
+        buddiesList.filter(
+          (contact) =>
+            contact.tags.includes(tagFilter) ||
+            contact.evaluation
+              .filter(
+                (q) =>
+                  (q.questionScore === null ||
+                    !Object.keys(q).includes("questionScore")) &&
+                  q.questionOption?.length > 0,
+              )
+              .flatMap((q) => q.questionOption)
+              .includes(tagFilter),
+        ),
       );
       return;
     }
@@ -727,6 +766,7 @@ export default function MySquad() {
         setSearchValue={setSearchValue}
         friendshipRolesStart={friendshipRoles}
         tags={tags}
+        evalTags={evalTags}
         tagFilter={tagFilter}
         setTagFilter={setTagFilter}
         squadTotal={squadTotal}
@@ -792,6 +832,7 @@ export default function MySquad() {
             featuredContact={featuredContact}
             fetchSquad={fetchSquad}
             tags={tags}
+            evalTags={evalTags}
             evalTotal={evalTotal}
           />
         )}
@@ -800,7 +841,13 @@ export default function MySquad() {
   );
 }
 
-function FeaturedContact({ featuredContact, fetchSquad, tags, evalTotal }) {
+function FeaturedContact({
+  featuredContact,
+  fetchSquad,
+  tags,
+  evalTags,
+  evalTotal,
+}) {
   const [contactHistory, setContactHistory] = useState([]);
   const [isMissionHistoryLoading, setIsMissionHistoryLoading] = useState(false);
   const [isEditContactOpen, setIsEditContactOpen] = useState(false);
@@ -860,7 +907,15 @@ function FeaturedContact({ featuredContact, fetchSquad, tags, evalTotal }) {
       <li>Edit contact to add socials</li>
     );
 
-  const tagsList = featuredContact.tags.map((tag) => (
+  const featuredEvalTags = featuredContact.evaluation
+    .filter(
+      (q) =>
+        (q.questionScore === null ||
+          !Object.keys(q).includes("questionScore")) &&
+        q.questionOption?.length > 0,
+    )
+    .flatMap((q) => q.questionOption);
+  const tagsList = [...featuredEvalTags, ...featuredContact.tags].map((tag) => (
     <CategoryTag text={tag} key={tag} />
   ));
 
@@ -1118,7 +1173,7 @@ function FeaturedContact({ featuredContact, fetchSquad, tags, evalTotal }) {
               <ul className="border-b-1 py-2">{socialsList}</ul>
 
               <h5 className="text-xs py-2">Tags</h5>
-              <div className="flex gap-1">
+              <div className="flex flex-wrap gap-1">
                 {tagsList.length > 0 ? (
                   tagsList
                 ) : (

@@ -53,9 +53,21 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
   let answerInput = [];
 
   function getAnswerInput(question, contact, index) {
+    const activeAnswerArray =
+      questionnaireType == "contacts"
+        ? singleContactAnswers
+        : allContactsAnswers;
+    const activeSetter =
+      questionnaireType == "contacts"
+        ? setSingleContactAnswers
+        : setAllContactsAnswers;
     switch (question.displayType) {
       case "checkbox": {
-        if (!allContactsAnswers[index]) return null;
+        if (
+          (questionnaireType != "contacts" && !allContactsAnswers[index]) ||
+          (questionnaireType == "contacts" && !singleContactAnswers[index])
+        )
+          return null;
         return question.options.map((option) => (
           <div
             className="flex gap-1 px-2 items-center"
@@ -67,13 +79,13 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
               name={`contact${index}response`}
               value={option.text}
               checked={
-                allContactsAnswers[index].questionOption?.includes(
+                activeAnswerArray[index].questionOption?.includes(
                   option.text,
                 ) || false
               }
               onChange={(e) => {
                 if (e.target.checked) {
-                  setAllContactsAnswers((prev) =>
+                  activeSetter((prev) =>
                     prev.map((answer, i) =>
                       i === index
                         ? {
@@ -86,7 +98,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
                     ),
                   );
                 } else {
-                  setAllContactsAnswers((prev) =>
+                  activeSetter((prev) =>
                     prev.map((answer, i) =>
                       i === index
                         ? {
@@ -108,7 +120,11 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         ));
       }
       case "radio": {
-        if (!allContactsAnswers[index]) return null;
+        if (
+          (questionnaireType != "contacts" && !allContactsAnswers[index]) ||
+          (questionnaireType == "contacts" && !singleContactAnswers[index])
+        )
+          return null;
         return question.options.map((option) => (
           <div
             className="flex gap-1 px-2 items-center"
@@ -120,13 +136,13 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
               name={`contact${index}response`}
               value={option.text}
               checked={
-                allContactsAnswers[index].questionOption?.includes(
+                activeAnswerArray[index].questionOption?.includes(
                   option.text,
                 ) || false
               }
               onChange={(e) => {
                 if (e.target.checked) {
-                  setAllContactsAnswers((prev) =>
+                  activeSetter((prev) =>
                     prev.map((answer, i) =>
                       i === index
                         ? question.questionType == "categorical"
@@ -152,7 +168,11 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         ));
       }
       case "slider": {
-        if (!allContactsAnswers[index]) return null;
+        if (
+          (questionnaireType != "contacts" && !allContactsAnswers[index]) ||
+          (questionnaireType == "contacts" && !singleContactAnswers[index])
+        )
+          return null;
         if (!question.sliderConfig) {
           return (
             <div key={`contact${index}`}>
@@ -164,12 +184,12 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
                 max={`${Math.max(...question.options.map((op) => op.baseScore))}`}
                 list="sliderValues"
                 value={
-                  allContactsAnswers[index]?.questionOption
+                  activeAnswerArray[index]?.questionOption
                     ? question.options
                         ?.find(
                           (o) =>
                             o.text ==
-                            allContactsAnswers[index]?.questionOption[0],
+                            activeAnswerArray[index]?.questionOption[0],
                         )
                         ?.baseScore.toString()
                     : question.options[Math.floor(question.options.length / 2)]
@@ -180,7 +200,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
                     e.target.value,
                     question.options.map((o) => o.baseScore.toString()),
                   );
-                  setAllContactsAnswers((prev) =>
+                  activeSetter((prev) =>
                     prev.map((answer, i) =>
                       i === index
                         ? {
@@ -216,8 +236,8 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
               max={`${question.sliderConfig.max}`}
               step={`${question.sliderConfig.step}`}
               value={
-                allContactsAnswers[index]?.questionOption
-                  ? allContactsAnswers[index]?.questionOption[0]
+                activeAnswerArray[index]?.questionOption
+                  ? activeAnswerArray[index]?.questionOption[0]
                   : question.sliderConfig.scoreMap[
                       Math.floor(question.sliderConfig.scoreMap.length / 2)
                     ].value
@@ -227,7 +247,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
                   e.target.value,
                   question.sliderConfig.scoreMap.map((o) => o.value.toString()),
                 );
-                setAllContactsAnswers((prev) =>
+                activeSetter((prev) =>
                   prev.map((answer, i) =>
                     i === index
                       ? {
@@ -260,9 +280,36 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
             <img src="/imgs/Small-Friend-Icon.png" alt="" />
             <h3>{`${contact.firstName} ${contact.nickname ? `"${contact.nickname}"` : ""} ${contact.lastName}`}</h3>
           </legend>
-          <div className="flex gap-2 py-1 pb-6 border-b-2">
+          <div className="flex flex-wrap gap-2 py-1 pb-6 border-b-2">
             {pageQuestionSubject.options &&
               getAnswerInput(pageQuestionSubject, contact, index)}
+          </div>
+        </fieldset>
+      </li>
+    ));
+  }
+  if (
+    questionnaireType == "contacts" &&
+    Object.keys(pageContactSubject)?.length > 0
+  ) {
+    answerInput = allQuestions.map((question, index) => (
+      <li key={question._id} className="mb-6">
+        <fieldset>
+          <legend className="flex flex-col gap-2 text-lg">
+            <h3>{question.question.split("\n")[0]}</h3>
+            {question.question.split("\n").length > 1 &&
+              question.question
+                .split("\n")
+                .slice(1)
+                .map((line, i) => (
+                  <p key={i} className="text-sm mb-1">
+                    {line}
+                  </p>
+                ))}
+          </legend>
+          <div className="flex flex-wrap gap-2 py-1 pb-6 border-b-2">
+            {question.options &&
+              getAnswerInput(question, pageContactSubject, index)}
           </div>
         </fieldset>
       </li>
@@ -343,6 +390,9 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
               }),
       ),
     );
+    if (Object.keys(pageContactSubject).length < 1) {
+      setPageContactSubject(selectedContact);
+    }
     setSingleContactAnswers(
       sortedAnswers.map(
         (question) =>
@@ -390,9 +440,10 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         ),
       );
     } else {
-      setPageContactSubject(
-        contacts.find((contact) => contact._id == e.target.value),
+      const newSelection = contacts.find(
+        (contact) => contact._id == e.target.value,
       );
+      setPageContactSubject(newSelection);
     }
   }
 
@@ -411,18 +462,35 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
 
   const saveAnswers = async () => {
     setIsSaving(true);
-    const contactList = questionnaireType == "custom" ? customGroup : contacts;
-    const response = await fetch("/api/evaluation/saveAnswers", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        answers: contactList.map((contact, i) => {
-          return { id: contact._id, question: allContactsAnswers[i] };
+    let response;
+    if (questionnaireType !== "contacts") {
+      const contactList =
+        questionnaireType == "custom" ? customGroup : contacts;
+      response = await fetch("/api/evaluation/saveAnswers", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          answers: contactList.map((contact, i) => {
+            return { id: contact._id, question: allContactsAnswers[i] };
+          }),
         }),
-      }),
-    });
+      });
+    } else {
+      response = await fetch(
+        `/api/evaluation/${pageContactSubject._id}/saveAnswers`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            answers: singleContactAnswers,
+          }),
+        },
+      );
+    }
     if (response.status === 200) {
       const data = await response.json();
       setContacts((prev) =>
@@ -439,16 +507,27 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
 
   async function saveAndNext() {
     await saveAnswers();
-
+    const pageSubject =
+      questionnaireType == "contacts"
+        ? pageContactSubject
+        : pageQuestionSubject;
+    const setPageSubject =
+      questionnaireType == "contacts"
+        ? setPageContactSubject
+        : setPageQuestionSubject;
     const questionList =
-      questionnaireType == "topic" ? questionsByTopic : allQuestions;
+      questionnaireType == "topic"
+        ? questionsByTopic
+        : questionnaireType == "contacts"
+          ? contacts
+          : allQuestions;
     const questionIndex = questionList.findIndex(
-      (question) => question._id == pageQuestionSubject._id,
+      (question) => question._id == pageSubject._id,
     );
     if (questionIndex < questionList.length - 1) {
-      setPageQuestionSubject(questionList[questionIndex + 1]);
+      setPageSubject(questionList[questionIndex + 1]);
     } else {
-      setPageQuestionSubject(questionList[0]);
+      setPageSubject(questionList[0]);
     }
   }
 
@@ -541,6 +620,32 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
     }
   }, [questionnaireType]);
 
+  useEffect(() => {
+    if (
+      Object.keys(pageContactSubject).length > 0 &&
+      questionnaireType == "contacts"
+    ) {
+      setSingleContactAnswers(
+        allQuestions.map(
+          (question) =>
+            pageContactSubject.evaluation?.find(
+              (entry) => entry.questionId == question._id,
+            ) ||
+            (question.displayType == "checkbox"
+              ? {
+                  questionId: question._id,
+                  questionOption: null,
+                }
+              : {
+                  questionId: question._id,
+                  questionOption: null,
+                  questionScore: null,
+                }),
+        ),
+      );
+    }
+  }, [pageContactSubject]);
+
   return (
     <div
       className={`${isSaving && "cursor-progress"} rounded-xl bg-(--c-purple-tech-20) w-[1000px] py-7 px-15 flex flex-col max-h-[820px]`}
@@ -548,7 +653,9 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
       <div className="flex items-center justify-end">
         <label htmlFor="questionChange" className="text-xs mr-2">
           {/*Question or Contact */}
-          Select Question
+          {questionnaireType == "contacts"
+            ? "Select Friend"
+            : "Select Question"}
         </label>
         <select
           name="questionChange"

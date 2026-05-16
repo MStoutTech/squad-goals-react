@@ -8,6 +8,6 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 router.post("/addQuestion", ensureAuth, evaluationController.addQuestion);
 router.get("/getEvaluation", ensureAuth, evaluationController.getEvaluation);
 router.put("/saveAnswers", ensureAuth, evaluationController.saveAnswers);
-
+router.put("/:id/saveAnswers", ensureAuth, evaluationController.saveSingleContactAnswers);
 
 module.exports = router;

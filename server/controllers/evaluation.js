@@ -38,7 +38,8 @@ module.exports = {
   },
   saveAnswers: async(req, res) => {
     try{
-       const updatedContacts = await Promise.all(req.body.answers.map( async(contact) => {
+      const nonEmptyAnswers = req.body.answers.filter(contact => contact.question.questionOption != null && contact.question.questionOption.length > 0)
+      const updatedContacts = await Promise.all(nonEmptyAnswers.map( async(contact) => {
         const found = await Contact.findById(contact.id)
         const questionIndex = found.evaluation.findIndex(entry => entry.questionId == contact.question.questionId)
         if (questionIndex !== -1) {
@@ -51,10 +52,24 @@ module.exports = {
       }))
 
       await calculateContactScores(req.user.id);
-     await sortSquad(req.user.id);
+      await sortSquad(req.user.id);
 
       
       res.status(200).json({message: "Answers Saved!", updatedContacts: updatedContacts});
+    }catch (err){
+      console.log(err);
+      res.status(500).json({message: `Error: ${err}`});
+    }
+  },
+  saveSingleContactAnswers: async(req,res)=>{
+    try{
+      const updatedContacts = await Contact.findById(req.params.id);
+      updatedContacts.evaluation = req.body.answers.filter(question => question.questionOption != null && question.questionOption.length > 0);
+      await updatedContacts.save();
+
+    await calculateContactScores(req.user.id);
+    await sortSquad(req.user.id);
+      res.status(200).json({message: "Answers Saved!", updatedContacts: [updatedContacts]});
     }catch (err){
       console.log(err);
       res.status(500).json({message: `Error: ${err}`});
