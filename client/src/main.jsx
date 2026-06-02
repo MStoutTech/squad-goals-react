@@ -5,11 +5,14 @@ import App from "./App.jsx";
 import "./css/style.css";
 //import "./js/animations.js";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { UIProvider } from "./context/UIContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <AuthProvider>
-      <App />
+      <UIProvider>
+        <App />
+      </UIProvider>
     </AuthProvider>
   </BrowserRouter>,
 );
