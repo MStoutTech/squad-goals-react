@@ -29,7 +29,7 @@ function MissionStatistics({ statistics }) {
   ];
   const month = months[today.getMonth()];
   return (
-    <section className="lg:col-span-6 border border-inherit rounded-lg px-6 py-3">
+    <section className="lg:col-span-6 border border-inherit rounded-lg px-6 py-3 max-h-[184px] ">
       <h3 className="text-lg mb-3">My stats</h3>
       <div className="flex justify-between text-sm">
         <section className="flex flex-col">
@@ -38,7 +38,7 @@ function MissionStatistics({ statistics }) {
               <img
                 src="/imgs/icons/star.png"
                 alt="star icon"
-                className="inline w-[10px] mr-2"
+                className="inline w-[10px] mr-2 -translate-y-[1px]"
               />
               Total: {statistics.total}
             </li>
@@ -46,7 +46,7 @@ function MissionStatistics({ statistics }) {
               <img
                 src="/imgs/icons/star.png"
                 alt="star icon"
-                className="inline w-[10px] mr-2"
+                className="inline w-[10px] mr-2 -translate-y-[1px]"
               />
               Month: {statistics.month}
             </li>
@@ -54,22 +54,24 @@ function MissionStatistics({ statistics }) {
               <img
                 src="/imgs/icons/star.png"
                 alt="star icon"
-                className="inline w-[10px] mr-2"
+                className="inline w-[10px] mr-2 -translate-y-[1px]"
               />
               Week: {statistics.week}
             </li>
           </ul>
-          <span>
-            Recent Badge:{" "}
-            <img
-              src="/imgs/icons/Badge.png"
-              alt="100 missions badge"
-              className="inline w-[10px] mx-1"
-            />
-            100 Missions
-          </span>
+          <p>
+            Recent Badge:
+            <span className="block">
+              <img
+                src="/imgs/icons/Badge.png"
+                alt="100 missions badge"
+                className="inline w-[10px] mx-1"
+              />
+              100 Missions
+            </span>
+          </p>
         </section>
-        <section className="flex flex-col">
+        <section className="flex flex-col justify-between -translate-y-5">
           {/*Calendar*/}
           <section className="calendar-today rounded-md border border-inherit flex flex-col text-center w-[60px]">
             <span className="calendar-month text-(--c-violet-void) bg-purple-300 border border-purple-300 rounded-t-sm">
@@ -81,7 +83,7 @@ function MissionStatistics({ statistics }) {
             <img
               src="/imgs/icons/star.png"
               alt="star icon"
-              className="inline w-[15px] mr-2"
+              className="inline w-[15px] mr-2 -translate-y-[2px]"
             />
             Today: {statistics.today}
           </span>
@@ -94,9 +96,9 @@ function MissionStatistics({ statistics }) {
 }
 function News() {
   return (
-    <section className="lg:col-span-6 bg-(--c-violet-void-80) rounded-lg px-6 py-3">
+    <section className="hidden lg:block lg:col-span-6 bg-(--c-violet-void-80) rounded-lg px-6 py-3 max-h-[184px]">
       <h3 className="mb-3">News / Suggested Activities</h3>
-      <ul className="flex flex-col gap-2 text-sm">
+      <ul className="flex flex-col gap-2 text-sm h-[124px] overflow-y-auto">
         <li className="bg-(--c-violet-void) px-3 py-2 rounded-lg">
           Try the new training activity on kindness
         </li>
@@ -127,7 +129,7 @@ function CompletedMissions({ completedList }) {
     </li>
   ));
   return (
-    <section className="lg:col-span-2 min-w-[172px]">
+    <section className="col-span-6 min-[1420px]:col-span-2 min-w-[172px]">
       <h3 className="text-center mb-2">Completed</h3>
       <ul className="text-xs flex flex-col gap-2 lg:h-[450px] overflow-auto">
         {completedMissions.length > 0 ? (
@@ -312,10 +314,10 @@ export default function MissionControl() {
   }
   return (
     <>
-      <section className="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:p-12 lg:grid lg:grid-cols-12 lg:gap-6 grow-1">
+      <section className="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:py-12 lg:px-6 lg:grid lg:grid-cols-12 lg:gap-6 grow-1">
         <MissionStatistics statistics={statistics} />
         <News />
-        <section className="lg:col-span-10 bg-(--c-violet-void-80) rounded-lg px-6 py-3">
+        <section className="my-6 lg:my-0 col-span-12 min-[1420px]:col-span-10 bg-(--c-violet-void-80) rounded-lg px-6 py-3">
           <div className="flex justify-between mb-3">
             <SortMissions
               missionList={missionList}
@@ -326,7 +328,7 @@ export default function MissionControl() {
             <PrimaryButton innerText="add" onClick={openAddMissionModal} />
           </div>
 
-          <div className="flex lg:h-[420px]" style={{ width: "100%" }}>
+          <div className="flex lg:min-h-[420px]" style={{ width: "100%" }}>
             {/*Mission List*/}
             <section className="bg-(--c-violet-void) rounded-lg px-6 py-3 min-w-[300px]">
               <div className="flex text-sm justify-between px-3">
@@ -350,12 +352,12 @@ export default function MissionControl() {
               }
             >
               {!featuredMission._id ? (
-                <section className="bg-(--c-light-coral-80)/25 border-(--c-light-coral) flex h-[402px] border-dashed border-r-1 border-l-1 p-3 featured-mission-section">
+                <section className="bg-(--c-light-coral-80)/25 border-(--c-light-coral) flex min-h-[402px] border-dashed border-r-1 border-l-1 p-3 featured-mission-section">
                   <h5 className="text-base">All done for today!</h5>
                 </section>
               ) : (
                 <section
-                  className={`${featuredMission._id ? "" : "bg-(--c-light-coral-80)/25 border-(--c-light-coral)"} flex h-[402px] border-dashed border-r-1 border-l-1 p-3 featured-mission-section`}
+                  className={`${featuredMission._id ? "" : "bg-(--c-light-coral-80)/25 border-(--c-light-coral)"} flex min-h-[402px] border-dashed border-r-1 border-l-1 p-3 featured-mission-section flex-wrap-reverse`}
                   id="featured-section"
                   style={
                     featuredMission._id
@@ -369,7 +371,7 @@ export default function MissionControl() {
                   <section style={{ flex: 1 }}>
                     <h5 className="text-base">Mission History</h5>
                     <ul
-                      className="text-xs lg:max-h-[354px] overflow-auto"
+                      className="text-xs lg:max-h-[354px] overflow-y-auto"
                       style={{ width: "100%" }}
                     >
                       {isMissionHistoryLoading && (

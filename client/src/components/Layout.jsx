@@ -1,7 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { UIContext } from "../context/UIContext";
 
 export function PageTab({ pageTitle, pageName, link, icon, iconAlt, text }) {
   const active = pageTitle === pageName;
@@ -52,32 +51,22 @@ export default function AuthLayout() {
   };
   const pageTitle = titles[locationPath] || "Squad Goals";
   const { user } = useContext(AuthContext);
-  const { windowWidth } = useContext(UIContext);
   const userName = user.userName;
 
   return (
     <>
       <title>{`${pageTitle}`}</title>
-      {windowWidth > 1024 ? (
-        <DesktopNav pageTitle={pageTitle} userName={userName}>
-          {" "}
-          <Outlet />
-        </DesktopNav>
-      ) : (
-        <MobileNav pageTitle={pageTitle} userName={userName}>
-          <Outlet />
-        </MobileNav>
-      )}
-    </>
-  );
-}
+      <header className="text-purple-300 fixed top-0 left-0 w-full h-16 py-4 lg:py-0 px-10 lg:px-0 flex items-center justify-between bg-(--c-violet-void) z-100">
+        <img
+          src="/imgs/SGShield.svg"
+          alt="Squad Goals logo"
+          className="w-[60px] lg:hidden "
+        />
+        <h1 className=" text-xl font-semibold lg:ml-[240px]  pl-6">
+          {pageTitle}
+        </h1>
 
-function DesktopNav({ pageTitle, userName, children }) {
-  return (
-    <>
-      <header className="text-purple-300 fixed top-0 left-0 w-full h-16 flex items-center lg:justify-between bg-(--c-violet-void) ">
-        <h1 className=" text-xl font-semibold ml-[240px] pl-6">{pageTitle}</h1>
-        <ul className="flex gap-12 mr-6 items-center">
+        <ul className="hidden lg:flex gap-12 mr-6 items-center">
           <li>
             <img
               src="/imgs/icons/settings.png"
@@ -98,9 +87,9 @@ function DesktopNav({ pageTitle, userName, children }) {
           </li>
         </ul>
       </header>
-      <div className="pt-16 flex">
-        <aside className="text-purple-300 min-h-[calc(100vh-4rem)] flex flex-col w-[240px] pr-6 shrink-0 border-r-1 border-inherit justify-between pb-16">
-          <ul className="flex flex-col gap-12 pl-12 my-12">
+      <div className="px-6 lg:px-0 pt-16 lg:pt-6 flex">
+        <aside className="hidden lg:flex text-purple-300 min-h-[calc(100vh-2rem)] flex-col w-[210px] pr-6 shrink-0 border-r-1 border-inherit justify-between pb-16">
+          <ul className="flex flex-col gap-12 pl-9 my-12">
             <PageTab
               pageTitle={pageTitle}
               pageName="Mission Control"
@@ -134,28 +123,14 @@ function DesktopNav({ pageTitle, userName, children }) {
           <img
             src="/imgs/SGShield.svg"
             alt="Squad Goals logo"
-            className="w-[100px] self-center hidden lg:block"
+            className="w-[100px] self-center translate-x-3"
           />
         </aside>
-        {children}
+        <div className="lg:h-[calc(100vh-2rem)] overflow-y-auto w-[100%]">
+          <Outlet />
+        </div>
       </div>
-    </>
-  );
-}
-
-function MobileNav({ pageTitle, userName, children }) {
-  return (
-    <>
-      <header className="text-purple-300 fixed top-0 left-0 w-full h-16 flex items-center justify-between py-10 px-10 bg-(--c-violet-void) z-100">
-        <img
-          src="/imgs/SGShield.svg"
-          alt="Squad Goals logo"
-          className="w-[60px] "
-        />
-        <h1 className=" text-xl font-semibold ">{pageTitle}</h1>
-      </header>
-      <div className="mx-10 my-20">{children}</div>
-      <ul className="fixed bottom-0 left-0 w-full h-20 flex justify-between px-6 py-2 bg-(--c-violet-void-60) text-purple-300 z-100">
+      <ul className="lg:hidden fixed bottom-0 left-0 w-full h-20 flex justify-between px-6 py-2 bg-(--c-violet-void-60) text-purple-300 z-100">
         <ThumbNav
           pageTitle={pageTitle}
           pageName="Mission Control"
