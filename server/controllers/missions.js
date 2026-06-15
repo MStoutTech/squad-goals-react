@@ -364,7 +364,7 @@ const MAX_DAYS = 93;
 
 const current = new Date(daysStart);
 while (current <= daysEnd && safetyCounter < MAX_DAYS ) {
-  countDays[current.toISOString().split("T")[0]] = 0;
+  countDays[current.toLocaleDateString()] = 0;
   
   current.setDate(current.getDate() + 1);
   safetyCounter++;
@@ -381,8 +381,8 @@ const scheduledMissions = await Mission.find({
 })
 
 scheduledMissions.forEach(mission => {
-	if (countDays[mission.scheduledFor.toISOString().split("T")[0]] !== undefined){
-    countDays[mission.scheduledFor.toISOString().split("T")[0]] += 1
+	if (countDays[mission.scheduledFor.toLocaleDateString()] !== undefined){
+    countDays[mission.scheduledFor.toLocaleDateString()] += 1
   }
     })
 
