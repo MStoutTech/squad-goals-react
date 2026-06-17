@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import ContactSearch from "../components/Search";
 import CircularProgress from "@mui/material/CircularProgress";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import {
   AnimatedCallToAction,
@@ -149,6 +153,7 @@ export default function MissionControl() {
   const [featuredMission, setFeaturedMission] = useState({});
   const [featuredMissionHistory, setFeaturedMissionHistory] = useState([]);
   const [isMissionHistoryLoading, setIsMissionHistoryLoading] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [missionStarted, setMissionStarted] = useState(false);
   const [missionTimer, setMissionTimer] = useState(0);
   const [isMissionPaused, setIsMissionPaused] = useState(true);
@@ -161,6 +166,7 @@ export default function MissionControl() {
     const data = await response.json();
     setMissionList(data.missionList);
     setCompletedList(data.completedList);
+    setIsHistoryOpen(false);
     setMissionStarted(false);
     setStatistics(data.statistics);
     if (data.missionList.length > 0) {
@@ -198,6 +204,34 @@ export default function MissionControl() {
     setFeaturedMission(mission);
     setMissionStarted(false);
   }
+  const missionHistoryList = featuredMissionHistory.map((entry, index) => (
+    <li key={index}>
+      <div className="flex items-center">
+        <div className="flex flex-col">
+          <span>
+            {new Date(entry.createdAt).toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "2-digit",
+            })}
+          </span>
+          <span>
+            {new Date(entry.createdAt).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+            })}
+          </span>
+        </div>
+        <h4 className="text-sm pl-3">
+          {entry.missionType == "field" ? "Field Mission" : "Contact Mission"}
+        </h4>
+      </div>
+
+      <p className="pl-3 py-2 border-l-2 border-dashed border-(--c-violet-void) ml-3">
+        {entry.noteText}
+      </p>
+    </li>
+  ));
 
   async function snooze(missionId) {
     const response = await fetch(`/api/mission/${missionId}/snooze`, {
@@ -225,7 +259,7 @@ export default function MissionControl() {
   const activeMissionsMobile = missionList.map((mission) => (
     <li
       key={mission._id}
-      className="flex bg-(--c-light-coral-80)/25 border-(--c-light-coral) border rounded-lg p-3 featured-mission-section"
+      className="bg-(--c-light-coral-80)/25 border-(--c-light-coral) border rounded-lg p-3 featured-mission-section"
       style={{
         "--highlight-color": `var(${
           themeColor[
@@ -234,79 +268,115 @@ export default function MissionControl() {
         })`,
       }}
     >
-      <div className="items-center min-w-[100px] mr-3">
-        <h4 id="featured-nickname">
-          {mission.contact.nickname || mission.contact.firstName}
-        </h4>
+      {/*div for above the mission history*/}
+      <div className="flex">
+        {/*name, img, snooze */}
+        <div className="items-center min-w-[100px] mr-3">
+          <h4 id="featured-nickname">
+            {mission.contact.nickname || mission.contact.firstName}
+          </h4>
 
-        <img
-          src={mission.contact.image || "imgs/mission-friend.png"}
-          alt={`${mission.contact.firstName} ${mission.contact.lastName}`}
-          className="size-24"
-          id="featured-image"
-        />
-        <span className="text-sm">
-          {`${mission.contact.firstName} ${mission.contact.lastName}`}
-        </span>
-        <IconButton
-          onClick={() => snooze(mission._id)}
-          svg={
-            <svg
-              width="25"
-              height="22"
-              viewBox="0 0 37 35"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="hover:drop-shadow-lg hover:drop-shadow-white mb-1 w-[100%]"
-            >
-              <path
-                d="M14.0219 22.593H22.1487V20.4855H16.9274L22.1487 14.5843V12.5189H14.0219V14.6265H19.3275L14.0219 20.6119V22.593ZM18.0643 33.0887C15.9869 33.0887 14.0289 32.6953 12.1902 31.9084C10.3515 31.1216 8.75141 30.0468 7.38993 28.6839C6.02844 27.321 4.94767 25.7192 4.14762 23.8786C3.34757 22.038 2.94755 20.064 2.94755 17.9564C2.94755 15.8769 3.34757 13.9169 4.14762 12.0763C4.94767 10.2357 6.02844 8.62694 7.38993 7.25C8.75141 5.87306 10.3515 4.79118 12.1902 4.00436C14.0289 3.21754 15.9869 2.82413 18.0643 2.82413C20.1416 2.82413 22.0996 3.21754 23.9383 4.00436C25.777 4.79118 27.3841 5.87306 28.7597 7.25C30.1352 8.62694 31.2159 10.2357 32.002 12.0763C32.788 13.9169 33.181 15.8769 33.181 17.9564C33.181 20.064 32.788 22.038 32.002 23.8786C31.2159 25.7192 30.1352 27.321 28.7597 28.6839C27.3841 30.0468 25.777 31.1216 23.9383 31.9084C22.0996 32.6953 20.1416 33.0887 18.0643 33.0887V33.0887ZM6.90569 0L8.67422 1.77035L1.76853 8.43023L0 6.65988L6.90569 0ZM29.2228 0L36.1285 6.65988L34.36 8.43023L27.4543 1.77035L29.2228 0ZM18.0643 30.5596C21.5733 30.5596 24.5489 29.3372 26.9911 26.8924C29.4334 24.4477 30.6545 21.469 30.6545 17.9564C30.6545 14.4438 29.4334 11.4651 26.9911 9.02035C24.5489 6.57558 21.5733 5.3532 18.0643 5.3532C14.5553 5.3532 11.5797 6.57558 9.1374 9.02035C6.69515 11.4651 5.47402 14.4438 5.47402 17.9564C5.47402 21.469 6.69515 24.4477 9.1374 26.8924C11.5797 29.3372 14.5553 30.5596 18.0643 30.5596Z"
-                fill="currentColor"
-              />
-            </svg>
-          }
-          text="Snooze"
-        />
+          <img
+            src={mission.contact.image || "imgs/mission-friend.png"}
+            alt={`${mission.contact.firstName} ${mission.contact.lastName}`}
+            className="size-24"
+            id="featured-image"
+          />
+          <span className="text-sm">
+            {`${mission.contact.firstName} ${mission.contact.lastName}`}
+          </span>
+          <IconButton
+            onClick={() => snooze(mission._id)}
+            svg={
+              <svg
+                width="25"
+                height="22"
+                viewBox="0 0 37 35"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="hover:drop-shadow-lg hover:drop-shadow-white mb-1 w-[100%]"
+              >
+                <path
+                  d="M14.0219 22.593H22.1487V20.4855H16.9274L22.1487 14.5843V12.5189H14.0219V14.6265H19.3275L14.0219 20.6119V22.593ZM18.0643 33.0887C15.9869 33.0887 14.0289 32.6953 12.1902 31.9084C10.3515 31.1216 8.75141 30.0468 7.38993 28.6839C6.02844 27.321 4.94767 25.7192 4.14762 23.8786C3.34757 22.038 2.94755 20.064 2.94755 17.9564C2.94755 15.8769 3.34757 13.9169 4.14762 12.0763C4.94767 10.2357 6.02844 8.62694 7.38993 7.25C8.75141 5.87306 10.3515 4.79118 12.1902 4.00436C14.0289 3.21754 15.9869 2.82413 18.0643 2.82413C20.1416 2.82413 22.0996 3.21754 23.9383 4.00436C25.777 4.79118 27.3841 5.87306 28.7597 7.25C30.1352 8.62694 31.2159 10.2357 32.002 12.0763C32.788 13.9169 33.181 15.8769 33.181 17.9564C33.181 20.064 32.788 22.038 32.002 23.8786C31.2159 25.7192 30.1352 27.321 28.7597 28.6839C27.3841 30.0468 25.777 31.1216 23.9383 31.9084C22.0996 32.6953 20.1416 33.0887 18.0643 33.0887V33.0887ZM6.90569 0L8.67422 1.77035L1.76853 8.43023L0 6.65988L6.90569 0ZM29.2228 0L36.1285 6.65988L34.36 8.43023L27.4543 1.77035L29.2228 0ZM18.0643 30.5596C21.5733 30.5596 24.5489 29.3372 26.9911 26.8924C29.4334 24.4477 30.6545 21.469 30.6545 17.9564C30.6545 14.4438 29.4334 11.4651 26.9911 9.02035C24.5489 6.57558 21.5733 5.3532 18.0643 5.3532C14.5553 5.3532 11.5797 6.57558 9.1374 9.02035C6.69515 11.4651 5.47402 14.4438 5.47402 17.9564C5.47402 21.469 6.69515 24.4477 9.1374 26.8924C11.5797 29.3372 14.5553 30.5596 18.0643 30.5596Z"
+                  fill="currentColor"
+                />
+              </svg>
+            }
+            text="Snooze"
+          />
+        </div>
+        {/*mission actions*/}
+        <section className="min-w-[260px]">
+          <span className="text-sm text-white" id="featured-last-contact">
+            Last Contact:{" "}
+            {mission.contact.lastContact
+              ? new Date(mission.contact.lastContact).toLocaleDateString()
+              : "N/A"}
+          </span>
+          <h4 className="text-white mb-1" id="featured-mission-type">
+            {mission.missionType === "field"
+              ? "Field Mission"
+              : "Contact Mission"}
+          </h4>
+
+          {mission.missionType == "field" ? (
+            <MissionDebriefButton
+              openMissionDebrief={(e) => {
+                handleMissionClick(mission);
+                openMissionDebrief(e);
+              }}
+              width="w-[100%]"
+            />
+          ) : !missionStarted ? (
+            <ContactMissionForm
+              missionStart={(e) => {
+                handleMissionClick(mission);
+                missionStart(e);
+              }}
+              contact={mission.contact}
+            />
+          ) : (
+            <TimerDisplay
+              missionTimer={missionTimer}
+              missionStartOver={missionStartOver}
+              openMissionDebrief={openMissionDebrief}
+              isMissionPaused={isMissionPaused}
+            />
+          )}
+        </section>
       </div>
-      {/*mission actions*/}
-      <section className="min-w-[260px]">
-        <span className="text-sm text-white" id="featured-last-contact">
-          Last Contact:{" "}
-          {mission.contact.lastContact
-            ? new Date(mission.contact.lastContact).toLocaleDateString()
-            : "N/A"}
-        </span>
-        <h4 className="text-white mb-1" id="featured-mission-type">
-          {mission.missionType === "field"
-            ? "Field Mission"
-            : "Contact Mission"}
-        </h4>
 
-        {mission.missionType == "field" ? (
-          <MissionDebriefButton
-            openMissionDebrief={(e) => {
-              handleMissionClick(mission);
-              openMissionDebrief(e);
-            }}
-            width="w-[100%]"
-          />
-        ) : !missionStarted ? (
-          <ContactMissionForm
-            missionStart={(e) => {
-              handleMissionClick(mission);
-              missionStart(e);
-            }}
-            contact={mission.contact}
-          />
-        ) : (
-          <TimerDisplay
-            missionTimer={missionTimer}
-            missionStartOver={missionStartOver}
-            openMissionDebrief={openMissionDebrief}
-            isMissionPaused={isMissionPaused}
-          />
-        )}
-      </section>
+      <Accordion
+        slotProps={{
+          heading: { component: "h4" },
+          transition: { unmountOnExit: true },
+        }}
+        className="bg-(--c-light-coral-80)/25"
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          Mission History
+        </AccordionSummary>
+        <AccordionDetails>
+          <ul
+            className="text-xs lg:max-h-[354px] overflow-y-auto"
+            style={{ width: "100%" }}
+          >
+            {isMissionHistoryLoading && <CircularProgress color="#7D4C9F" />}
+            {!isMissionHistoryLoading &&
+              (missionHistoryList.length > 0 ? (
+                missionHistoryList
+              ) : (
+                <li style={{ minWidth: "100%" }}>
+                  <h4 className="text-sm pl-3">No Mission History</h4>
+                </li>
+              ))}
+          </ul>
+        </AccordionDetails>
+      </Accordion>
     </li>
   ));
 
@@ -343,35 +413,6 @@ export default function MissionControl() {
           </svg>
         }
       />
-    </li>
-  ));
-
-  const missionHistoryList = featuredMissionHistory.map((entry, index) => (
-    <li key={index}>
-      <div className="flex items-center">
-        <div className="flex flex-col">
-          <span>
-            {new Date(entry.createdAt).toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
-              year: "2-digit",
-            })}
-          </span>
-          <span>
-            {new Date(entry.createdAt).toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-            })}
-          </span>
-        </div>
-        <h4 className="text-sm pl-3">
-          {entry.missionType == "field" ? "Field Mission" : "Contact Mission"}
-        </h4>
-      </div>
-
-      <p className="pl-3 py-2 border-l-2 border-dashed border-(--c-violet-void) ml-3">
-        {entry.noteText}
-      </p>
     </li>
   ));
 
@@ -591,12 +632,14 @@ function ContactMissionForm({ missionStart, contact }) {
   const socialOptions =
     contact.details?.socials && contact.details?.socials.length > 0 ? (
       contact.details.socials.map((social) => (
-        <>
-          <option value={social.platform}>{social.platform}</option>
-        </>
+        <option key={social.platform} value={social.platform}>
+          {social.platform}
+        </option>
       ))
     ) : (
-      <option value="social media">social media</option>
+      <option key={"social media"} value="social media">
+        social media
+      </option>
     );
 
   return (
@@ -613,10 +656,18 @@ function ContactMissionForm({ missionStart, contact }) {
         id="time-select"
         className="bg-(--c-violet-void) rounded-md px-3 py-2"
       >
-        <option value="5">5 min</option>
-        <option value="10">10 min</option>
-        <option value="15">15 min</option>
-        <option value="20">20 min</option>
+        <option key={5} value="5">
+          5 min
+        </option>
+        <option key={10} value="10">
+          10 min
+        </option>
+        <option key={15} value="15">
+          15 min
+        </option>
+        <option key={20} value="20">
+          20 min
+        </option>
       </select>
       <label htmlFor="method-select" className="text-xs text-white">
         Method
