@@ -471,6 +471,7 @@ function ContactList({
   title,
   img,
   setFeaturedContact,
+  setMobileActiveTab,
   featuredContact,
   searchTerm,
   searchList,
@@ -479,8 +480,10 @@ function ContactList({
   function toggleSelect(contact) {
     if (featuredContact == contact) {
       setFeaturedContact({});
+      setMobileActiveTab("heartCore");
     } else {
       setFeaturedContact(contact);
+      setMobileActiveTab(contact.friendList || contact.connectionInstinct);
     }
   }
 
@@ -506,7 +509,7 @@ function ContactList({
         </p>
         <p className="text-sm">Score: {contact.evalScore}</p>
       </div>
-      <div className="w-[150px]">
+      <div className="w-[150px] hidden xl:block">
         <p>
           <img src={img} alt="clock-icon" className="inline" /> Contact:{" "}
           {contact.contactFrequency}
@@ -556,6 +559,7 @@ export default function MySquad() {
   const [heartCoreList, setHeartCoreList] = useState([]);
   const [rayLiablesList, setRayLiablesList] = useState([]);
   const [buddiesList, setBuddiesList] = useState([]);
+  const [mobileActiveTab, setMobileActiveTab] = useState("heartCore");
   const [featuredContact, setFeaturedContact] = useState({});
   const [activeFilter, setActiveFilter] = useState("score");
   const [searchValue, setSearchValue] = useState("");
@@ -787,6 +791,7 @@ export default function MySquad() {
             img="/imgs/icons/pink-clock.png"
             setFeaturedContact={setFeaturedContact}
             featuredContact={featuredContact}
+            setMobileActiveTab={setMobileActiveTab}
             activeFilter={activeFilter}
           />
         )}
@@ -804,6 +809,7 @@ export default function MySquad() {
             searchTerm={query}
             img="/imgs/icons/coral-clock.png"
             setFeaturedContact={setFeaturedContact}
+            setMobileActiveTab={setMobileActiveTab}
             featuredContact={featuredContact}
             activeFilter={activeFilter}
           />
@@ -822,6 +828,7 @@ export default function MySquad() {
             searchTerm={query}
             img="/imgs/icons/green-clock.png"
             setFeaturedContact={setFeaturedContact}
+            setMobileActiveTab={setMobileActiveTab}
             featuredContact={featuredContact}
             activeFilter={activeFilter}
           />
