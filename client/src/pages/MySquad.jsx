@@ -5,6 +5,9 @@ import { CategoryTag, RoleTag } from "../components/Tags";
 import ContactSearch from "../components/Search";
 import { roleLabels } from "../utils/roleHelpers";
 import { formatPhoneNumber } from "../utils/formatPhoneNumber";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+
 
 function FilterAndSearch({
   fetchSquad,
@@ -59,9 +62,9 @@ function FilterAndSearch({
   }
 
   return (
-    <div className="w-full mb-10">
+    <div className="w-full mb-6">
       <ul className="flex justify-between">
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <li>
             <PrimaryButton
               innerText="score"
@@ -115,7 +118,7 @@ function FilterAndSearch({
             />
           </li>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 min-w-[144px] self-end">
           <li>
             <PrimaryButton innerText="set roles" onClick={openRolesModal} />
           </li>
@@ -532,7 +535,7 @@ function ContactList({
   ));
   return (
     <section style={{ color: `var(${themeColor})` }}>
-      <h2 className="text-2xl text-center">{title}</h2>
+      <h2 className="text-2xl text-center hidden md:block">{title}</h2>
       <ul
         className={` rounded-lg p-3  text-xs justify-center `}
         style={{ backgroundColor: `var(${themeColor})` }}
@@ -761,7 +764,7 @@ export default function MySquad() {
   }, [searchValue, activeFilter, tagFilter]);
 
   return (
-    <div className="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:p-12 flex flex-col">
+    <div className="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:pl-8 lg:pt-12 flex flex-col">
       <FilterAndSearch
         fetchSquad={fetchSquad}
         activeFilter={activeFilter}
@@ -776,8 +779,18 @@ export default function MySquad() {
         squadTotal={squadTotal}
       />
 
-      <main className="flex gap-6">
-        {/*Inner Circle or "Heart" core friends*/}
+      <main className="flex gap-6 justify-center">
+        <Tabs
+  value={}
+  onChange={}
+  aria-label="friend list tabs"
+  className="md:hidden"
+>
+  <Tab value="one" label="Heart Core" />
+  <Tab value="two" label="Ray-Liables" />
+  <Tab value="three" label="Buddies" />
+</Tabs>
+        {/*Inner Circle or "Heart" core freiends*/}
         {(!featuredContact._id ||
           featuredContact.friendList === "heartCore" ||
           (!featuredContact.friendList &&
@@ -995,20 +1008,20 @@ function FeaturedContact({
   }
   return (
     <div
-      className="mt-8 rounded-lg lg:h-[663px] min-w-[1000px] w-[100%] p-2"
+      className="mt-8 rounded-lg lg:h-[663px] min-w-[700px] w-[100%] p-2"
       style={{ backgroundColor: `var(${contactTheme})` }}
     >
       <div className="bg-(--c-violet-void) rounded">
         {/*Top Section*/}
-        <div className="flex gap-4 p-3">
+        <div className="flex flex-wrap gap-4 p-3">
           <img
             src={featuredContact.image || "imgs/mission-friend.png"}
             alt={`${featuredContact.firstName} ${featuredContact.lastName}`}
             className="size-24"
             id="featured-image"
           />
-          <div className="w-[100%]">
-            <div className="flex justify-between">
+          <div className="">
+            <div className="flex justify-between min-w-[500px]">
               <div>
                 <p className="text-l">{`${featuredContact.firstName} ${featuredContact.lastName}`}</p>
                 <h3 className="text-3xl">
@@ -1055,21 +1068,23 @@ function FeaturedContact({
                     : "N/A"}
                 </p>
               </div>
-              <div className="flex flex-col items-end">
+              
+            </div>
+            
+          </div>
+          <div className="flex flex-wrap gap-15 items-start min-w-[240px]">
                 <PrimaryButton
                   innerText="edit"
                   onClick={() => setIsEditContactOpen(true)}
                 />
-                <h4 className="text-2xl self-start">
+                <h4 className="text-2xl self-start w-[210px]">
                   Eval Score: {featuredContact.evalScore}
                 </h4>
-                <p className="self-start">
+                <p className="self-start w-[240px]">
                   Questions Answered:{" "}
                   {featuredContact.evaluation?.length || "0"}/{evalTotal}
                 </p>
-              </div>
             </div>
-          </div>
           {isEditContactOpen && (
             <EditContactModal
               featuredContact={featuredContact}
@@ -1082,7 +1097,7 @@ function FeaturedContact({
         {/*Main Area*/}
         <div className="flex p-3 gap-6">
           {/*History */}
-          <div className="w-[60%]">
+          <div className="w-[55%]">
             <h4>Mission History</h4>
             <ul
               className="text-xs lg:max-h-[480px] overflow-auto"
@@ -1100,7 +1115,7 @@ function FeaturedContact({
             </ul>
           </div>
           {/*Contact details */}
-          <div className="w-[40%] " style={{ color: `var(${contactTheme})` }}>
+          <div className="w-[45%] " style={{ color: `var(${contactTheme})` }}>
             <h4 className="border-b-4 text-base">Details</h4>
             <div className="border rounded-b p-2 text-sm lg:max-h-[478px] overflow-auto">
               <p className="border-b-1 py-2">
