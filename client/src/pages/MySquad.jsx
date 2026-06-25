@@ -5,9 +5,8 @@ import { CategoryTag, RoleTag } from "../components/Tags";
 import ContactSearch from "../components/Search";
 import { roleLabels } from "../utils/roleHelpers";
 import { formatPhoneNumber } from "../utils/formatPhoneNumber";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 function FilterAndSearch({
   fetchSquad,
@@ -62,63 +61,62 @@ function FilterAndSearch({
   }
 
   return (
-    <div className="w-full mb-6">
-      <ul className="flex justify-between">
-        <div className="flex flex-wrap gap-3">
-          <li>
-            <PrimaryButton
-              innerText="score"
-              onClick={() => setActiveFilter("score")}
-              isActive={"score" == activeFilter}
-            />
-          </li>
-          <li>
-            <PrimaryButton
-              innerText="first"
-              onClick={() => setActiveFilter("first")}
-              isActive={"first" == activeFilter}
-            />
-          </li>
-          <li>
-            <PrimaryButton
-              innerText="last"
-              onClick={() => setActiveFilter("last")}
-              isActive={"last" == activeFilter}
-            />
-          </li>
-          <li>
-            <PrimaryButton
-              innerText="date"
-              onClick={() => setActiveFilter("date")}
-              isActive={"date" == activeFilter}
-            />
-          </li>
-          <li>
-            <PrimaryButton
-              innerText={tagFilter !== "" ? `tag: ${tagFilter}` : "tag"}
-              onClick={() => {
-                setActiveFilter("tag");
-                toggleShowTags();
-              }}
-              isActive={"tag" == activeFilter}
-            />
-            {showTagsList && (
-              <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-1 text-white max-h-40 overflow-y-auto text-sm">
-                {userTagsList}
-              </ul>
-            )}
-          </li>
-          <li>
-            <input
-              type="search"
-              className="text-sm border border-inherit rounded-md px-3 py-2"
-              placeholder="SEARCH CONTACTS"
-              onChange={handleChange}
-              value={searchValue}
-            />
-          </li>
-        </div>
-        <div className="flex gap-2 min-w-[144px] self-end">
+    <div className="w-full mb-2 md:mb-6">
+      <ul className="flex flex-wrap gap-2">
+        <li>
+          <PrimaryButton
+            innerText="score"
+            onClick={() => setActiveFilter("score")}
+            isActive={"score" == activeFilter}
+          />
+        </li>
+        <li>
+          <PrimaryButton
+            innerText="first"
+            onClick={() => setActiveFilter("first")}
+            isActive={"first" == activeFilter}
+          />
+        </li>
+        <li>
+          <PrimaryButton
+            innerText="last"
+            onClick={() => setActiveFilter("last")}
+            isActive={"last" == activeFilter}
+          />
+        </li>
+        <li>
+          <PrimaryButton
+            innerText="date"
+            onClick={() => setActiveFilter("date")}
+            isActive={"date" == activeFilter}
+          />
+        </li>
+        <li>
+          <PrimaryButton
+            innerText={tagFilter !== "" ? `tag: ${tagFilter}` : "tag"}
+            onClick={() => {
+              setActiveFilter("tag");
+              toggleShowTags();
+            }}
+            isActive={"tag" == activeFilter}
+          />
+          {showTagsList && (
+            <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-1 text-white max-h-40 overflow-y-auto text-sm">
+              {userTagsList}
+            </ul>
+          )}
+        </li>
+        <li>
+          <input
+            type="search"
+            className="text-sm border border-inherit rounded-md px-3 py-2 -mr-3"
+            placeholder="SEARCH CONTACTS"
+            onChange={handleChange}
+            value={searchValue}
+          />
+        </li>
+
+        <div className="flex gap-2 min-w-[146px] self-end ml-auto">
           <li>
             <PrimaryButton innerText="set roles" onClick={openRolesModal} />
           </li>
@@ -471,10 +469,12 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
 function ContactList({
   themeColor,
   contactList,
+  tabValue,
   title,
   img,
   setFeaturedContact,
   setMobileActiveTab,
+  mobileActiveTab,
   featuredContact,
   searchTerm,
   searchList,
@@ -483,7 +483,6 @@ function ContactList({
   function toggleSelect(contact) {
     if (featuredContact == contact) {
       setFeaturedContact({});
-      setMobileActiveTab("heartCore");
     } else {
       setFeaturedContact(contact);
       setMobileActiveTab(contact.friendList || contact.connectionInstinct);
@@ -534,27 +533,57 @@ function ContactList({
     </li>
   ));
   return (
-    <section style={{ color: `var(${themeColor})` }}>
-      <h2 className="text-2xl text-center hidden md:block">{title}</h2>
-      <ul
-        className={` rounded-lg p-3  text-xs justify-center `}
-        style={{ backgroundColor: `var(${themeColor})` }}
+    <>
+      <section
+        className="hidden md:block"
+        style={{ color: `var(${themeColor})` }}
       >
-        <div className="flex flex-col gap-2 lg:h-[640px] lg: overflow-auto">
-          {activeList.length > 0 ? (
-            styledContacts
-          ) : (
-            <li className="bg-(--c-violet-void) px-3 py-2 rounded-lg w-[388px] h-[156px] flex-column justify-center">
-              <h3 className="h-[60px]">
-                {searchTerm != ""
-                  ? "No contact matches to search"
-                  : "List empty, add more contacts!"}
-              </h3>
-            </li>
-          )}
-        </div>
-      </ul>
-    </section>
+        <h2 className="text-2xl text-center ">{title}</h2>
+        <ul
+          className={` rounded-lg p-3  text-xs justify-center`}
+          style={{ backgroundColor: `var(${themeColor})` }}
+        >
+          <div className="flex flex-col gap-2 lg:h-[640px] lg: overflow-auto">
+            {activeList.length > 0 ? (
+              styledContacts
+            ) : (
+              <li className="bg-(--c-violet-void) px-3 py-2 rounded-lg w-[388px] h-[156px] flex-column justify-center">
+                <h3 className="h-[60px]">
+                  {searchTerm != ""
+                    ? "No contact matches to search"
+                    : "List empty, add more contacts!"}
+                </h3>
+              </li>
+            )}
+          </div>
+        </ul>
+      </section>
+      {tabValue == mobileActiveTab && (
+        <section
+          className="md:hidden w-[100%] max-w-[400px] mt-2"
+          style={{ color: `var(${themeColor})` }}
+        >
+          <ul
+            className={` rounded-lg p-3  text-xs justify-center `}
+            style={{ backgroundColor: `var(${themeColor})` }}
+          >
+            <div className="flex flex-col gap-2">
+              {activeList.length > 0 ? (
+                styledContacts
+              ) : (
+                <li className="bg-(--c-violet-void) px-3 py-2 rounded-lg w-[100%] h-[156px] flex-column justify-center">
+                  <h3 className="h-[60px]">
+                    {searchTerm != ""
+                      ? "No contact matches to search"
+                      : "List empty, add more contacts!"}
+                  </h3>
+                </li>
+              )}
+            </div>
+          </ul>
+        </section>
+      )}
+    </>
   );
 }
 
@@ -778,18 +807,51 @@ export default function MySquad() {
         setTagFilter={setTagFilter}
         squadTotal={squadTotal}
       />
+      <Tabs
+        value={mobileActiveTab}
+        onChange={(event, tabValue) => setMobileActiveTab(tabValue)}
+        aria-label="friend list tabs"
+        className="md:hidden"
+        centered
+        sx={{
+          "& .MuiTab-root": {
+            color: "var(--c-purple-tech-60)",
+            fontFamily: "Georama",
+            fontSize: 17,
+          },
+          "& .MuiTabs-indicator": { backgroundColor: "white" },
+        }}
+      >
+        <Tab
+          value="heartCore"
+          label="Heart Core"
+          sx={{
+            "&.Mui-selected": {
+              color: "var(--c-deep-cerise)",
+            },
+          }}
+        />
+        <Tab
+          value="rayLiables"
+          label="Ray-Liables"
+          sx={{
+            "&.Mui-selected": {
+              color: "var(--c-light-coral)",
+            },
+          }}
+        />
+        <Tab
+          value="buddies"
+          label="Buddies"
+          sx={{
+            "&.Mui-selected": {
+              color: "var(--c-green-sheen)",
+            },
+          }}
+        />
+      </Tabs>
 
       <main className="flex gap-6 justify-center">
-        <Tabs
-  value={}
-  onChange={}
-  aria-label="friend list tabs"
-  className="md:hidden"
->
-  <Tab value="one" label="Heart Core" />
-  <Tab value="two" label="Ray-Liables" />
-  <Tab value="three" label="Buddies" />
-</Tabs>
         {/*Inner Circle or "Heart" core freiends*/}
         {(!featuredContact._id ||
           featuredContact.friendList === "heartCore" ||
@@ -798,6 +860,7 @@ export default function MySquad() {
           <ContactList
             title="Heart-Core Friends"
             themeColor="--c-deep-cerise"
+            tabValue="heartCore"
             contactList={heartCoreList}
             searchList={searchHeartCoreList}
             searchTerm={query}
@@ -805,6 +868,7 @@ export default function MySquad() {
             setFeaturedContact={setFeaturedContact}
             featuredContact={featuredContact}
             setMobileActiveTab={setMobileActiveTab}
+            mobileActiveTab={mobileActiveTab}
             activeFilter={activeFilter}
           />
         )}
@@ -817,12 +881,14 @@ export default function MySquad() {
           <ContactList
             title="Ray-liables"
             themeColor="--c-light-coral"
+            tabValue="rayLiables"
             contactList={rayLiablesList}
             searchList={searchRayLiablesList}
             searchTerm={query}
             img="/imgs/icons/coral-clock.png"
             setFeaturedContact={setFeaturedContact}
             setMobileActiveTab={setMobileActiveTab}
+            mobileActiveTab={mobileActiveTab}
             featuredContact={featuredContact}
             activeFilter={activeFilter}
           />
@@ -836,26 +902,29 @@ export default function MySquad() {
           <ContactList
             title="Bud-dies"
             themeColor="--c-green-sheen"
+            tabValue="buddies"
             contactList={buddiesList}
             searchList={searchBuddiesList}
             searchTerm={query}
             img="/imgs/icons/green-clock.png"
             setFeaturedContact={setFeaturedContact}
             setMobileActiveTab={setMobileActiveTab}
+            mobileActiveTab={mobileActiveTab}
             featuredContact={featuredContact}
             activeFilter={activeFilter}
           />
         )}
-
-        {featuredContact._id && (
-          <FeaturedContact
-            featuredContact={featuredContact}
-            fetchSquad={fetchSquad}
-            tags={tags}
-            evalTags={evalTags}
-            evalTotal={evalTotal}
-          />
-        )}
+        <div className="hidden md:block">
+          {featuredContact._id && (
+            <FeaturedContact
+              featuredContact={featuredContact}
+              fetchSquad={fetchSquad}
+              tags={tags}
+              evalTags={evalTags}
+              evalTotal={evalTotal}
+            />
+          )}
+        </div>
       </main>
     </div>
   );
@@ -1068,23 +1137,21 @@ function FeaturedContact({
                     : "N/A"}
                 </p>
               </div>
-              
             </div>
-            
           </div>
           <div className="flex flex-wrap gap-15 items-start min-w-[240px]">
-                <PrimaryButton
-                  innerText="edit"
-                  onClick={() => setIsEditContactOpen(true)}
-                />
-                <h4 className="text-2xl self-start w-[210px]">
-                  Eval Score: {featuredContact.evalScore}
-                </h4>
-                <p className="self-start w-[240px]">
-                  Questions Answered:{" "}
-                  {featuredContact.evaluation?.length || "0"}/{evalTotal}
-                </p>
-            </div>
+            <PrimaryButton
+              innerText="edit"
+              onClick={() => setIsEditContactOpen(true)}
+            />
+            <h4 className="text-2xl self-start w-[210px]">
+              Eval Score: {featuredContact.evalScore}
+            </h4>
+            <p className="self-start w-[240px]">
+              Questions Answered: {featuredContact.evaluation?.length || "0"}/
+              {evalTotal}
+            </p>
+          </div>
           {isEditContactOpen && (
             <EditContactModal
               featuredContact={featuredContact}
