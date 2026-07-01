@@ -16,30 +16,39 @@ export default function HumanConnection() {
         </div>
         <div className="mx-auto max-w-2xl px-6 sm:my-18 lg:my-20">
           <ul className="flex flex-col md:flex-row gap-3">
-            <li>
-              <img
-                src="/imgs/lonely-user.png"
-                alt="illustration longingly looking at phone"
-                className="max-h-32"
-              />
+            <li className="flex flex-col items-center md:block">
+              <div className="max-w-32 max-h-32 p-2">
+                <img
+                  src="/imgs/lonely-user.png"
+                  alt="illustration longingly looking at phone"
+                  className=""
+                />
+              </div>
+
               <p className="py-5">3 out of 5 Americans report being lonely</p>
             </li>
-            <li>
-              <img
-                src="/imgs/unhappy-user.png"
-                alt="sad illustrated girl holding hands up shrugging"
-                className="max-h-32"
-              />
+            <li className="flex flex-col items-center md:block">
+              <div className="max-w-32 max-h-32 p-2">
+                <img
+                  src="/imgs/unhappy-user.png"
+                  alt="sad illustrated girl holding hands up shrugging"
+                  className=""
+                />
+              </div>
+
               <p className="py-5">
                 According to a Gallup Poll, happiness and optimism are falling
               </p>
             </li>
-            <li>
-              <img
-                src="/imgs/mental-health.png"
-                alt="illustration showing someone talking about mental health"
-                className="max-h-32"
-              />
+            <li className="flex flex-col items-center md:block">
+              <div className="max-w-32 max-h-32 p-2">
+                <img
+                  src="/imgs/mental-health.png"
+                  alt="illustration showing someone talking about mental health"
+                  className=""
+                />
+              </div>
+
               <p className="py-5">
                 21% of adults report experiencing mental illness
               </p>

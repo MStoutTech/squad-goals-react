@@ -21,7 +21,7 @@ export default function Index() {
             ></div>
           </div>
           {/*Hero Section*/}
-          <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-20">
+          <div className="mx-auto max-w-2xl pb-48 lg:py-20">
             <div className="text-center relative">
               <h1 className="text-5xl font-semibold tracking-tight text-balance text-white text-shadow-lg sm:text-7xl absolute left-1/2 -translate-x-1/2 whitespace-nowrap top-100">
                 Squad Goals

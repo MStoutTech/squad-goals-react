@@ -7,6 +7,10 @@ import { roleLabels } from "../utils/roleHelpers";
 import { formatPhoneNumber } from "../utils/formatPhoneNumber";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function FilterAndSearch({
   fetchSquad,
@@ -179,12 +183,12 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
 
       <div
         tabindex="0"
-        className="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0"
+        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
       >
-        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
           <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="sm:flex sm:items-start">
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left ">
+              <div className="mt-0 sm:ml-4 text-left">
                 {/*Window title*/}
                 <h3
                   id="dialog-title"
@@ -417,12 +421,12 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
 
       <div
         tabindex="0"
-        className="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0"
+        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
       >
-        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
           <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="sm:flex sm:items-start">
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left ">
+              <div className="mt-0 sm:ml-4 text-left ">
                 {/*Window title*/}
                 <h3
                   id="dialog-title"
@@ -479,6 +483,10 @@ function ContactList({
   searchTerm,
   searchList,
   activeFilter,
+  fetchSquad,
+  tags,
+  evalTags,
+  evalTotal,
 }) {
   function toggleSelect(contact) {
     if (featuredContact == contact) {
@@ -494,48 +502,63 @@ function ContactList({
   const styledContacts = activeList.map((contact) => (
     <li
       key={contact._id}
-      className={`${contact._id == featuredContact._id ? "bg-(--c-violet-void-60) text-white" : "bg-(--c-violet-void)"} px-3 py-2 rounded-lg flex gap-2 hover:bg-(--c-violet-void-60) hover:text-white cursor-pointer`}
-      onClick={() => toggleSelect(contact)}
+      className={`${contact._id == featuredContact._id ? "bg-(--c-violet-void-60)" : "bg-(--c-violet-void)"}  rounded-lg hover:bg-(--c-violet-void-60) `}
     >
-      <img
-        src={contact.image ? contact.image : "/imgs/icons/profile.png"}
-        alt=""
-        className="size-6 mt-3 mx-3"
-      />
-      <div className="w-[150px]">
-        <h4 className="text-sm">
-          {contact.nickname ? contact.nickname : contact.firstName}
-        </h4>
-        <p>
-          {contact.firstName} {contact.lastName}
-        </p>
-        <p className="text-sm">Score: {contact.evalScore}</p>
-      </div>
-      <div className="w-[150px] hidden xl:block">
-        <p>
-          <img src={img} alt="clock-icon" className="inline" /> Contact:{" "}
-          {contact.contactFrequency}
-        </p>
+      <div
+        className={`${contact._id == featuredContact._id ? "text-white" : ""} flex gap-2 cursor-pointer px-3 py-2 hover:text-white`}
+        onClick={() => toggleSelect(contact)}
+      >
+        <img
+          src={contact.image ? contact.image : "/imgs/icons/profile.png"}
+          alt=""
+          className="size-6 mt-3 mx-3"
+        />
+        <div className="w-[150px]">
+          <h4 className="text-sm">
+            {contact.nickname ? contact.nickname : contact.firstName}
+          </h4>
+          <p>
+            {contact.firstName} {contact.lastName}
+          </p>
+          <p className="text-sm">Score: {contact.evalScore}</p>
+        </div>
+        <div className="w-[150px] hidden xl:block">
+          <p>
+            <img src={img} alt="clock-icon" className="inline" /> Contact:{" "}
+            {contact.contactFrequency}
+          </p>
 
-        <p>
-          Prev:{" "}
-          {contact.lastContact
-            ? new Date(contact.lastContact).toLocaleDateString()
-            : "N/A"}
-        </p>
-        <p>
-          Next:{" "}
-          {contact.nextMission
-            ? new Date(contact.nextMission.scheduledFor).toLocaleDateString()
-            : "N/A"}
-        </p>
+          <p>
+            Prev:{" "}
+            {contact.lastContact
+              ? new Date(contact.lastContact).toLocaleDateString()
+              : "N/A"}
+          </p>
+          <p>
+            Next:{" "}
+            {contact.nextMission
+              ? new Date(contact.nextMission.scheduledFor).toLocaleDateString()
+              : "N/A"}
+          </p>
+        </div>
+      </div>
+      <div className="block md:hidden">
+        {featuredContact._id == contact._id && (
+          <FeaturedContact
+            featuredContact={featuredContact}
+            fetchSquad={fetchSquad}
+            tags={tags}
+            evalTags={evalTags}
+            evalTotal={evalTotal}
+          />
+        )}
       </div>
     </li>
   ));
   return (
     <>
       <section
-        className="hidden md:block"
+        className="hidden md:block mb-22 lg:mb-0"
         style={{ color: `var(${themeColor})` }}
       >
         <h2 className="text-2xl text-center ">{title}</h2>
@@ -543,7 +566,7 @@ function ContactList({
           className={` rounded-lg p-3  text-xs justify-center`}
           style={{ backgroundColor: `var(${themeColor})` }}
         >
-          <div className="flex flex-col gap-2 lg:h-[640px] lg: overflow-auto">
+          <div className="flex flex-col gap-2 lg:max-h-[calc(100vh-14rem)] lg:min-h-[393px] lg:overflow-auto">
             {activeList.length > 0 ? (
               styledContacts
             ) : (
@@ -560,7 +583,7 @@ function ContactList({
       </section>
       {tabValue == mobileActiveTab && (
         <section
-          className="md:hidden w-[100%] max-w-[400px] mt-2"
+          className="mb-22 md:hidden w-[100%] max-w-[400px] mt-2"
           style={{ color: `var(${themeColor})` }}
         >
           <ul
@@ -793,7 +816,7 @@ export default function MySquad() {
   }, [searchValue, activeFilter, tagFilter]);
 
   return (
-    <div className="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:pl-8 lg:pt-12 flex flex-col">
+    <div className="text-purple-300 lg:px-8 lg:pt-12 flex flex-col">
       <FilterAndSearch
         fetchSquad={fetchSquad}
         activeFilter={activeFilter}
@@ -809,7 +832,10 @@ export default function MySquad() {
       />
       <Tabs
         value={mobileActiveTab}
-        onChange={(event, tabValue) => setMobileActiveTab(tabValue)}
+        onChange={(event, tabValue) => {
+          setMobileActiveTab(tabValue);
+          setFeaturedContact({});
+        }}
         aria-label="friend list tabs"
         className="md:hidden"
         centered
@@ -851,7 +877,7 @@ export default function MySquad() {
         />
       </Tabs>
 
-      <main className="flex gap-6 justify-center">
+      <main className="flex gap-4 justify-center xl:justify-start w-full md:overflow-x-auto">
         {/*Inner Circle or "Heart" core freiends*/}
         {(!featuredContact._id ||
           featuredContact.friendList === "heartCore" ||
@@ -870,6 +896,10 @@ export default function MySquad() {
             setMobileActiveTab={setMobileActiveTab}
             mobileActiveTab={mobileActiveTab}
             activeFilter={activeFilter}
+            fetchSquad={fetchSquad}
+            tags={tags}
+            evalTags={evalTags}
+            evalTotal={evalTotal}
           />
         )}
 
@@ -891,6 +921,10 @@ export default function MySquad() {
             mobileActiveTab={mobileActiveTab}
             featuredContact={featuredContact}
             activeFilter={activeFilter}
+            fetchSquad={fetchSquad}
+            tags={tags}
+            evalTags={evalTags}
+            evalTotal={evalTotal}
           />
         )}
 
@@ -912,10 +946,15 @@ export default function MySquad() {
             mobileActiveTab={mobileActiveTab}
             featuredContact={featuredContact}
             activeFilter={activeFilter}
+            fetchSquad={fetchSquad}
+            tags={tags}
+            evalTags={evalTags}
+            evalTotal={evalTotal}
           />
         )}
-        <div className="hidden md:block">
-          {featuredContact._id && (
+
+        {featuredContact._id && (
+          <div className="hidden md:block">
             <FeaturedContact
               featuredContact={featuredContact}
               fetchSquad={fetchSquad}
@@ -923,8 +962,8 @@ export default function MySquad() {
               evalTags={evalTags}
               evalTotal={evalTotal}
             />
-          )}
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );
@@ -940,6 +979,7 @@ function FeaturedContact({
   const [contactHistory, setContactHistory] = useState([]);
   const [isMissionHistoryLoading, setIsMissionHistoryLoading] = useState(false);
   const [isEditContactOpen, setIsEditContactOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const fetchMissionHistory = async (contactId) => {
     setIsMissionHistoryLoading(true);
@@ -1077,33 +1117,41 @@ function FeaturedContact({
   }
   return (
     <div
-      className="mt-8 rounded-lg lg:h-[663px] min-w-[700px] w-[100%] p-2"
+      className="mt-2 md:mt-8 rounded-lg md:p-2 text-purple-300"
       style={{ backgroundColor: `var(${contactTheme})` }}
     >
-      <div className="bg-(--c-violet-void) rounded">
+      <div className="p-2 md:p-0 bg-(--c-violet-void) rounded md:min-w-[450px] w-[100%] lg:min-h-[400px] lg:max-h-[calc(100vh-13.5rem)] lg:overflow-auto">
         {/*Top Section*/}
-        <div className="flex flex-wrap gap-4 p-3">
+        <div className="md:flex md:flex-wrap gap-4 p-3">
           <img
             src={featuredContact.image || "imgs/mission-friend.png"}
             alt={`${featuredContact.firstName} ${featuredContact.lastName}`}
-            className="size-24"
+            className="size-24 hidden md:block"
             id="featured-image"
           />
           <div className="">
-            <div className="flex justify-between min-w-[500px]">
+            <div className="md:flex justify-between md:min-w-[500px]">
               <div>
-                <p className="text-l">{`${featuredContact.firstName} ${featuredContact.lastName}`}</p>
-                <h3 className="text-3xl">
+                <p className="hidden md:block text-l">{`${featuredContact.firstName} ${featuredContact.lastName}`}</p>
+                <h3 className="hidden md:block text-3xl">
                   {`${featuredContact.nickname ? featuredContact.nickname : featuredContact.firstName}`}
                 </h3>
-                <h3 className="text-3xl flex">
-                  {featuredContact.friendshipRole && (
-                    <RoleTag
-                      text={roleLabels[featuredContact.friendshipRole]}
-                      img="/imgs/icons/star.png"
+                <div className="flex flex-row-reverse md:flex-row justify-between mb-2 md:mb-0">
+                  <div className="block md:hidden">
+                    <PrimaryButton
+                      innerText="edit"
+                      onClick={() => setIsEditContactOpen(true)}
                     />
+                  </div>
+                  {featuredContact.friendshipRole && (
+                    <h3 className="text-3xl">
+                      <RoleTag
+                        text={roleLabels[featuredContact.friendshipRole]}
+                        img="/imgs/icons/star.png"
+                      />
+                    </h3>
                   )}
-                </h3>
+                </div>
               </div>
               <div className="text-sm self-end">
                 <p>
@@ -1140,11 +1188,13 @@ function FeaturedContact({
             </div>
           </div>
           <div className="flex flex-wrap gap-15 items-start min-w-[240px]">
-            <PrimaryButton
-              innerText="edit"
-              onClick={() => setIsEditContactOpen(true)}
-            />
-            <h4 className="text-2xl self-start w-[210px]">
+            <div className="hidden md:block">
+              <PrimaryButton
+                innerText="edit"
+                onClick={() => setIsEditContactOpen(true)}
+              />
+            </div>
+            <h4 className="text-2xl self-start w-[210px] hidden md:block">
               Eval Score: {featuredContact.evalScore}
             </h4>
             <p className="self-start w-[240px]">
@@ -1162,9 +1212,9 @@ function FeaturedContact({
           )}
         </div>
         {/*Main Area*/}
-        <div className="flex p-3 gap-6">
+        <div className="flex flex-col md:flex-row p-3 gap-6 ">
           {/*History */}
-          <div className="w-[55%]">
+          <div className="w-[55%] hidden md:block">
             <h4>Mission History</h4>
             <ul
               className="text-xs lg:max-h-[480px] overflow-auto"
@@ -1182,7 +1232,10 @@ function FeaturedContact({
             </ul>
           </div>
           {/*Contact details */}
-          <div className="w-[45%] " style={{ color: `var(${contactTheme})` }}>
+          <div
+            className="w-[100%] md:w-[45%] lg:max-h-auto"
+            style={{ color: `var(${contactTheme})` }}
+          >
             <h4 className="border-b-4 text-base">Details</h4>
             <div className="border rounded-b p-2 text-sm lg:max-h-[478px] overflow-auto">
               <p className="border-b-1 py-2">
@@ -1313,6 +1366,46 @@ function FeaturedContact({
                   : "No more notes to show."}
               </p>
             </div>
+          </div>
+          {/*History for mobile*/}
+          <div className="block md:hidden text-lg">
+            <Accordion
+              expanded={isHistoryOpen == true}
+              onChange={() => {
+                setIsHistoryOpen((prev) => !prev);
+              }}
+              slotProps={{
+                heading: { component: "h4" },
+                transition: { unmountOnExit: true },
+              }}
+              className="text-(--c-violet-void)"
+              style={{
+                "background-color": `var(${contactTheme})`,
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                Mission History
+              </AccordionSummary>
+              <AccordionDetails>
+                <ul className="text-xs" style={{ width: "100%" }}>
+                  {isMissionHistoryLoading && (
+                    <CircularProgress color="#7D4C9F" />
+                  )}
+                  {!isMissionHistoryLoading &&
+                    (missionHistoryList.length > 0 ? (
+                      missionHistoryList
+                    ) : (
+                      <li style={{ minWidth: "100%" }}>
+                        <h4 className="text-sm pl-3">No Mission History</h4>
+                      </li>
+                    ))}
+                </ul>
+              </AccordionDetails>
+            </Accordion>
           </div>
         </div>
       </div>
@@ -1505,12 +1598,12 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
 
       <div
         tabIndex="0"
-        className="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0"
+        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
       >
-        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
           <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="sm:flex sm:items-start">
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left ">
+              <div className="mt-0 sm:ml-4 text-left">
                 {/*Window title*/}
                 <h3
                   id="dialog-title"

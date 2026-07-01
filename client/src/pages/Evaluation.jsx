@@ -4,7 +4,7 @@ import ContactSearch from "../components/Search";
 
 function InfoSection({ children }) {
   return (
-    <div className="border-2 border-double border-(--c-purple-tech-40) rounded-lg text-(--c-purple-tech-40) p-5">
+    <div className="hidden md:block border-2 border-double border-(--c-purple-tech-40) rounded-lg text-(--c-purple-tech-40) p-5">
       {children}
     </div>
   );
@@ -648,9 +648,9 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
 
   return (
     <div
-      className={`${isSaving && "cursor-progress"} rounded-xl bg-(--c-purple-tech-20) w-[1000px] py-7 px-15 flex flex-col max-h-[820px]`}
+      className={`${isSaving && "cursor-progress"} rounded-xl bg-(--c-purple-tech-20) md:w-[1000px] py-7 px-7 lg:px-15 flex flex-col lg:min-h-[450px] lg:max-h-[calc(100vh-6rem)] mb-20 lg:mb-0`}
     >
-      <div className="flex items-center justify-end">
+      <div className="flex flex-col md:flex-row md:items-center justify-end">
         <label htmlFor="questionChange" className="text-xs mr-2">
           {/*Question or Contact */}
           {questionnaireType == "contacts"
@@ -660,7 +660,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         <select
           name="questionChange"
           id="questionChange"
-          className="bg-(--c-violet-void) rounded-md px-3 py-2 text-(--c-purple-tech-20) text-xs w-[400px]"
+          className="bg-(--c-violet-void) rounded-md px-3 py-2 text-(--c-purple-tech-20) text-xs md:w-[400px]"
           value={
             questionnaireType != "contacts"
               ? pageQuestionSubject._id
@@ -736,18 +736,22 @@ export default function Evaluation() {
     setIsCustomSelectModalOpen(false);
   }
   return (
-    <main className="flex gap-5 p-4">
+    <main className="flex flex-col md:flex-row gap-5 p-2 md:p-4 lg:pt-12">
       {/*Side section */}
-      <div className="max-w-[400px] flex flex-col gap-4">
+      <div className="md:max-w-[400px] flex flex-col gap-4">
         <InfoSection>
           <h3 className="text-center mb-2">What's This?</h3>
-          <div className="flex items-center gap-1">
-            <img src="imgs/thinker.png" className="" />
-            <p className="text-xs">
-              Want to know if your friends are fake or who your most reliable
-              contacts are? Use the evaluation questions to rank your squad by
-              score.
-            </p>
+          <div className="flex items-center justify-center gap-1 flex-wrap-reverse">
+            <div className="w-[90px] m-x-auto shrink-0">
+              <img src="imgs/thinker.png" className="w-full" />
+            </div>
+            <div className="text-xs flex-1 min-w-[90px]">
+              <p>
+                Want to know if your friends are fake or who your most reliable
+                contacts are? Use the evaluation questions to rank your squad by
+                score.
+              </p>
+            </div>
           </div>
         </InfoSection>
         <div className="border-3 rounded-lg flex flex-col gap-4 p-3 text-(--c-purple-tech-40) text-xl">
@@ -794,9 +798,12 @@ export default function Evaluation() {
         </div>
         <InfoSection>
           <h3 className="text-center mb-2">Notes</h3>
-          <div className="flex items-center gap-1">
-            <img src="imgs/takeevaluation.png" className="" />
-            <ul className="text-xs">
+          <div className="flex items-center justify-center gap-1 flex-wrap-reverse">
+            <div className="w-[90px] m-x-auto shrink-0">
+              <img src="imgs/takeevaluation.png" className="w-full" />
+            </div>
+
+            <ul className="text-xs flex-1 min-w-[90px]">
               <li>To truly evaluate your squad may take an hour or two</li>
               <li>
                 Save periodically. You can always come back to questions later
@@ -864,11 +871,11 @@ function CustomSelectionModal({
 
       <div
         tabIndex="0"
-        className="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0"
+        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
       >
-        <div className="relative transform border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+        <div className="relative transform border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
           <div className="bg-(--c-purple-tech-40)/40 min-h-[200px] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left ">
+            <div className="mt-0 sm:ml-4 text-left ">
               {/*Window title*/}
               <h3
                 id="dialog-title"

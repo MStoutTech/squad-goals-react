@@ -4,11 +4,10 @@ function ArticleCard({ title, preview }) {
       onClick=""
       className="flex flex-col cursor-pointer bg-(--c-violet-void-60) border-1 border-(--c-purple-tech-40) rounded-lg p-2 text-(--c-purple-tech-20) w-[200px] h-[250px] p-3 mr-8"
     >
-      <img
-        src=""
-        alt=""
-        className="border-2 border-(--c-purple-tech-40) rounded-lg w-[175px] h-[120px] self-center"
-      />
+      <div className="border-2 border-(--c-purple-tech-40) rounded-lg w-[175px] h-[120px] self-center">
+        <img src="" alt="" className="w-[100%] justify-self-center" />
+      </div>
+
       <h4 className="font-light mt-2">{title}</h4>
       <p className="text-xs">{preview}</p>
     </li>
@@ -17,19 +16,19 @@ function ArticleCard({ title, preview }) {
 function ArticleList({ children, title }) {
   return (
     <div className="mb-14">
-      <h2 className="text-xl">{title}</h2>
-      <ul className="flex mt-4 ">{children}</ul>
+      <h2 className="text-xl ml-10">{title}</h2>
+      <ul className="flex mt-4 overflow-y-auto px-10">{children}</ul>
     </div>
   );
 }
 
 export default function Train() {
   return (
-    <div className="text-(--c-purple-tech-40) w-[100%] p-6">
-      <div className="flex justify-between">
-        <label className="text-(--c-purple-tech-40) text-xs">
+    <div className="text-(--c-purple-tech-40) w-[100%] py-2 lg:max-h-[calc(100vh-4rem)] lg:py-12 lg:px-6">
+      <div className="flex flex-wrap-reverse gap-2 justify-between">
+        <label className="flex flex-col md:block text-(--c-purple-tech-40) text-xs">
           Filter Articles
-          <select className="border-1 border-(--c-purple-tech-40) rounded-lg p-2 text-(--c-purple-tech-40) text-base ml-2">
+          <select className="border-1 border-(--c-purple-tech-40) rounded-lg p-2 text-(--c-purple-tech-40) text-base md:ml-2">
             <option>ALL TOPICS</option>
             <option value="selfImprovement">SELF IMPROVEMENT</option>
             <option value="healingRelationships">HEALING RELATIONSHIPS</option>
@@ -39,11 +38,11 @@ export default function Train() {
         </label>
         <input
           type="search"
-          className="border-1 border-(--c-purple-tech-40) rounded-lg p-2 block"
+          className="border-1 border-(--c-purple-tech-40) rounded-lg p-2 block ml-auto max-h-[42px]"
           placeholder="Search"
         />
       </div>
-      <main className="mt-10 px-10 max-h-[680px] overflow-auto">
+      <main className="mt-10 mb-22 lg:mb-0">
         <ArticleList title="Featured">
           <ArticleCard
             title="Kindness"
