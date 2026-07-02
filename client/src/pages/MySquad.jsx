@@ -1121,16 +1121,21 @@ function FeaturedContact({
       style={{ backgroundColor: `var(${contactTheme})` }}
     >
       <div className="p-2 md:p-0 bg-(--c-violet-void) rounded md:min-w-[450px] w-[100%] lg:min-h-[400px] lg:max-h-[calc(100vh-13.5rem)] lg:overflow-auto">
-        {/*Top Section*/}
+        {/*Top Basic Info Section*/}
         <div className="md:flex md:flex-wrap gap-4 p-3">
-          <img
-            src={featuredContact.image || "imgs/mission-friend.png"}
-            alt={`${featuredContact.firstName} ${featuredContact.lastName}`}
-            className="size-24 hidden md:block"
-            id="featured-image"
-          />
-          <div className="">
-            <div className="md:flex justify-between md:min-w-[500px]">
+          {/*ID and scheduling */}
+          <div className="md:flex md:flex-wrap justify-between gap-x-10 gap-y-2 md:min-w-[450px]">
+            {/*Img and name*/}
+            <div className="flex gap-3">
+              {/*Img wrapper */}
+              <div className="size-24 hidden md:block">
+                <img
+                  src={featuredContact.image || "imgs/mission-friend.png"}
+                  alt={`${featuredContact.firstName} ${featuredContact.lastName}`}
+                  id="featured-image"
+                />
+              </div>
+              {/*Name */}
               <div>
                 <p className="hidden md:block text-l">{`${featuredContact.firstName} ${featuredContact.lastName}`}</p>
                 <h3 className="hidden md:block text-3xl">
@@ -1153,41 +1158,44 @@ function FeaturedContact({
                   )}
                 </div>
               </div>
-              <div className="text-sm self-end">
-                <p>
-                  <img
-                    src="/imgs/icons/coral-clock.png"
-                    alt="clock-icon"
-                    className="inline"
-                  />{" "}
-                  Contact Frequency: {featuredContact.contactFrequency}
-                </p>
-                <p>
-                  Preferred Days:{" "}
-                  {(featuredContact.preferredDay &&
-                    featuredContact.preferredDay
-                      .map((day) => daysAbbrev[day])
-                      .join(" ")) ||
-                    "None"}
-                </p>
-                <p>
-                  Previous Contact:{" "}
-                  {featuredContact.lastContact
-                    ? new Date(featuredContact.lastContact).toLocaleDateString()
-                    : "N/A"}
-                </p>
-                <p>
-                  Next Mission:{" "}
-                  {featuredContact.nextMission
-                    ? new Date(
-                        featuredContact.nextMission.scheduledFor,
-                      ).toLocaleDateString()
-                    : "N/A"}
-                </p>
-              </div>
+            </div>
+            {/*Mission scheduling */}
+            <div className="text-sm self-end">
+              <p>
+                {/*TODO: Make this image a pseudo element and give it a class once the svg is ready */}
+                <img
+                  src="/imgs/icons/coral-clock.png"
+                  alt="clock-icon"
+                  className="inline"
+                />{" "}
+                Contact Frequency: {featuredContact.contactFrequency}
+              </p>
+              <p>
+                Preferred Days:{" "}
+                {(featuredContact.preferredDay &&
+                  featuredContact.preferredDay
+                    .map((day) => daysAbbrev[day])
+                    .join(" ")) ||
+                  "None"}
+              </p>
+              <p>
+                Previous Contact:{" "}
+                {featuredContact.lastContact
+                  ? new Date(featuredContact.lastContact).toLocaleDateString()
+                  : "N/A"}
+              </p>
+              <p>
+                Next Mission:{" "}
+                {featuredContact.nextMission
+                  ? new Date(
+                      featuredContact.nextMission.scheduledFor,
+                    ).toLocaleDateString()
+                  : "N/A"}
+              </p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-15 items-start min-w-[240px]">
+          {/*Edit and eval strip */}
+          <div className="flex flex-wrap gap-x-15 gap-y-2 items-start min-w-[240px]">
             <div className="hidden md:block">
               <PrimaryButton
                 innerText="edit"
@@ -1212,14 +1220,11 @@ function FeaturedContact({
           )}
         </div>
         {/*Main Area*/}
-        <div className="flex flex-col md:flex-row p-3 gap-6 ">
+        <div className="flex flex-col md:flex-row md:flex-wrap-reverse p-4 gap-x-4 md:gap-y-2 ">
           {/*History */}
-          <div className="w-[55%] hidden md:block">
+          <div className="basis-8 min-w-[300px] grow-1 hidden md:block">
             <h4>Mission History</h4>
-            <ul
-              className="text-xs lg:max-h-[480px] overflow-auto"
-              style={{ width: "100%" }}
-            >
+            <ul className="text-xs " style={{ width: "100%" }}>
               {isMissionHistoryLoading && <CircularProgress color="#7D4C9F" />}
               {!isMissionHistoryLoading &&
                 (missionHistoryList.length > 0 ? (
@@ -1233,7 +1238,7 @@ function FeaturedContact({
           </div>
           {/*Contact details */}
           <div
-            className="w-[100%] md:w-[45%] lg:max-h-auto"
+            className="basis-7 grow-1 min-w-[300px]"
             style={{ color: `var(${contactTheme})` }}
           >
             <h4 className="border-b-4 text-base">Details</h4>

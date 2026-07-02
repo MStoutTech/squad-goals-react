@@ -175,7 +175,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
           return null;
         if (!question.sliderConfig) {
           return (
-            <div key={`contact${index}`}>
+            <div className="w-full" key={`contact${index}`}>
               <input
                 type="range"
                 id={`contact${index}response`}
@@ -183,6 +183,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
                 min={`${Math.min(...question.options.map((op) => op.baseScore))}`}
                 max={`${Math.max(...question.options.map((op) => op.baseScore))}`}
                 list="sliderValues"
+                className="w-full"
                 value={
                   activeAnswerArray[index]?.questionOption
                     ? question.options
@@ -226,7 +227,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
           );
         }
         return (
-          <div key={`contact${index}`}>
+          <div className="w-full" key={`contact${index}`}>
             <input
               type="range"
               id={`contact${index}response`}
@@ -235,6 +236,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
               min={`${question.sliderConfig.min}`}
               max={`${question.sliderConfig.max}`}
               step={`${question.sliderConfig.step}`}
+              className="w-full"
               value={
                 activeAnswerArray[index]?.questionOption
                   ? activeAnswerArray[index]?.questionOption[0]
