@@ -26,6 +26,7 @@ export function AuthProvider({ children }) {
     const response = await fetch("/api/logout");
     const data = await response.json();
     setUser(data.user);
+    return data;
   }
 
   function setLoggedInUser(user) {

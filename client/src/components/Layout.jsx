@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import ConfirmLogoutModal from "../components/Modals";
 
 export function PageTab({ pageTitle, pageName, link, icon, iconAlt, text }) {
   const active = pageTitle === pageName;
@@ -24,8 +25,9 @@ function ThumbNav({ pageTitle, pageName, link, icon, iconAlt, text }) {
   const active = pageTitle === pageName;
 
   return (
-    <Link to={link} className="flex flex-col items-center justify-end h-full">
-      <li
+    <li className="flex flex-col items-center justify-end h-full">
+      <Link
+        to={link}
         className={
           active
             ? "text-white border-b-1 border-white p-2 flex flex-col items-center gap-2"
@@ -34,12 +36,11 @@ function ThumbNav({ pageTitle, pageName, link, icon, iconAlt, text }) {
       >
         <img src={icon} alt={iconAlt} className="block" />
         <span className="block text-xs">{text || pageName}</span>
-      </li>
-    </Link>
+      </Link>
+    </li>
   );
 }
 export default function AuthLayout() {
-  document.body.classList.add("bg-(--c-violet-void)");
   const locationPath = useLocation().pathname;
   const titles = {
     "/mission-control": "Mission Control",
@@ -47,11 +48,21 @@ export default function AuthLayout() {
     "/evaluation": "Evaluation",
     "/train": "Train",
     "/settings": "Settings",
-    "/profile": "Profile",
+    "/profile": "Settings > Profile",
   };
   const pageTitle = titles[locationPath] || "Squad Goals";
   const { user } = useContext(AuthContext);
   const userName = user.userName;
+  const [showUserOptions, setShowUserOptions] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.classList.add("bg-(--c-violet-void)");
+
+    return () => {
+      document.body.classList.remove("bg-(--c-violet-void)");
+    };
+  }, []);
 
   return (
     <>
@@ -67,24 +78,60 @@ export default function AuthLayout() {
         </h1>
 
         <ul className="hidden lg:flex gap-12 mr-6 items-center">
-          <li>
-            <img
-              src="/imgs/icons/settings.png"
-              alt="settings icon"
-              className="inline mr-3"
-            />
-            Settings
+          <PageTab
+            pageTitle={pageTitle}
+            pageName="Settings"
+            link="/settings"
+            icon="/imgs/icons/settings.png"
+            iconAlt="settings icon"
+            text="Settings"
+          />
+          <li
+            className={
+              pageTitle === "Profile"
+                ? "text-white border-b-1 border-white p-2 flex items-center gap-2"
+                : "hover:rounded-md hover:bg-(--c-violet-void-80) hover:text-white border-b-1 border-(--c-violet-void) p-2 flex items-center "
+            }
+          >
+            <p
+              onClick={() => setShowUserOptions(!showUserOptions)}
+              className="flex gap-2 items-center justify-end h-full cursor-pointer"
+            >
+              <img
+                src="/imgs/icons/profile.png"
+                alt="profile icon"
+                className="block"
+              />
+              <span className="block">{userName}</span>
+            </p>
           </li>
-          {/*Preferences for colors, (low color, high contrast, simplified, preferences for evaluation question priority, notifications)*/}
-          {/*Profile info, logout, change password, delete account*/}
-          <li>
-            <img
-              src="/imgs/icons/profile.png"
-              alt="profile icon"
-              className="inline mr-3"
+          {showUserOptions && (
+            <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 w-26 rounded-md mt-26 ml-42 text-white max-h-40 text-sm">
+              <li>
+                <Link
+                  to="/settings/profile"
+                  onClick={() => setShowUserOptions(false)}
+                  className="p-2 block hover:bg-purple-400 cursor-pointer"
+                >
+                  Profile
+                </Link>
+              </li>
+              <li
+                className="p-2 hover:bg-purple-400 cursor-pointer"
+                onClick={() => {
+                  setShowUserOptions(false);
+                  setIsLogoutModalOpen(true);
+                }}
+              >
+                Logout
+              </li>
+            </ul>
+          )}
+          {isLogoutModalOpen && (
+            <ConfirmLogoutModal
+              closeModal={() => setIsLogoutModalOpen(false)}
             />
-            {userName}
-          </li>
+          )}
         </ul>
       </header>
       <div className="px-6 lg:px-0 pt-16 lg:pt-6 flex">

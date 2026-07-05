@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
   const loadingScreen = <h2>Loading...</h2>;
   return (
     <>
-      {isLoading ? loadingScreen : user ? children : <Navigate to="/signup" />}
+      {isLoading ? loadingScreen : user ? children : <Navigate to="/login" />}
     </>
   );
 }

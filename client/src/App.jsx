@@ -37,8 +37,9 @@ function App() {
           <Route path="/my-squad" element={<MySquad />} />
           <Route path="/evaluation" element={<Evaluation />} />
           <Route path="/train" element={<Train />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />}>
+            <Route path="profile" element={<Profile />} />
+          </Route>
         </Route>
       </Routes>
     </>
