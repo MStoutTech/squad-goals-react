@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 export default function GuestHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useContext(AuthContext);
 
   return (
     <header className="inset-x-0 top-0 z-50 relative">
@@ -58,15 +60,29 @@ export default function GuestHeader() {
           <Link to="/sg-blog" className="text-lg/6 font-semibold text-gray-900">
             Blog
           </Link>
-          <Link to="/signup" className="text-lg/6 font-semibold text-gray-900">
-            Sign Up
-          </Link>
+          {!user ? (
+            <Link
+              to="/signup"
+              className="text-lg/6 font-semibold text-gray-900"
+            >
+              Sign Up
+            </Link>
+          ) : (
+            <Link
+              to="/mission-control"
+              className="text-lg/6 font-semibold text-gray-900"
+            >
+              Go to App
+            </Link>
+          )}
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <Link to="/login" className="text-lg/6 font-semibold text-gray-900">
-            Log in <span aria-hidden="true">&rarr;</span>
-          </Link>
-        </div>
+        {!user && (
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+            <Link to="/login" className="text-lg/6 font-semibold text-gray-900">
+              Log in <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
+        )}
       </nav>
       {/*Mobile Menu conditionally rendered*/}
       {isMobileMenuOpen && (
@@ -120,21 +136,32 @@ export default function GuestHeader() {
                 >
                   Blog
                 </Link>
-                <Link
-                  to="/signup"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold  hover:bg-gray-50"
-                >
-                  Sign Up
-                </Link>
+                {!user ? (
+                  <Link
+                    to="/signup"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold  hover:bg-gray-50"
+                  >
+                    Sign Up
+                  </Link>
+                ) : (
+                  <Link
+                    to="/mission-control"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold  hover:bg-gray-50"
+                  >
+                    Go to app
+                  </Link>
+                )}
               </div>
-              <div className="py-6">
-                <Link
-                  to="/login"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold  hover:bg-gray-50"
-                >
-                  Log in
-                </Link>
-              </div>
+              {!user && (
+                <div className="py-6">
+                  <Link
+                    to="/login"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold  hover:bg-gray-50"
+                  >
+                    Log in
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
