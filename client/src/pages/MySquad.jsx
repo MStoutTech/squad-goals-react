@@ -11,6 +11,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ContactAvatar from "../components/ContactAvatar";
 
 function FilterAndSearch({
   fetchSquad,
@@ -345,15 +346,11 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
       </label>
       {selectedRoles[role] ? (
         <div className="flex justify-between mb-6 items-center p-2 border border-purple-300 rounded-md">
-          <img
-            src={
-              selectedRoles[role]
-                ? selectedRoles[role].url || "/imgs/Small-Friend-Icon.png"
-                : ""
-            }
-            alt=""
-            className="inline size-6"
+          <ContactAvatar
+            className="inline size-6 border-2 rounded-full"
+            contact={selectedRoles[role]}
           />
+
           <span id="selected-contact-name">
             {selectedRoles[role]?.firstName} {selectedRoles[role]?.lastName}
           </span>
@@ -508,11 +505,8 @@ function ContactList({
         className={`${contact._id == featuredContact._id ? "text-white" : ""} flex gap-2 cursor-pointer px-3 py-2 hover:text-white`}
         onClick={() => toggleSelect(contact)}
       >
-        <img
-          src={contact.image ? contact.image : "/imgs/icons/profile.png"}
-          alt=""
-          className="size-6 mt-3 mx-3"
-        />
+        <ContactAvatar className="size-6 mt-3 mx-3" contact={contact} />
+
         <div className="w-[150px]">
           <h4 className="text-sm">
             {contact.nickname ? contact.nickname : contact.firstName}
@@ -1128,13 +1122,11 @@ function FeaturedContact({
             {/*Img and name*/}
             <div className="flex gap-3">
               {/*Img wrapper */}
-              <div className="size-24 hidden md:block">
-                <img
-                  src={featuredContact.image || "imgs/mission-friend.png"}
-                  alt={`${featuredContact.firstName} ${featuredContact.lastName}`}
-                  id="featured-image"
-                />
-              </div>
+              <ContactAvatar
+                className="size-24 border-3 rounded-sm hidden md:block"
+                contact={featuredContact}
+              />
+
               {/*Name */}
               <div>
                 <p className="hidden md:block text-l">{`${featuredContact.firstName} ${featuredContact.lastName}`}</p>

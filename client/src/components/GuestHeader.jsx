@@ -16,9 +16,9 @@ export default function GuestHeader() {
           <Link to="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Squad Goals</span>
             <img
-              src="null"
+              src="/imgs/SGHalfShield.svg"
               alt="Squad Goals"
-              className="h-8 w-auto font-bold"
+              className="h-10 w-auto font-bold"
             />
           </Link>
         </div>
@@ -90,7 +90,11 @@ export default function GuestHeader() {
           <div className="flex items-center justify-between">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">Squad Goals</span>
-              <img src="null" alt="Squad Goals" className="h-8 w-auto" />
+              <img
+                src="/imgs/SGHalfShield.svg"
+                alt="Squad Goals"
+                className="h-8 w-auto"
+              />
             </a>
             <button
               type="button"

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { PrimaryButton } from "../components/Buttons";
 import ContactSearch from "../components/Search";
+import ContactAvatar from "../components/ContactAvatar";
 
 function InfoSection({ children }) {
   return (
@@ -279,7 +280,10 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
       <li key={contact._id} className="mb-6">
         <fieldset>
           <legend className="flex gap-2 text-lg items-center">
-            <img src="/imgs/Small-Friend-Icon.png" alt="" />
+            <ContactAvatar
+              className="inline size-6 border-2 rounded-full"
+              contact={contact}
+            />
             <h3>{`${contact.firstName} ${contact.nickname ? `"${contact.nickname}"` : ""} ${contact.lastName}`}</h3>
           </legend>
           <div className="flex flex-wrap gap-2 py-1 pb-6 border-b-2">

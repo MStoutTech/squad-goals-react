@@ -15,7 +15,7 @@ export function PageTab({ pageTitle, pageName, link, icon, iconAlt, text }) {
       }
     >
       <Link to={link}>
-        <img src={icon} alt={iconAlt} className="inline mr-3" />
+        <img src={icon} alt={iconAlt} className="inline mr-3 w-[28px]" />
         {text || pageName}
       </Link>
     </li>
@@ -149,7 +149,7 @@ export default function AuthLayout() {
               pageTitle={pageTitle}
               pageName="My Squad"
               link="/my-squad"
-              icon="/imgs/icons/my-squad.png"
+              icon="/imgs/icons/squad.svg"
               iconAlt="my squad icon"
             />
             <PageTab
@@ -197,7 +197,7 @@ export default function AuthLayout() {
           pageTitle={pageTitle}
           pageName="My Squad"
           link="/my-squad"
-          icon="/imgs/icons/my-squad.png"
+          icon="/imgs/icons/squad.svg"
           iconAlt="my squad icon"
           text="Squad"
         />

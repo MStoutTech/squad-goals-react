@@ -5,6 +5,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ContactAvatar from "../components/ContactAvatar";
 
 import {
   AnimatedCallToAction,
@@ -120,7 +121,11 @@ function News() {
 function CompletedMissions({ completedList }) {
   const completedMissions = completedList.map((mission) => (
     <li className="flex items-center" key={mission._id}>
-      <img src="/imgs/Small-Friend-Icon.png" alt="" className="mr-3" />
+      <ContactAvatar
+        className="h-[30px] w-[30px] border-2 rounded-full mr-3"
+        contact={mission.contact}
+      />
+
       <p>
         {new Date(mission.completedAt).toLocaleString()} <br />
         {mission.contact.firstName} {mission.contact.lastName}
@@ -281,11 +286,9 @@ export default function MissionControl() {
             {mission.contact.nickname || mission.contact.firstName}
           </h4>
 
-          <img
-            src={mission.contact.image || "imgs/mission-friend.png"}
-            alt={`${mission.contact.firstName} ${mission.contact.lastName}`}
-            className="size-24"
-            id="featured-image"
+          <ContactAvatar
+            className="size-24 border-3 rounded-sm"
+            contact={mission.contact}
           />
           <span className="text-sm">
             {`${mission.contact.firstName} ${mission.contact.lastName}`}
@@ -543,14 +546,9 @@ export default function MissionControl() {
                   </section>
                   <section className="min-w-[230px] ml-4">
                     <div className="flex items-center">
-                      <img
-                        src={
-                          featuredMission.contact?.image ||
-                          "imgs/mission-friend.png"
-                        }
-                        alt={`${featuredMission.contact?.firstName} ${featuredMission.contact?.lastName}`}
-                        className="size-24"
-                        id="featured-image"
+                      <ContactAvatar
+                        className="size-24 border-3 rounded-sm"
+                        contact={featuredMission.contact}
                       />
                       <div className="pl-2">
                         <h4 id="featured-nickname">
@@ -838,17 +836,11 @@ function AddMissionModal({ closeModal, fetchMissions }) {
                             id="selected-contact"
                             className="flex justify-between mb-6 items-center p-2 border border-purple-300 rounded-md"
                           >
-                            <img
-                              id="selected-contact-image"
-                              src={
-                                selectedContact
-                                  ? selectedContact.url ||
-                                    "/imgs/Small-Friend-Icon.png"
-                                  : ""
-                              }
-                              alt=""
-                              className="inline size-6"
+                            <ContactAvatar
+                              className="inline size-6 border-2 rounded-full"
+                              contact={selectedContact}
                             />
+
                             <span id="selected-contact-name">
                               {selectedContact?.firstName}{" "}
                               {selectedContact?.lastName}
