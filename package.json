@@ -7,7 +7,7 @@
     "dev": "concurrently \"cd client && vite\" \"npm run scss\" \"nodemon server/server.js\"",
     "scss": "sass client/src/css/animations.scss client/src/css/animations.css --watch",
     "client": "cd client && vite",
-    "server": "nodemon server/server.js",
+    "server": "node server/server.js",
     "build": "cd client && vite build",
     "lint": "eslint client/src",
     "preview": "cd client && vite preview"
