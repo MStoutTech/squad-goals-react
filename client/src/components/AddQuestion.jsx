@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { PrimaryButton } from "./Buttons";
+import { apiFetch } from "../utils/apiUrl";
 
 export default function AddQuestion() {
   const [isLoading, setIsLoading] = useState(false);
@@ -123,7 +124,7 @@ export default function AddQuestion() {
         ? { ...newQuestion.sliderConfig, scoreMap: scoreMap }
         : null,
     };
-    const response = await fetch(`/api/evaluation/addQuestion`, {
+    const response = await apiFetch(`/api/evaluation/addQuestion`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

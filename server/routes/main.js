@@ -8,7 +8,7 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 router.post("/login", authController.postLogin);
 router.get("/logout", authController.logout);
 
-router.post("/signup", authController.postSignup);
+router.post("/signup", ensureGuest, authController.postSignup);
 router.get("/user",  authController.getUser)
 
 

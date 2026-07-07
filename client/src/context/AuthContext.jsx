@@ -1,5 +1,6 @@
 import { createContext, useState } from "react";
 import { useEffect } from "react";
+import { apiFetch } from "../utils/apiUrl";
 
 export const AuthContext = createContext({
   user: null,
@@ -11,7 +12,7 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
 
   async function login(email, password) {
-    const response = await fetch("/api/login", {
+    const response = await apiFetch("/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -23,7 +24,7 @@ export function AuthProvider({ children }) {
     return data;
   }
   async function logout() {
-    const response = await fetch("/api/logout");
+    const response = await apiFetch("/api/logout");
     const data = await response.json();
     setUser(data.user);
     return data;
@@ -34,7 +35,7 @@ export function AuthProvider({ children }) {
   }
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await fetch("/api/user");
+      const response = await apiFetch("/api/user");
       const data = await response.json();
       setUser(data.user);
       setIsLoading(false);

@@ -4,7 +4,7 @@ const User = require("../models/User");
 const Evaluation = require("../models/Evaluation");
 const { scheduleNextMission } = require("../utils/scheduleNextMission");
 const { calculateContactScores } = require("../utils/calculateContactScores");
-const { ConnectionClosedEvent } = require("mongodb");
+
 
 module.exports = {
   getSquad: async (req, res) => {

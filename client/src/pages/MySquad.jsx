@@ -12,6 +12,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ContactAvatar from "../components/ContactAvatar";
+import { apiFetch } from "../utils/apiUrl";
 
 function FilterAndSearch({
   fetchSquad,
@@ -155,7 +156,7 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
     event.preventDefault();
     const formData = new FormData(event.target);
 
-    const response = await fetch("/api/contact/createContact", {
+    const response = await apiFetch("/api/contact/createContact", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -387,7 +388,7 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
     event.preventDefault();
     const formData = new FormData(event.target);
 
-    const response = await fetch("/api/contact/setFriendshipRoles", {
+    const response = await apiFetch("/api/contact/setFriendshipRoles", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -518,8 +519,26 @@ function ContactList({
         </div>
         <div className="w-[150px] hidden xl:block">
           <p>
-            <img src={img} alt="clock-icon" className="inline" /> Contact:{" "}
-            {contact.contactFrequency}
+            <svg
+              width="20"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              xmlns="http://www.w3.org/2000/svg"
+              className="mr-1 inline"
+            >
+              <path d="M12 2a10 10 0 0 1 7.38 16.75" />
+              <path d="M12 6v6l4 2" />
+              <path d="M2.5 8.875a10 10 0 0 0-.5 3" />
+              <path d="M2.83 16a10 10 0 0 0 2.43 3.4" />
+              <path d="M4.636 5.235a10 10 0 0 1 .891-.857" />
+              <path d="M8.644 21.42a10 10 0 0 0 7.631-.38" />
+            </svg>
+            Contact: {contact.contactFrequency}
           </p>
 
           <p>
@@ -627,7 +646,7 @@ export default function MySquad() {
   const searchTimeout = useRef(null);
 
   const fetchSquad = async () => {
-    const response = await fetch("/api/contact/getSquad");
+    const response = await apiFetch("/api/contact/getSquad");
     const data = await response.json();
     setHeartCoreList(data.heartCoreList);
     setRayLiablesList(data.rayLiablesList);
@@ -977,7 +996,7 @@ function FeaturedContact({
 
   const fetchMissionHistory = async (contactId) => {
     setIsMissionHistoryLoading(true);
-    const response = await fetch(`/api/contact/${contactId}/history`);
+    const response = await apiFetch(`/api/contact/${contactId}/history`);
     const data = await response.json();
     setIsMissionHistoryLoading(false);
     setContactHistory(data);
@@ -1155,11 +1174,25 @@ function FeaturedContact({
             <div className="text-sm self-end">
               <p>
                 {/*TODO: Make this image a pseudo element and give it a class once the svg is ready */}
-                <img
-                  src="/imgs/icons/coral-clock.png"
-                  alt="clock-icon"
-                  className="inline"
-                />{" "}
+                <svg
+                  width="20"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="mr-1 inline"
+                >
+                  <path d="M12 2a10 10 0 0 1 7.38 16.75" />
+                  <path d="M12 6v6l4 2" />
+                  <path d="M2.5 8.875a10 10 0 0 0-.5 3" />
+                  <path d="M2.83 16a10 10 0 0 0 2.43 3.4" />
+                  <path d="M4.636 5.235a10 10 0 0 1 .891-.857" />
+                  <path d="M8.644 21.42a10 10 0 0 0 7.631-.38" />
+                </svg>{" "}
                 Contact Frequency: {featuredContact.contactFrequency}
               </p>
               <p>
@@ -1527,7 +1560,7 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
       !userTags.includes(tagInputValue.toLowerCase()) &&
       tagInputValue.trim() !== ""
     ) {
-      const response = await fetch("/api/user/addTag", {
+      const response = await apiFetch("/api/user/addTag", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1570,13 +1603,16 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
       birthday: cleanedBirthday,
     };
 
-    const response = await fetch(`/api/contact/${featuredContact._id}/edit`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await apiFetch(
+      `/api/contact/${featuredContact._id}/edit`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(cleanedContact),
       },
-      body: JSON.stringify(cleanedContact),
-    });
+    );
 
     if (response.status === 200) {
       fetchSquad();

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { apiFetch } from "../utils/apiUrl";
 
 export default function ContactSearch({ onSelect, excludeIds, clearOnSelect }) {
   const [searchInput, setSearchInput] = useState("");
@@ -17,7 +18,7 @@ export default function ContactSearch({ onSelect, excludeIds, clearOnSelect }) {
     }
     clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(async () => {
-      const res = await fetch(`api/mission/searchContacts?query=${query}`);
+      const res = await apiFetch(`api/mission/searchContacts?query=${query}`);
       const contacts = await res.json();
       if (excludeIds) {
         setContactSearchResults(

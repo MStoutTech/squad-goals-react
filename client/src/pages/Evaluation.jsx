@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { PrimaryButton } from "../components/Buttons";
 import ContactSearch from "../components/Search";
 import ContactAvatar from "../components/ContactAvatar";
+import { apiFetch } from "../utils/apiUrl";
 
 function InfoSection({ children }) {
   return (
@@ -351,7 +352,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
   );
 
   const fetchEvaluation = async () => {
-    const response = await fetch("/api/evaluation/getEvaluation");
+    const response = await apiFetch("/api/evaluation/getEvaluation");
     const data = await response.json();
 
     const sortedAnswers = data.evaluation.map((question) => {
@@ -472,7 +473,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
     if (questionnaireType !== "contacts") {
       const contactList =
         questionnaireType == "custom" ? customGroup : contacts;
-      response = await fetch("/api/evaluation/saveAnswers", {
+      response = await apiFetch("/api/evaluation/saveAnswers", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -484,7 +485,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         }),
       });
     } else {
-      response = await fetch(
+      response = await apiFetch(
         `/api/evaluation/${pageContactSubject._id}/saveAnswers`,
         {
           method: "PUT",

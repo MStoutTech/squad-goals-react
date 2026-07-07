@@ -6,6 +6,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ContactAvatar from "../components/ContactAvatar";
+import { apiFetch } from "../utils/apiUrl";
 
 import {
   AnimatedCallToAction,
@@ -167,7 +168,7 @@ export default function MissionControl() {
     useState(false);
 
   const fetchMissions = async () => {
-    const response = await fetch("/api/mission/missionList");
+    const response = await apiFetch("/api/mission/missionList");
     const data = await response.json();
     setMissionList(data.missionList);
     setCompletedList(data.completedList);
@@ -183,7 +184,7 @@ export default function MissionControl() {
 
   const fetchMissionHistory = async (contactId) => {
     setIsMissionHistoryLoading(true);
-    const response = await fetch(`/api/contact/${contactId}/history`);
+    const response = await apiFetch(`/api/contact/${contactId}/history`);
     const data = await response.json();
     setIsMissionHistoryLoading(false);
     setFeaturedMissionHistory(data);
@@ -239,7 +240,7 @@ export default function MissionControl() {
   ));
 
   async function snooze(missionId) {
-    const response = await fetch(`/api/mission/${missionId}/snooze`, {
+    const response = await apiFetch(`/api/mission/${missionId}/snooze`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -780,7 +781,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
     event.preventDefault();
     const formData = new FormData(event.target);
 
-    const response = await fetch("/api/mission/createMission", {
+    const response = await apiFetch("/api/mission/createMission", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -935,7 +936,7 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
     event.preventDefault();
     const formData = new FormData(event.target);
 
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/mission/${featuredMission._id}/complete`,
       {
         method: "PUT",

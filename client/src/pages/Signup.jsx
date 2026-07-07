@@ -4,6 +4,7 @@ import { AnimatedCallToAction } from "../components/Buttons";
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { apiFetch } from "../utils/apiUrl";
 
 export default function Signup() {
   const [errors, setErrors] = useState({});
@@ -15,7 +16,7 @@ export default function Signup() {
     event.preventDefault();
     const formData = new FormData(event.target);
 
-    const response = await fetch("/api/signup", {
+    const response = await apiFetch("/api/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
