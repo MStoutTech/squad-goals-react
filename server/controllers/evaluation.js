@@ -63,7 +63,7 @@ module.exports = {
   },
   saveSingleContactAnswers: async(req,res)=>{
     try{
-      const updatedContacts = await Contact.findById(req.params.id);
+      const updatedContacts = await Contact.findOne({user: req.user.id, _id: req.params.id});
       updatedContacts.evaluation = req.body.answers.filter(question => question.questionOption != null && question.questionOption.length > 0);
       await updatedContacts.save();
 

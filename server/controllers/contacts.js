@@ -97,7 +97,7 @@ module.exports = {
       //add new roles to specified contacts that were added to user
     for(const role of Object.keys(req.body)){
         if(req.body[role]){ 
-          await Contact.findByIdAndUpdate(req.body[role], {friendshipRole: role});
+          await Contact.findOneAndUpdate({user: req.user.id, _id:req.body[role]}, {friendshipRole: role});
         }
     }
       await calculateContactScores(req.user.id);
@@ -118,7 +118,7 @@ const safeDate = req.body.birthday ? new Date(Date.UTC(
   12, 0, 0   // noon UTC
 )) : req.body.birthday;
 
-      await Contact.findByIdAndUpdate(req.params.id, {
+      await Contact.findOneAndUpdate({user: req.user.id, _id: req.params.id}, {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         nickname: req.body.nickname,

@@ -98,7 +98,7 @@ module.exports = {
   createMission: async (req, res) => {
     try{
       
-      const contactPerson = await Contact.findById(req.body.missionContact ).lean();
+      const contactPerson = await Contact.findOne({user: req.user.id, _id: req.body.missionContact }).lean();
       const contactMap = {
         contact: contactPerson.preferredMethod,
         field: null,
@@ -129,11 +129,11 @@ const safeDate = new Date(Date.UTC(
   },
   getMissionDetails: async (req, res) => {
     try{
-      const mission = await Mission.findById(req.params.id)
+      const mission = await Mission.findOne({user: req.user.id, _id: req.params.id})
         .populate("contact")
         .lean();
 
-      const history = await HistoryNote.find({ contact: mission.contact._id})
+      const history = await HistoryNote.find({user: req.user.id, contact: mission.contact._id})
         .sort({ createdAt: -1 })
         .lean();
 
@@ -147,6 +147,7 @@ const safeDate = new Date(Date.UTC(
       const q = req.query.query;
 
       const contacts = await Contact.find({
+        user: req.user.id,
         $or: [
             { firstName: new RegExp(q, "i") },
             { lastName: new RegExp(q, "i") },
@@ -165,8 +166,8 @@ const safeDate = new Date(Date.UTC(
     try {
       const missionId = req.params.id;
       const today = new Date();
-      await Mission.findByIdAndUpdate(
-        missionId,
+      await Mission.findOneAndUpdate({user: req.user.id,
+        _id: missionId},
         { missionStatus: "complete", completedAt: today },
         {new: true}
       );
@@ -181,7 +182,7 @@ const safeDate = new Date(Date.UTC(
       });
       const user = await User.findById(req.user._id)
       
-      await Contact.findByIdAndUpdate(req.body.debriefContactId, {lastContact: today}, {new: true});
+      await Contact.findOneAndUpdate({user: req.user.id, _id: req.body.debriefContactId}, {lastContact: today}, {new: true});
       today.setHours(0,0,0,0);
 
       let updateLongestStreak = user.stats.longestStreak;
@@ -232,7 +233,7 @@ updateLongestStreak = Math.max(
   snoozeMission: async (req, res) => {
     try{
     //look at user's last mission complete date
-    const mission = await Mission.findById(req.params.id)
+    const mission = await Mission.findOne({user: req.user.id, _id: req.params.id})
       .populate("contact")
       .lean();
 
@@ -397,7 +398,7 @@ for (const day in countDays){
 
 };
 //update mission, don't need to update contact's next mission because it is already tied to this mission's Id
-await Mission.findByIdAndUpdate(req.params.id, {scheduledFor: mostAvailableDay})
+await Mission.findOneAndUpdate({user: req.user.id, _id: req.params.id}, {scheduledFor: mostAvailableDay})
 res.status(200).json({message: "Mission rescheduled!"});
     } catch (err) {
       console.log(err);
