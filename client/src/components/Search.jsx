@@ -18,7 +18,7 @@ export default function ContactSearch({ onSelect, excludeIds, clearOnSelect }) {
     }
     clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(async () => {
-      const res = await apiFetch(`api/mission/searchContacts?query=${query}`);
+      const res = await apiFetch(`/api/mission/searchContacts?query=${query}`);
       const contacts = await res.json();
       if (excludeIds) {
         setContactSearchResults(
