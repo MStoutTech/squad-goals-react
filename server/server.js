@@ -3,6 +3,7 @@ require("dotenv").config({ path: "./server/config/.env" });
 
 const express = require("express");
 const app = express();
+app.set("trust proxy", 1);
 const cors = require("cors");
 
 //allow both development servers to communicate with each other
