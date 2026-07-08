@@ -1,3 +1,37 @@
 {
-    "type": "module"
+    "type": "module",
+    "name": "squad-goals-client",
+  "private": true,
+  "version": "0.0.0",
+  "description": "CRM for personal relationships",
+   "scripts": {
+    "dev": "vite",
+    "scss": "sass src/css/animations.scss src/css/animations.css --watch",
+    "build": "vite build",
+    "lint": "eslint src",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^9.1.1",
+    "@mui/material": "^9.0.0",
+    "@tailwindcss/vite": "^4.2.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.13.1",
+    "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "sass": "^1.98.0",
+    "vite": "^7.2.4"
+  }
 }

@@ -26,7 +26,7 @@ In the spirit of a CRM (Customer Relationship Management) app, Squad Goals seeks
 
 ## Local Setup
 
-Install all dependencies:
+Install all dependencies (at root level, then cd to /client and npm install):
 
 ```
 npm install
