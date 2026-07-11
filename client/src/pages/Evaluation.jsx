@@ -299,6 +299,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
   }
   if (
     questionnaireType == "contacts" &&
+    pageContactSubject &&
     Object.keys(pageContactSubject)?.length > 0
   ) {
     answerInput = allQuestions.map((question, index) => (
@@ -357,69 +358,71 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
     const response = await apiFetch("/api/evaluation/getEvaluation");
     const data = await response.json();
 
-    const sortedAnswers = data.evaluation.map((question) => {
-      if (question.displayType == "slider" && !question.sliderConfig) {
-        return {
-          ...question,
-          options: question.options
-            .slice()
-            .sort((a, b) => a.baseScore - b.baseScore),
-        };
-      } else return question;
-    });
+    if (data.contacts) {
+      const sortedAnswers = data.evaluation.map((question) => {
+        if (question.displayType == "slider" && !question.sliderConfig) {
+          return {
+            ...question,
+            options: question.options
+              .slice()
+              .sort((a, b) => a.baseScore - b.baseScore),
+          };
+        } else return question;
+      });
 
-    const selectedQuestion =
-      Object.keys(pageQuestionSubject).length < 1
-        ? sortedAnswers[0]
-        : pageQuestionSubject;
-    const selectedContact =
-      Object.keys(pageContactSubject).length < 1
-        ? data.contacts[0]
-        : pageContactSubject;
-    setAllQuestions(sortedAnswers);
-    if (Object.keys(pageQuestionSubject).length < 1) {
-      setPageQuestionSubject(sortedAnswers[0]);
+      const selectedQuestion =
+        pageQuestionSubject && Object.keys(pageQuestionSubject).length < 1
+          ? sortedAnswers[0]
+          : pageQuestionSubject;
+      const selectedContact =
+        pageContactSubject && Object.keys(pageContactSubject).length < 1
+          ? data.contacts[0]
+          : pageContactSubject;
+      setAllQuestions(sortedAnswers);
+      if (pageQuestionSubject && Object.keys(pageQuestionSubject).length < 1) {
+        setPageQuestionSubject(sortedAnswers[0]);
+      }
+      setContacts(data.contacts);
+      setAllContactsAnswers(
+        data.contacts?.map(
+          (contact) =>
+            contact.evaluation?.find(
+              (question) => question.questionId == selectedQuestion._id,
+            ) ||
+            (selectedQuestion.displayType == "checkbox"
+              ? {
+                  questionId: selectedQuestion._id,
+                  questionOption: null,
+                }
+              : {
+                  questionId: selectedQuestion._id,
+                  questionOption: null,
+                  questionScore: null,
+                }),
+        ),
+      );
+      if (pageContactSubject && Object.keys(pageContactSubject).length < 1) {
+        setPageContactSubject(selectedContact);
+      }
+      setSingleContactAnswers(
+        sortedAnswers.map(
+          (question) =>
+            selectedContact?.evaluation?.find(
+              (entry) => entry.questionId == question._id,
+            ) ||
+            (question.displayType == "checkbox"
+              ? {
+                  questionId: question._id,
+                  questionOption: null,
+                }
+              : {
+                  questionId: question._id,
+                  questionOption: null,
+                  questionScore: null,
+                }),
+        ),
+      );
     }
-    setContacts(data.contacts);
-    setAllContactsAnswers(
-      data.contacts?.map(
-        (contact) =>
-          contact.evaluation?.find(
-            (question) => question.questionId == selectedQuestion._id,
-          ) ||
-          (selectedQuestion.displayType == "checkbox"
-            ? {
-                questionId: selectedQuestion._id,
-                questionOption: null,
-              }
-            : {
-                questionId: selectedQuestion._id,
-                questionOption: null,
-                questionScore: null,
-              }),
-      ),
-    );
-    if (Object.keys(pageContactSubject).length < 1) {
-      setPageContactSubject(selectedContact);
-    }
-    setSingleContactAnswers(
-      sortedAnswers.map(
-        (question) =>
-          selectedContact.evaluation?.find(
-            (entry) => entry.questionId == question._id,
-          ) ||
-          (question.displayType == "checkbox"
-            ? {
-                questionId: question._id,
-                questionOption: null,
-              }
-            : {
-                questionId: question._id,
-                questionOption: null,
-                questionScore: null,
-              }),
-      ),
-    );
   };
 
   function questionChange(e) {
@@ -591,6 +594,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
     if (
       questionnaireType == "custom" &&
       customGroup.length > 0 &&
+      pageQuestionSubject &&
       Object.keys(pageQuestionSubject).length > 0
     ) {
       setAllContactsAnswers(
@@ -618,6 +622,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
     if (
       questionnaireType == "allQuestions" &&
       contacts.length > 0 &&
+      pageQuestionSubject &&
       Object.keys(pageQuestionSubject).length > 0
     ) {
       setAllContactsAnswers(
@@ -643,6 +648,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
 
   useEffect(() => {
     if (
+      pageContactSubject &&
       Object.keys(pageContactSubject).length > 0 &&
       questionnaireType == "contacts"
     ) {
@@ -684,12 +690,20 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
           className="bg-(--c-violet-void) rounded-md px-3 py-2 text-(--c-purple-tech-20) text-xs md:w-[400px]"
           value={
             questionnaireType != "contacts"
-              ? pageQuestionSubject._id
-              : pageContactSubject._id
+              ? pageQuestionSubject?._id
+              : pageContactSubject
+                ? pageContactSubject?._id
+                : "none"
           }
           onChange={(e) => questionChange(e)}
         >
-          {questionOptions}
+          {contacts.length > 0 ? (
+            questionOptions
+          ) : (
+            <option value={"none"} className="w-[400px]" key={"none"} disabled>
+              No contacts
+            </option>
+          )}
         </select>
       </div>
       <div className="flex">
@@ -707,12 +721,22 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
             </p>
           ))}
       {pageQuestionSubject.displayType == "slider" && sliderValues}
-      <ul className="grow overflow-auto pt-3">{answerInput}</ul>
+      <ul className="grow overflow-auto pt-3">
+        {contacts.length > 0 ? (
+          answerInput
+        ) : (
+          <li className="p-4 rounded-lg bg-(--c-light-coral) mb-2">
+            No available contacts. Add contacts on squad page
+          </li>
+        )}
+      </ul>
 
-      <div className="flex justify-between">
-        <PrimaryButton innerText="save" onClick={saveAnswers} />
-        <PrimaryButton innerText="save and next" onClick={saveAndNext} />
-      </div>
+      {contacts.length > 0 && (
+        <div className="flex justify-between">
+          <PrimaryButton innerText="save" onClick={saveAnswers} />
+          <PrimaryButton innerText="save and next" onClick={saveAndNext} />
+        </div>
+      )}
     </div>
   );
 }
