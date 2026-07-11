@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
+import { ToastContext } from "../context/ToastContext";
 import { PrimaryButton } from "../components/Buttons";
 import ContactSearch from "../components/Search";
 import ContactAvatar from "../components/ContactAvatar";
@@ -20,6 +21,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
   const [singleContactAnswers, setSingleContactAnswers] = useState([]);
   const [pageContactSubject, setPageContactSubject] = useState({});
   const [pageQuestionSubject, setPageQuestionSubject] = useState({});
+  const { showToast } = useContext(ToastContext);
   const [isSaving, setIsSaving] = useState(false);
 
   const pageTitle =
@@ -380,7 +382,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
     }
     setContacts(data.contacts);
     setAllContactsAnswers(
-      data.contacts.map(
+      data.contacts?.map(
         (contact) =>
           contact.evaluation?.find(
             (question) => question.questionId == selectedQuestion._id,
@@ -429,7 +431,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         questionnaireType == "custom" ? customGroup : contacts;
       setPageQuestionSubject(newQuestion);
       setAllContactsAnswers(
-        contactList.map(
+        contactList?.map(
           (contact) =>
             contact.evaluation?.find(
               (question) => question.questionId == newQuestion._id,
@@ -469,46 +471,58 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
 
   const saveAnswers = async () => {
     setIsSaving(true);
-    let response;
-    if (questionnaireType !== "contacts") {
-      const contactList =
-        questionnaireType == "custom" ? customGroup : contacts;
-      response = await apiFetch("/api/evaluation/saveAnswers", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          answers: contactList.map((contact, i) => {
-            return { id: contact._id, question: allContactsAnswers[i] };
-          }),
-        }),
-      });
-    } else {
-      response = await apiFetch(
-        `/api/evaluation/${pageContactSubject._id}/saveAnswers`,
-        {
+    try {
+      let response;
+      if (questionnaireType !== "contacts") {
+        const contactList =
+          questionnaireType == "custom" ? customGroup : contacts;
+        response = await apiFetch("/api/evaluation/saveAnswers", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            answers: singleContactAnswers,
+            answers: contactList.map((contact, i) => {
+              return { id: contact._id, question: allContactsAnswers[i] };
+            }),
           }),
-        },
-      );
-    }
-    if (response.status === 200) {
-      const data = await response.json();
-      setContacts((prev) =>
-        prev.map(
-          (contact) =>
-            data.updatedContacts.find(
-              (updated) => updated._id == contact._id,
-            ) || contact,
-        ),
-      );
+        });
+      } else {
+        response = await apiFetch(
+          `/api/evaluation/${pageContactSubject._id}/saveAnswers`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              answers: singleContactAnswers,
+            }),
+          },
+        );
+      }
+      if (response.status === 200) {
+        const data = await response.json();
+        setContacts((prev) =>
+          prev.map(
+            (contact) =>
+              data.updatedContacts.find(
+                (updated) => updated._id == contact._id,
+              ) || contact,
+          ),
+        );
+        showToast("Saved answers", "success");
+      }
+      if (response.status === 500) {
+        showToast(`Could not save answers. Refresh and try again.`, "error");
+      }
       setIsSaving(false);
+    } catch (err) {
+      setIsSaving(false);
+      showToast(
+        `Could not save answers. Check your connection and try again.`,
+        "error",
+      );
     }
   };
 
@@ -552,7 +566,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
       setPageQuestionSubject(filteredQuestions[0] || {});
       setAllContactsAnswers(
         filteredQuestions[0]
-          ? contacts.map(
+          ? contacts?.map(
               (contact) =>
                 contact.evaluation?.find(
                   (question) => question.questionId == filteredQuestions[0]._id,

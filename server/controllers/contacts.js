@@ -34,8 +34,24 @@ module.exports = {
       const contacts = await Contact.find({ user: req.user.id }).lean();
       if (contacts.length >= 150){
         console.log("Contact limit reached!");
-        res.status(400).json({message: "Contact limit reached!"});
+        res.status(409).json({message: "Contact limit reached!"});
       } else {
+      if(!req.body.connectionInstinct){
+        res.status(400).json({message: "Contact not added. Missing connection instinct"});
+        return;
+      }
+      if(!req.body.firstName){
+        res.status(400).json({message: "Contact not added. Missing first name"});
+        return;
+      }
+      if(!req.body.lastName){
+        res.status(400).json({message: "Contact not added. Missing last name"});
+        return;
+      }
+      if(!req.body.preferredMethod){
+        res.status(400).json({message: "Contact not added. Missing preferred contact method"});
+        return;
+      }
       const instinct = req.body.connectionInstinct;
       const instinctMap = {
         heartCore: { evalScore: 100, contactFrequency: 'weekly'},
@@ -55,21 +71,26 @@ module.exports = {
         contactFrequency: contactFrequency
       });
       await scheduleNextMission(req.user.id, newContact._id)
-      console.log("Contact added!");
       res.status(201).json({message: "Contact added!"});
       }
     } catch (err) {
       console.log(err);
+      res.status(500).json({message: "Request failed"});
     }
   },
   getHistory: async (req, res) => {
     try {
+      if(!req.params.id){
+        res.status(400).json({message: "Cannot find mission history. Missing contact"});
+        return;
+      }
+      
       const contactHistory = await HistoryNote.find({ user: req.user.id, contact: req.params.id }).sort({ createdAt: -1 }).lean();
 
-      
       res.status(200).json(contactHistory)
     } catch (err) {
       console.log(err);
+      res.status(500).json({message: "Request failed"});
     }
   },
   setFriendshipRoles: async (req, res) => {
@@ -105,10 +126,27 @@ module.exports = {
       res.status(200).json({message: "Friendship Roles Saved!"});
     }catch(err){
       console.log(err);
+      res.status(500).json({message: "Request failed"});
     }
   },
   editContact: async (req, res) => {
     try{
+      if(!req.params.id){
+        res.status(400).json({message: "Details not saved. Missing contact id"});
+        return;
+      }
+      if(!req.body.firstName){
+        res.status(400).json({message: "Details not saved. Missing first name"});
+        return;
+      }
+      if(!req.body.lastName){
+        res.status(400).json({message: "Details not saved. Missing last name"});
+        return;
+      }
+      if(!req.body.preferredMethod){
+        res.status(400).json({message: "Details not saved. Missing preferred contact method"});
+        return;
+      }
       const [year, month, day] = req.body.birthday ? req.body.birthday.split("-").map(Number) : [];
 
 const safeDate = req.body.birthday ? new Date(Date.UTC(
@@ -145,6 +183,7 @@ const safeDate = req.body.birthday ? new Date(Date.UTC(
       res.status(200).json({message: "Contact details saved!"});
     }catch(err){
       console.log(err);
+      res.status(500).json({message: "Request failed"});
     }
   }
 };

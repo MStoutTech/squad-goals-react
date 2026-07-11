@@ -97,8 +97,20 @@ module.exports = {
   },
   createMission: async (req, res) => {
     try{
-      
+      if(!req.body.missionContact){
+        res.status(400).json({message: "Mission not created. Missing existing contact"});
+        return;
+      }
+      if(!req.body.scheduledFor){
+        res.status(400).json({message: "Mission not created. Missing date input"});
+        return;
+      }
+      if(!req.body.missionType){
+        res.status(400).json({message: "Mission not created. No mission type"});
+        return;
+      }
       const contactPerson = await Contact.findOne({user: req.user.id, _id: req.body.missionContact }).lean();
+      
       const contactMap = {
         contact: contactPerson.preferredMethod,
         field: null,
@@ -125,6 +137,7 @@ const safeDate = new Date(Date.UTC(
       res.status(201).json({message: "Mission created!"});
     } catch (err) {
       console.log(err);
+      res.status(500).json({message: "Request failed"});
     }    
   },
   getMissionDetails: async (req, res) => {
@@ -164,6 +177,22 @@ const safeDate = new Date(Date.UTC(
   },
   completeMission: async (req, res) => {
     try {
+      if(!req.params.id){
+        res.status(400).json({message: "Snooze failed. Missing mission id"});
+        return;
+      }
+      if(!req.body.debriefContactId){
+        res.status(400).json({message: "Snooze failed. Missing contact"});
+        return;
+      }
+      if(!req.body.debriefNotes){
+        res.status(400).json({message: "Snooze failed. Missing notes about mission experience"});
+        return;
+      }
+      if(!req.body.debriefMissionType){
+        res.status(400).json({message: "Snooze failed. Missing mission type"});
+        return;
+      }
       const missionId = req.params.id;
       const today = new Date();
       await Mission.findOneAndUpdate({user: req.user.id,
@@ -228,19 +257,22 @@ updateLongestStreak = Math.max(
       res.status(200).json({message: "Mission complete!"});
     } catch (err) {
       console.log(err);
+      res.status(500).json({message: "Request failed"});
     }
   },
   snoozeMission: async (req, res) => {
     try{
+      if(!req.params.id){
+        res.status(400).json({message: "Snooze failed. Missing contact"});
+        return;
+      }
     //look at user's last mission complete date
     const mission = await Mission.findOne({user: req.user.id, _id: req.params.id})
       .populate("contact")
       .lean();
 
-    
- 
     const today =new Date();
-         let prevMission = mission.contact.lastContact ? new Date(mission.contact.lastContact): null;
+    let prevMission = mission.contact.lastContact ? new Date(mission.contact.lastContact): null;
 
     let daysStart
     let daysEnd
@@ -402,8 +434,7 @@ await Mission.findOneAndUpdate({user: req.user.id, _id: req.params.id}, {schedul
 res.status(200).json({message: "Mission rescheduled!"});
     } catch (err) {
       console.log(err);
+      res.status(500).json({message: "Request failed"});
     }
-
-
   }
 };

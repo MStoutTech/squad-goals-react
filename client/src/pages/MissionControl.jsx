@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
+import { ToastContext } from "../context/ToastContext";
 import ContactSearch from "../components/Search";
 import CircularProgress from "@mui/material/CircularProgress";
 import Accordion from "@mui/material/Accordion";
@@ -153,6 +154,7 @@ function CompletedMissions({ completedList }) {
 }
 
 export default function MissionControl() {
+  const { showToast } = useContext(ToastContext);
   const [missionList, setMissionList] = useState([]);
   const [completedList, setCompletedList] = useState([]);
   const [statistics, setStatistics] = useState({});
@@ -184,10 +186,18 @@ export default function MissionControl() {
 
   const fetchMissionHistory = async (contactId) => {
     setIsMissionHistoryLoading(true);
-    const response = await apiFetch(`/api/contact/${contactId}/history`);
-    const data = await response.json();
-    setIsMissionHistoryLoading(false);
-    setFeaturedMissionHistory(data);
+    try {
+      const response = await apiFetch(`/api/contact/${contactId}/history`);
+      const data = await response.json();
+      setIsMissionHistoryLoading(false);
+      setFeaturedMissionHistory(data);
+    } catch (err) {
+      setIsMissionHistoryLoading(false);
+      showToast(
+        `Failed to load mission history. Check your connection and try again.`,
+        "error",
+      );
+    }
   };
 
   useEffect(() => {
@@ -240,14 +250,25 @@ export default function MissionControl() {
   ));
 
   async function snooze(missionId) {
-    const response = await apiFetch(`/api/mission/${missionId}/snooze`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.status === 200) {
-      fetchMissions();
+    try {
+      const response = await apiFetch(`/api/mission/${missionId}/snooze`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.status === 200) {
+        fetchMissions();
+        showToast("Mission snoozed", "success");
+      }
+      if (response.status === 500) {
+        showToast("Could not snooze mission", "error");
+      }
+    } catch (err) {
+      showToast(
+        `Could not snooze mission. Check your connection and try again.`,
+        "error",
+      );
     }
   }
 
@@ -372,7 +393,7 @@ export default function MissionControl() {
         }}
         className="text-(--c-violet-void)"
         style={{
-          "background-color": `var(${
+          backgroundColor: `var(${
             themeColor[
               mission.contact.friendList || mission.contact.connectionInstinct
             ]
@@ -771,31 +792,60 @@ function MissionDebriefButton({ openMissionDebrief, width }) {
 }
 function AddMissionModal({ closeModal, fetchMissions }) {
   const [selectedContact, setSelectedContact] = useState(null);
+  const { showToast } = useContext(ToastContext);
   const [isLoading, setIsLoading] = useState(false);
+  const contactSearchRef = useRef(null);
 
   function clearSelectedContact() {
     setSelectedContact(null);
   }
+
   async function addNewMission(event) {
-    setIsLoading(true);
     event.preventDefault();
     const formData = new FormData(event.target);
+    const validContact = contactSearchRef.current.validate();
+    if (!validContact) {
+      return;
+    }
+    setIsLoading(true);
 
-    const response = await apiFetch("/api/mission/createMission", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        missionContact: formData.get("missionContact"),
-        scheduledFor: formData.get("scheduledFor"),
-        missionType: formData.get("missionType"),
-      }),
-    });
-    if (response.status === 201) {
-      fetchMissions();
+    try {
+      const response = await apiFetch("/api/mission/createMission", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          missionContact: formData.get("missionContact"),
+          scheduledFor: formData.get("scheduledFor"),
+          missionType: formData.get("missionType"),
+        }),
+      });
+      if (response.status === 201) {
+        fetchMissions();
+        closeModal();
+        showToast(
+          `Scheduled new mission for ${selectedContact.firstName}`,
+          "success",
+        );
+      }
+      if (response.status === 400) {
+        const messageResponse = await response.json();
+        showToast(`${messageResponse.message}`, "error");
+      }
+      if (response.status === 500) {
+        showToast(
+          `Mission could not be created. Refresh and try again.`,
+          "error",
+        );
+      }
       setIsLoading(false);
-      closeModal();
+    } catch (err) {
+      setIsLoading(false);
+      showToast(
+        `Mission could not be created. Check your connection and try again.`,
+        "error",
+      );
     }
   }
   return (
@@ -856,7 +906,10 @@ function AddMissionModal({ closeModal, fetchMissions }) {
                             </button>
                           </div>
                         ) : (
-                          <ContactSearch onSelect={setSelectedContact} />
+                          <ContactSearch
+                            onSelect={setSelectedContact}
+                            ref={contactSearchRef}
+                          />
                         )}
 
                         <input
@@ -894,6 +947,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
                               type="radio"
                               name="missionType"
                               value="field"
+                              required
                             />
                             Field Mission
                           </label>
@@ -932,31 +986,50 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   async function completeMission(event) {
-    setIsLoading(true);
     event.preventDefault();
+    setIsLoading(true);
     const formData = new FormData(event.target);
 
-    const response = await apiFetch(
-      `/api/mission/${featuredMission._id}/complete`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const response = await apiFetch(
+        `/api/mission/${featuredMission._id}/complete`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            debriefContactId: formData.get("debriefContactId"),
+            debriefNotes: formData.get("debriefNotes"),
+            debriefMissionType: formData.get("debriefMissionType"),
+          }),
         },
-        body: JSON.stringify({
-          debriefContactId: formData.get("debriefContactId"),
-          debriefNotes: formData.get("debriefNotes"),
-          debriefMissionType: formData.get("debriefMissionType"),
-        }),
-      },
-    );
-    if (response.status === 200) {
-      await fetchMissions();
-      setIsLoading(false);
-      setShowConfirmation(true);
-      {
-        /*closeModal();*/
+      );
+      if (response.status === 200) {
+        await fetchMissions();
+
+        setShowConfirmation(true);
+        {
+          /*closeModal();*/
+        }
       }
+      if (response.status === 400) {
+        const messageResponse = await response.json();
+        showToast(`${messageResponse.message}`, "error");
+      }
+      if (response.status === 500) {
+        showToast(
+          `Failed to submit mission debrief. Refresh and try again.`,
+          "error",
+        );
+      }
+      setIsLoading(false);
+    } catch (err) {
+      setIsLoading(false);
+      showToast(
+        `Failed to submit mission debrief. Check your connection and try again.`,
+        "error",
+      );
     }
   }
   return (
@@ -1045,7 +1118,7 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
                             id="debrief-notes"
                             name="debriefNotes"
                             className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-48 resize-none overflow-y-auto"
-                            placeholder="Add some specifics about your mission"
+                            placeholder="Add some specifics about your mission experience"
                             required
                           ></textarea>
                         </div>

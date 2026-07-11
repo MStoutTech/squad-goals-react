@@ -58,7 +58,7 @@ module.exports = {
       res.status(200).json({message: "Answers Saved!", updatedContacts: updatedContacts});
     }catch (err){
       console.log(err);
-      res.status(500).json({message: `Error: ${err}`});
+      res.status(500).json({message: "Request failed"});
     }
   },
   saveSingleContactAnswers: async(req,res)=>{

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
+import { ToastContext } from "../context/ToastContext";
 import { AnimatedCallToAction, PrimaryButton } from "../components/Buttons";
 import CircularProgress from "@mui/material/CircularProgress";
 import { CategoryTag, RoleTag } from "../components/Tags";
@@ -151,28 +152,52 @@ function FilterAndSearch({
 
 function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
   const [isLoading, setIsLoading] = useState(false);
+  const { showToast } = useContext(ToastContext);
+
   async function createContact(event) {
     setIsLoading(true);
     event.preventDefault();
     const formData = new FormData(event.target);
+    const fullName = `${formData.get("firstName")} ${formData.get("lastName")}`;
 
-    const response = await apiFetch("/api/contact/createContact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        firstName: formData.get("firstName"),
-        lastName: formData.get("lastName"),
-        nickname: formData.get("nickname"),
-        connectionInstinct: formData.get("connectionInstinct"),
-        preferredMethod: formData.get("preferredMethod"),
-      }),
-    });
-    if (response.status === 201) {
-      fetchSquad();
+    try {
+      const response = await apiFetch("/api/contact/createContact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.get("firstName"),
+          lastName: formData.get("lastName"),
+          nickname: formData.get("nickname"),
+          connectionInstinct: formData.get("connectionInstinct"),
+          preferredMethod: formData.get("preferredMethod"),
+        }),
+      });
+      if (response.status === 201) {
+        fetchSquad();
+        closeModal();
+        showToast(`Contact  ${fullName} added!`, "success");
+      }
+      if (response.status === 409) {
+        const messageResponse = await response.json();
+        showToast(`${messageResponse.message}`, "error");
+        closeModal();
+      }
+      if (response.status === 400) {
+        const messageResponse = await response.json();
+        showToast(`${messageResponse.message}`, "error");
+      }
+      if (response.status === 500) {
+        showToast(`Could not add contact. Refresh and try again.`, "error");
+      }
       setIsLoading(false);
-      closeModal();
+    } catch (err) {
+      setIsLoading(false);
+      showToast(
+        `Could not add contact. Check your connection and try again.`,
+        "error",
+      );
     }
   }
   return (
@@ -184,7 +209,7 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
       <div className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></div>
 
       <div
-        tabindex="0"
+        tabIndex="0"
         className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
       >
         <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
@@ -313,6 +338,7 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
 
 function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
   const [isLoading, setIsLoading] = useState(false);
+  const { showToast } = useContext(ToastContext);
   const [selectedRoles, setSelectedRoles] = useState(
     friendshipRolesStart || {
       nonJudgementalBestie: null,
@@ -388,25 +414,37 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
     event.preventDefault();
     const formData = new FormData(event.target);
 
-    const response = await apiFetch("/api/contact/setFriendshipRoles", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        nonJudgementalBestie: formData.get("nonJudgementalBestie"),
-        brutallyHonestFriend: formData.get("brutallyHonestFriend"),
-        careerMentor: formData.get("careerMentor"),
-        tirelessCheerleader: formData.get("tirelessCheerleader"),
-        inCaseOfEmergency: formData.get("inCaseOfEmergency"),
-        healthcareProfessional: formData.get("healthcareProfessional"),
-        stylist: formData.get("stylist"),
-      }),
-    });
-    if (response.status === 200) {
-      fetchSquad();
+    try {
+      const response = await apiFetch("/api/contact/setFriendshipRoles", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nonJudgementalBestie: formData.get("nonJudgementalBestie"),
+          brutallyHonestFriend: formData.get("brutallyHonestFriend"),
+          careerMentor: formData.get("careerMentor"),
+          tirelessCheerleader: formData.get("tirelessCheerleader"),
+          inCaseOfEmergency: formData.get("inCaseOfEmergency"),
+          healthcareProfessional: formData.get("healthcareProfessional"),
+          stylist: formData.get("stylist"),
+        }),
+      });
+      if (response.status === 200) {
+        fetchSquad();
+        closeModal();
+        showToast("Friendship Roles Saved!", "success");
+      }
+      if (response.status === 500) {
+        showToast(`Roles not saved. Refresh and try again.`, "error");
+      }
       setIsLoading(false);
-      closeModal();
+    } catch (err) {
+      setIsLoading(false);
+      showToast(
+        `Roles not saved. Check your connection and try again.`,
+        "error",
+      );
     }
   }
   return (
@@ -418,7 +456,7 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
       <div className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></div>
 
       <div
-        tabindex="0"
+        tabIndex="0"
         className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
       >
         <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
@@ -1445,6 +1483,7 @@ function FeaturedContact({
 
 function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
   const [isLoading, setIsLoading] = useState(false);
+  const { showToast } = useContext(ToastContext);
   const [contactDetails, setContactDetails] = useState({
     firstName: featuredContact.firstName,
     lastName: featuredContact.lastName,
@@ -1603,21 +1642,40 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
       birthday: cleanedBirthday,
     };
 
-    const response = await apiFetch(
-      `/api/contact/${featuredContact._id}/edit`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const response = await apiFetch(
+        `/api/contact/${featuredContact._id}/edit`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(cleanedContact),
         },
-        body: JSON.stringify(cleanedContact),
-      },
-    );
+      );
 
-    if (response.status === 200) {
-      fetchSquad();
+      if (response.status === 200) {
+        fetchSquad();
+        closeModal();
+        showToast("User details saved!", "success");
+      }
+      if (response.status === 400) {
+        const messageResponse = await response.json();
+        showToast(`${messageResponse.message}`, "error");
+      }
+      if (response.status === 500) {
+        showToast(
+          `Details could not be saved. Refresh and try again.`,
+          "error",
+        );
+      }
       setIsLoading(false);
-      closeModal();
+    } catch (err) {
+      setIsLoading(false);
+      showToast(
+        `Details could not be saved. Check your connection and try again.`,
+        "error",
+      );
     }
   }
 
