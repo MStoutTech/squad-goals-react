@@ -170,7 +170,9 @@ export default function MissionControl() {
     useState(false);
 
   const fetchMissions = async () => {
-    const response = await apiFetch("/api/mission/missionList");
+    const response = await apiFetch("/api/mission/missionList", {
+      credentials: "include",
+    });
     const data = await response.json();
     setMissionList(data.missionList);
     setCompletedList(data.completedList);

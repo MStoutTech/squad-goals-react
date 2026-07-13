@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email: email, password: password }),
+      credentials: "include",
     });
     const data = await response.json();
     setUser(data.user);

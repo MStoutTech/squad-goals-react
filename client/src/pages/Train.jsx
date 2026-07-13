@@ -1,11 +1,12 @@
 function ArticleCard({ title, preview }) {
   return (
-    <li
-      onClick=""
-      className="flex flex-col cursor-pointer bg-(--c-violet-void-60) border-1 border-(--c-purple-tech-40) rounded-lg p-2 text-(--c-purple-tech-20) w-[200px] h-[250px] p-3 mr-8"
-    >
+    <li className="flex flex-col cursor-pointer bg-(--c-violet-void-60) border-1 border-(--c-purple-tech-40) rounded-lg p-2 text-(--c-purple-tech-20) w-[200px] h-[250px] p-3 mr-8">
       <div className="border-2 border-(--c-purple-tech-40) rounded-lg w-[175px] h-[120px] self-center">
-        <img src="" alt="" className="w-[100%] justify-self-center" />
+        <img
+          src="../imgs/article.png"
+          alt="article image"
+          className="w-[100%] justify-self-center"
+        />
       </div>
 
       <h4 className="font-light mt-2">{title}</h4>
