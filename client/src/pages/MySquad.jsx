@@ -71,35 +71,35 @@ function FilterAndSearch({
   return (
     <div className="w-full mb-2 md:mb-6">
       <ul className="flex flex-wrap gap-2">
-        <li>
+        <li className={`${squadTotal === 0 ? "opacity-50" : ""}`}>
           <PrimaryButton
             innerText="score"
             onClick={() => setActiveFilter("score")}
             isActive={"score" == activeFilter}
           />
         </li>
-        <li>
+        <li className={`${squadTotal === 0 ? "opacity-50" : ""}`}>
           <PrimaryButton
             innerText="first"
             onClick={() => setActiveFilter("first")}
             isActive={"first" == activeFilter}
           />
         </li>
-        <li>
+        <li className={`${squadTotal === 0 ? "opacity-50" : ""}`}>
           <PrimaryButton
             innerText="last"
             onClick={() => setActiveFilter("last")}
             isActive={"last" == activeFilter}
           />
         </li>
-        <li>
+        <li className={`${squadTotal === 0 ? "opacity-50" : ""}`}>
           <PrimaryButton
             innerText="date"
             onClick={() => setActiveFilter("date")}
             isActive={"date" == activeFilter}
           />
         </li>
-        <li>
+        <li className={`${squadTotal === 0 ? "opacity-50" : ""}`}>
           <PrimaryButton
             innerText={tagFilter !== "" ? `tag: ${tagFilter}` : "tag"}
             onClick={() => {
@@ -114,7 +114,7 @@ function FilterAndSearch({
             </ul>
           )}
         </li>
-        <li>
+        <li className={`${squadTotal === 0 ? "opacity-50" : ""}`}>
           <input
             type="search"
             className="text-sm border border-inherit rounded-md px-3 py-2 -mr-3"
@@ -125,7 +125,7 @@ function FilterAndSearch({
         </li>
 
         <div className="flex gap-2 min-w-[146px] self-end ml-auto">
-          <li>
+          <li className={`${squadTotal === 0 ? "opacity-50" : ""}`}>
             <PrimaryButton innerText="set roles" onClick={openRolesModal} />
           </li>
           <li>
@@ -671,6 +671,7 @@ function ContactList({
 }
 
 export default function MySquad() {
+  const { setAuthIssue } = useContext(AuthContext);
   const [heartCoreList, setHeartCoreList] = useState([]);
   const [rayLiablesList, setRayLiablesList] = useState([]);
   const [buddiesList, setBuddiesList] = useState([]);
@@ -694,6 +695,10 @@ export default function MySquad() {
 
   const fetchSquad = async () => {
     const response = await apiFetch("/api/contact/getSquad");
+    if (response.status === 401) {
+      setAuthIssue(true);
+      return;
+    }
     const data = await response.json();
     setHeartCoreList(data.heartCoreList);
     setRayLiablesList(data.rayLiablesList);
@@ -897,7 +902,7 @@ export default function MySquad() {
           setFeaturedContact({});
         }}
         aria-label="friend list tabs"
-        className="md:hidden"
+        className={`${squadTotal === 0 ? "opacity-50" : ""} md:hidden`}
         centered
         sx={{
           "& .MuiTab-root": {
@@ -937,7 +942,9 @@ export default function MySquad() {
         />
       </Tabs>
 
-      <main className="flex gap-4 justify-center xl:justify-start w-full md:overflow-x-auto">
+      <main
+        className={`${squadTotal === 0 ? "opacity-50" : ""} flex gap-4 justify-center xl:justify-start w-full md:overflow-x-auto`}
+      >
         {/*Inner Circle or "Heart" core freiends*/}
         {(!featuredContact._id ||
           featuredContact.friendList === "heartCore" ||

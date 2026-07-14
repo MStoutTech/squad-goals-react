@@ -156,7 +156,7 @@ function CompletedMissions({ completedList }) {
 
 export default function MissionControl() {
   const { showToast } = useContext(ToastContext);
-  const { hasContacts } = useContext(AuthContext);
+  const { hasContacts, setAuthIssue } = useContext(AuthContext);
   const [missionList, setMissionList] = useState([]);
   const [completedList, setCompletedList] = useState([]);
   const [statistics, setStatistics] = useState({});
@@ -173,6 +173,10 @@ export default function MissionControl() {
 
   const fetchMissions = async () => {
     const response = await apiFetch("/api/mission/missionList");
+    if (response.status === 401) {
+      setAuthIssue(true);
+      return;
+    }
     const data = await response.json();
     setMissionList(data.missionList);
     setCompletedList(data.completedList);

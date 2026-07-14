@@ -8,6 +8,10 @@ const { updateUpcomingMission } = require("../utils/updateUpcomingMission") ;
 module.exports = {
   getMissionList: async (req, res) => {
     try{
+      if(!req.user.id){
+        res.status(401).json({message: "User logged out"});
+        return;
+      }
       const today = new Date();
       today.setHours(23, 59, 59, 999);
       const missions = await Mission.find({

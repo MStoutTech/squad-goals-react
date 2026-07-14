@@ -8,9 +8,12 @@ export const AuthContext = createContext({
   logout: () => {},
   hasContacts: null,
   setHasContacts: () => {},
+  authIssue: null,
+  setAuthIssue: () => {},
 });
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [authIssue, setAuthIssue] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasContacts, setHasContacts] = useState(false);
 
@@ -54,6 +57,8 @@ export function AuthProvider({ children }) {
         user: user,
         hasContacts: hasContacts,
         setHasContacts: setHasContacts,
+        authIssue: authIssue,
+        setAuthIssue: setAuthIssue,
         login: login,
         logout: logout,
         setUser: setLoggedInUser,

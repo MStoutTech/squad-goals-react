@@ -9,6 +9,10 @@ const { calculateContactScores } = require("../utils/calculateContactScores");
 module.exports = {
   getSquad: async (req, res) => {
     try {
+      if(!req.user.id){
+        res.status(401).json({message: "User logged out"});
+        return;
+      }
       const contacts = await Contact.find({ user: req.user.id }).populate("nextMission").lean();
       const heartCoreList = contacts.filter(contact => contact.friendList ? contact.friendList === "heartCore" : contact.connectionInstinct === "heartCore");
       const rayLiablesList = contacts.filter(contact => contact.friendList ? contact.friendList === "rayLiables" : contact.connectionInstinct === "rayLiables");

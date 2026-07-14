@@ -14,6 +14,7 @@ import Evaluation from "./pages/Evaluation";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Train from "./pages/Train";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
           </Route>
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
