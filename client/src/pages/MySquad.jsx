@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { ToastContext } from "../context/ToastContext";
+import { AuthContext } from "../context/AuthContext";
 import { AnimatedCallToAction, PrimaryButton } from "../components/Buttons";
 import CircularProgress from "@mui/material/CircularProgress";
 import { CategoryTag, RoleTag } from "../components/Tags";
@@ -128,7 +129,11 @@ function FilterAndSearch({
             <PrimaryButton innerText="set roles" onClick={openRolesModal} />
           </li>
           <li>
-            <PrimaryButton innerText="add" onClick={openAddContactModal} />
+            <PrimaryButton
+              innerText="add"
+              onClick={openAddContactModal}
+              isGlowing={squadTotal === 0 && true}
+            />
           </li>
           {isAddContactModalOpen && (
             <AddContactModal
@@ -153,6 +158,7 @@ function FilterAndSearch({
 function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
   const [isLoading, setIsLoading] = useState(false);
   const { showToast } = useContext(ToastContext);
+  const { hasContacts, setHasContacts } = useContext(AuthContext);
 
   async function createContact(event) {
     setIsLoading(true);
@@ -175,6 +181,9 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
         }),
       });
       if (response.status === 201) {
+        if (!hasContacts) {
+          setHasContacts(true);
+        }
         fetchSquad();
         closeModal();
         showToast(`Contact  ${fullName} added!`, "success");

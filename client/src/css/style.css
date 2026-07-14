@@ -162,5 +162,31 @@ button {
     }
 }
 
+//Glow buttons
+@-webkit-keyframes glow-pulse-walkthrough {
+  0%, 100% {
+    border-color: #BDFFF6;
+    box-shadow: 0 0 4px 0 white;
+  }
+  50% {
+    border-color: #68ACA3;
+    box-shadow: 0 0 14px 2px white;
+  }
+}
 
+@keyframes glow-pulse-walkthrough {
+  0%, 100% {
+    border-color: #BDFFF6;
+    box-shadow: 0 0 4px 0 white;
+  }
+  50% {
+    border-color: #68ACA3;
+    box-shadow: 0 0 14px 2px white;
+  }
+}
+
+.glow-walkthrough {
+-webkit-animation: glow-pulse-walkthrough 1.8s ease-in-out infinite;
+  animation: glow-pulse-walkthrough 1.8s ease-in-out infinite;
+}
 

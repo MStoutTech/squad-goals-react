@@ -51,13 +51,13 @@ export function IconButton({ svg, onClick, text }) {
   );
 }
 
-export function PrimaryButton({ innerText, onClick, isActive }) {
+export function PrimaryButton({ innerText, onClick, isActive, isGlowing }) {
   return (
     <>
       <button
         type="button"
         onClick={onClick}
-        className={`${isActive == true ? "border-white text-white drop-shadow-white" : "border-inherit hover:bg-(--c-violet-void-60) hover:text-white"} text-sm p-2 border rounded-lg`}
+        className={`${isActive == true ? "border-white text-white drop-shadow-white" : " hover:bg-(--c-violet-void-60) hover:text-white"} ${isGlowing == true ? "glow-walkthrough" : " border-inherit"} text-sm p-2 border rounded-lg`}
       >
         {innerText.toUpperCase()}
       </button>

@@ -7,7 +7,7 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
   const [errors, setErrors] = useState({});
-  const { login, user, isLoading } = useContext(AuthContext);
+  const { login, user, isLoading, hasContacts } = useContext(AuthContext);
   const navigate = useNavigate();
   const messages = Object.values(errors);
 
@@ -25,15 +25,18 @@ export default function Login() {
     if (response.emailMsg || response.passwordMsg) {
       setErrors(response);
     }
-    if (response.user) {
-      navigate("/mission-control");
-    }
   }
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!isLoading && user && hasContacts) {
       navigate("/mission-control");
     }
-  }, [user, isLoading]);
+    if (!isLoading && user && !hasContacts) {
+      navigate("/my-squad");
+    }
+    if (!isLoading && !user) {
+      navigate("/login");
+    }
+  }, [user, isLoading, hasContacts]);
   return (
     <>
       <GuestHeader />

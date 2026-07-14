@@ -1,6 +1,7 @@
 const passport = require("passport");
 const validator = require("validator");
 const User = require("../models/User");
+const Contact = require("../models/Contact")
 
 
 exports.postLogin = async (req, res, next) => {
@@ -35,7 +36,10 @@ exports.postLogin = async (req, res, next) => {
         });
       });
         
-      res.status(200).json({user: req.user});  
+      const contactCheck = await Contact.exists({user: req.user._id})
+      const hasContacts = !!contactCheck
+
+      res.status(200).json({user: req.user, hasContacts: hasContacts});  
   } catch (err){
     return next(err);
   };
@@ -108,7 +112,7 @@ exports.postSignup = async (req, res, next) => {
       });
     });
     
-    res.status(201).json({user: req.user});
+    res.status(201).json({user: req.user, hasContacts: false});
     
     
   } catch (err) {        
@@ -116,8 +120,12 @@ exports.postSignup = async (req, res, next) => {
   }
 }
 
-exports.getUser = (req, res) => {
-    if (req.isAuthenticated()) {return res.json({user: req.user})}
+exports.getUser = async (req, res) => {
+    if (req.isAuthenticated()) {
+      const contactCheck = await Contact.exists({user: req.user._id})
+      const hasContacts = !!contactCheck
+      return res.json({user: req.user, hasContacts: hasContacts})
+    }
     else { return res.status(401).json({user:null});}
 }
 

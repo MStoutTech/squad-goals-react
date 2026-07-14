@@ -6,10 +6,13 @@ export const AuthContext = createContext({
   user: null,
   login: () => {},
   logout: () => {},
+  hasContacts: null,
+  setHasContacts: () => {},
 });
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasContacts, setHasContacts] = useState(false);
 
   async function login(email, password) {
     const response = await apiFetch("/api/login", {
@@ -22,6 +25,7 @@ export function AuthProvider({ children }) {
     });
     const data = await response.json();
     setUser(data.user);
+    setHasContacts(data.hasContacts);
     return data;
   }
   async function logout() {
@@ -39,6 +43,7 @@ export function AuthProvider({ children }) {
       const response = await apiFetch("/api/user");
       const data = await response.json();
       setUser(data.user);
+      setHasContacts(data.hasContacts);
       setIsLoading(false);
     };
     fetchUser();
@@ -48,6 +53,8 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user: user,
+        hasContacts: hasContacts,
+        setHasContacts: setHasContacts,
         login: login,
         logout: logout,
         setUser: setLoggedInUser,

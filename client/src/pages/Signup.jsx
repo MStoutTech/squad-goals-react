@@ -43,12 +43,12 @@ export default function Signup() {
     }
     if (data.user) {
       setUser(data.user);
-      navigate("/mission-control");
+      navigate("/my-squad");
     }
   }
   useEffect(() => {
     if (!isLoading && user) {
-      navigate("/mission-control");
+      navigate("/my-squad");
     }
   }, [user, isLoading]);
 

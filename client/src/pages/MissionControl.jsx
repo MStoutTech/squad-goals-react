@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { ToastContext } from "../context/ToastContext";
+import { AuthContext } from "../context/AuthContext";
 import ContactSearch from "../components/Search";
 import CircularProgress from "@mui/material/CircularProgress";
 import Accordion from "@mui/material/Accordion";
@@ -155,6 +156,7 @@ function CompletedMissions({ completedList }) {
 
 export default function MissionControl() {
   const { showToast } = useContext(ToastContext);
+  const { hasContacts } = useContext(AuthContext);
   const [missionList, setMissionList] = useState([]);
   const [completedList, setCompletedList] = useState([]);
   const [statistics, setStatistics] = useState({});
@@ -503,7 +505,13 @@ export default function MissionControl() {
             />
             <h2 className="text-xl">Today's Missions</h2>
             {/*ADD Mission*/}
-            <PrimaryButton innerText="add" onClick={openAddMissionModal} />
+            <PrimaryButton
+              innerText="add"
+              onClick={openAddMissionModal}
+              isGlowing={
+                hasContacts && !featuredMission?._id && !completedList.length
+              }
+            />
           </div>
 
           <div className="flex lg:min-h-[420px]" style={{ width: "100%" }}>
@@ -534,7 +542,13 @@ export default function MissionControl() {
             >
               {!featuredMission._id ? (
                 <section className="bg-(--c-light-coral-80)/25 border-(--c-light-coral) flex min-h-[402px] border-dashed border-r-1 border-l-1 p-3 featured-mission-section">
-                  <h5 className="text-base">All done for today!</h5>
+                  {!hasContacts ? (
+                    <p className="p-4 rounded-lg bg-(--c-light-coral) text-(--c-violet-void) mb-2 self-center w-[100%]">
+                      No available contacts. Add contacts on squad page
+                    </p>
+                  ) : (
+                    <h5 className="text-base">All done for today!</h5>
+                  )}
                 </section>
               ) : (
                 <section
