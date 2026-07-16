@@ -7,6 +7,7 @@ import "./css/style.css";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { UIProvider } from "./context/UIContext.jsx";
 import { ToastProvider } from "./context/ToastContext.jsx";
+import { WalkthroughProvider } from "./context/WalkthroughContext.jsx";
 import { StyledEngineProvider } from "@mui/material/styles";
 import GlobalStyles from "@mui/material/GlobalStyles";
 
@@ -17,7 +18,9 @@ createRoot(document.getElementById("root")).render(
         <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
         <UIProvider>
           <ToastProvider>
-            <App />
+            <WalkthroughProvider>
+              <App />
+            </WalkthroughProvider>
           </ToastProvider>
         </UIProvider>
       </StyledEngineProvider>

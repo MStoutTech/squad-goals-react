@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { ToastContext } from "../context/ToastContext";
 import { AuthContext } from "../context/AuthContext";
+import { WalkthroughContext } from "../context/WalkthroughContext";
 import ContactSearch from "../components/Search";
 import CircularProgress from "@mui/material/CircularProgress";
 import Accordion from "@mui/material/Accordion";
@@ -156,7 +157,8 @@ function CompletedMissions({ completedList }) {
 
 export default function MissionControl() {
   const { showToast } = useContext(ToastContext);
-  const { hasContacts, setAuthIssue } = useContext(AuthContext);
+  const { hasContacts, user, setAuthIssue } = useContext(AuthContext);
+  const { dismissedIntros, dismissIntro } = useContext(WalkthroughContext);
   const [missionList, setMissionList] = useState([]);
   const [completedList, setCompletedList] = useState([]);
   const [statistics, setStatistics] = useState({});
@@ -497,6 +499,14 @@ export default function MissionControl() {
   return (
     <>
       <section className="text-purple-300 lg:max-h-[calc(100vh-4rem)] lg:py-12 lg:px-6 lg:grid lg:grid-cols-12 lg:gap-6 grow-1">
+        {user.stats.totalCompleted === 0 &&
+          hasContacts &&
+          !dismissedIntros.missions && (
+            <MissionIntroModal
+              closeModal={() => dismissIntro("missions")}
+              featuredMission={featuredMission?._id ? true : false}
+            />
+          )}
         <MissionStatistics statistics={statistics} />
         <News />
         <section className="my-6 lg:my-0 col-span-12 min-[1420px]:col-span-10 bg-(--c-violet-void-80) rounded-lg md:px-6 py-3">
@@ -821,8 +831,8 @@ function AddMissionModal({ closeModal, fetchMissions }) {
   async function addNewMission(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const validContact = contactSearchRef.current.validate();
-    if (!validContact) {
+    const validContact = contactSearchRef.current?.validate();
+    if (contactSearchRef.current && !validContact) {
       return;
     }
     setIsLoading(true);
@@ -1167,6 +1177,65 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
             )}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function MissionIntroModal({ closeModal, featuredMission }) {
+  return (
+    <div
+      id="mission-intro"
+      aria-labelledby="squad-intro"
+      className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
+    >
+      <div className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></div>
+
+      <div
+        tabIndex="0"
+        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
+      >
+        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
+          <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div className="sm:flex sm:items-start">
+              <div className="mt-0 sm:ml-4 text-left">
+                {/*Window title*/}
+                <h3
+                  id="dialog-title"
+                  className="text-base font-semibold text-gray-900"
+                >
+                  Welcome to Mission Control
+                </h3>
+
+                <div className="mt-2 text-purple-300 text-sm">
+                  {!featuredMission ? (
+                    <p>
+                      This is where you will see your 'mission' assignments to
+                      contact or hang out with your squad. Contact missions are
+                      automatically scheduled, but you can schedule either a
+                      contact mission or a field (hangout) mission yourself.{" "}
+                      <br /> <br />
+                      You don't have any assigned missions at the moment, why
+                      not add one for TODAY?
+                    </p>
+                  ) : (
+                    "Begin a mission by clicking the `Start Mission` button. Contact missions will have a timer encouraging you not to get distracted by scrolling. When you are done with a mission click `debrief` to add details about how it went."
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          {/*Window buttons*/}
+          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="mt-3 inline-flex w-full justify-center rounded-md bg-(--c-violet-void-40) px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) sm:mt-0 sm:w-auto"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
