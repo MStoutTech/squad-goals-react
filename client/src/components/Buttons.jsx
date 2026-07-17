@@ -57,9 +57,13 @@ export function PrimaryButton({ innerText, onClick, isActive, isGlowing }) {
       <button
         type="button"
         onClick={onClick}
-        className={`${isActive == true ? "border-white text-white drop-shadow-white" : " hover:bg-(--c-violet-void-60) hover:text-white"} ${isGlowing == true ? "glow-walkthrough" : " border-inherit"} text-sm p-2 border rounded-lg`}
+        className="min-h-[44px] min-w-[44px]"
       >
-        {innerText.toUpperCase()}
+        <div
+          className={`${isActive == true ? "border-white text-white drop-shadow-white" : " hover:bg-(--c-violet-void-60) hover:text-white"} ${isGlowing && "glow-walkthrough"} text-sm p-2 border rounded-lg`}
+        >
+          {innerText.toUpperCase()}
+        </div>
       </button>
     </>
   );

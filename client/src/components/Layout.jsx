@@ -7,35 +7,52 @@ export function PageTab({ pageTitle, pageName, link, icon, iconAlt, text }) {
   const active = pageTitle === pageName;
 
   return (
-    <li
-      className={
-        active
-          ? "text-white border-b-1 border-white p-2"
-          : "hover:rounded-md hover:bg-(--c-violet-void-80) hover:text-white border-b-1 border-(--c-violet-void) p-2"
-      }
-    >
-      <Link to={link}>
-        <img src={icon} alt={iconAlt} className="inline mr-3 w-[28px]" />
+    <li>
+      <Link
+        to={link}
+        className={`
+          ${
+            active
+              ? "text-white border-b-1 border-white p-2"
+              : "hover:rounded-md hover:bg-(--c-violet-void-80) --c-purple-tech-40 border-b-1 border-(--c-violet-void) p-2 "
+          } min-h-[44px] hover:text-white flex`}
+      >
+        <div className="mr-3 w-[28px]">
+          <img src={icon} alt={iconAlt} />
+        </div>
         {text || pageName}
       </Link>
     </li>
   );
 }
-function ThumbNav({ pageTitle, pageName, link, icon, iconAlt, text }) {
+function ThumbNav({
+  pageTitle,
+  pageName,
+  link,
+  icon,
+  iconAlt,
+  text,
+  imageTranslate,
+}) {
   const active = pageTitle === pageName;
 
   return (
-    <li className="flex flex-col items-center justify-end h-full">
+    <li className="flex flex-col items-center grow basis-1">
       <Link
         to={link}
         className={
           active
-            ? "text-white border-b-1 border-white p-2 flex flex-col items-center gap-2"
-            : "hover:rounded-md hover:bg-(--c-violet-void) hover:text-white border-b-1 border-(--c-violet-void-60) p-2 flex flex-col items-center gap-2"
+            ? "text-white border-b-1 border-white flex flex-col p-2 gap-1 items-center size-[64px] justify-end"
+            : "hover:rounded-md hover:bg-(--c-violet-void) hover:text-white border-b-1 border-(--c-violet-void-60)  flex flex-col items-center justify-end size-[64px] gap-1 p-2"
         }
       >
-        <img src={icon} alt={iconAlt} className="block" />
-        <span className="block text-xs">{text || pageName}</span>
+        <div className="size-[30px]">
+          <img src={icon} alt={iconAlt} className={imageTranslate} />
+        </div>
+
+        <span className={`${active && "text-white"}  block text-xs`}>
+          {text || pageName}
+        </span>
       </Link>
     </li>
   );
@@ -177,7 +194,7 @@ export default function AuthLayout() {
           <Outlet />
         </div>
       </div>
-      <ul className="lg:hidden fixed bottom-0 left-0 w-full h-20 flex justify-between px-6 py-2 bg-(--c-violet-void-60) text-purple-300 z-100">
+      <ul className="lg:hidden fixed bottom-0 left-0 w-full h-20 flex justify-end px-2 py-2 bg-(--c-violet-void-60) text-purple-300 z-100">
         <ThumbNav
           pageTitle={pageTitle}
           pageName="Mission Control"
@@ -185,6 +202,7 @@ export default function AuthLayout() {
           icon="/imgs/icons/mission-control.png"
           iconAlt="mission control icon"
           text="Missions"
+          imageTranslate={"translate-x-1"}
         />
         <ThumbNav
           pageTitle={pageTitle}
