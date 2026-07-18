@@ -1,10 +1,11 @@
 import { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 export default function GuestHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useContext(AuthContext);
+  const isIndexPage = useLocation().pathname == "/";
 
   return (
     <header className="inset-x-0 top-0 z-50 relative">
@@ -50,27 +51,33 @@ export default function GuestHeader() {
         <div className="hidden lg:flex lg:gap-x-12">
           <Link
             to="/human-connection"
-            className="text-lg/6 font-semibold text-gray-900"
+            className={`text-lg/6 font-semibold ${isIndexPage ? "text-purple-300" : "text-gray-900"}`}
           >
             Human Connection
           </Link>
-          <Link to="/about" className="text-lg/6 font-semibold text-gray-900">
+          <Link
+            to="/about"
+            className={`text-lg/6 font-semibold ${isIndexPage ? "text-purple-300" : "text-gray-900"}`}
+          >
             About
           </Link>
-          <Link to="/sg-blog" className="text-lg/6 font-semibold text-gray-900">
+          <Link
+            to="/sg-blog"
+            className={`text-lg/6 font-semibold ${isIndexPage ? "text-purple-300" : "text-gray-900"}`}
+          >
             Blog
           </Link>
           {!user ? (
             <Link
               to="/signup"
-              className="text-lg/6 font-semibold text-gray-900"
+              className={`text-lg/6 font-semibold ${isIndexPage ? "text-purple-300" : "text-gray-900"}`}
             >
               Sign Up
             </Link>
           ) : (
             <Link
               to="/mission-control"
-              className="text-lg/6 font-semibold text-gray-900"
+              className={`text-lg/6 font-semibold ${isIndexPage ? "text-purple-300" : "text-gray-900"}`}
             >
               Go to App
             </Link>
@@ -78,7 +85,10 @@ export default function GuestHeader() {
         </div>
         {!user && (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <Link to="/login" className="text-lg/6 font-semibold text-gray-900">
+            <Link
+              to="/login"
+              className={`text-lg/6 font-semibold ${isIndexPage ? "text-purple-300" : "text-gray-900"}`}
+            >
               Log in <span aria-hidden="true">&rarr;</span>
             </Link>
           </div>

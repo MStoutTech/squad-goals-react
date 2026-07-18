@@ -13,4 +13,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -This changelog
 -Walkthrough context and pop ups
--Fixed bug in add mission button validation
+-Fixed bug in add mission button validation (not checking correct conditions)

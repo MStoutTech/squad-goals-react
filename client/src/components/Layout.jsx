@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import ConfirmLogoutModal from "../components/Modals";
+import { ConfirmLogoutModal } from "../components/Modals";
 
 export function PageTab({ pageTitle, pageName, link, icon, iconAlt, text }) {
   const active = pageTitle === pageName;

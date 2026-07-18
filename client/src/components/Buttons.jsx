@@ -44,7 +44,7 @@ export function IconButton({ svg, onClick, text }) {
     <button
       type="button"
       onClick={onClick}
-      className=" text-sm hover:text-white flex gap-2"
+      className=" text-sm hover:text-white flex items-center justify-center gap-2 min-h-[44px] min-w-[44px]"
     >
       {svg} {""} {text}
     </button>
@@ -112,25 +112,25 @@ export function SortMissions({ missionList, setMissionList }) {
     <>
       <PrimaryButton innerText="sort" onClick={toggleList} />
       {showList && (
-        <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-10 text-white max-h-40 overflow-y-auto text-sm">
+        <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-45 text-white overflow-y-auto text-sm">
           <li
             key={"lastName"}
             onClick={sortLastName}
-            className="p-2 hover:bg-purple-400 cursor-pointer"
+            className="p-2 hover:bg-purple-400 cursor-pointer h-[44px] flex items-center"
           >
             Last Name
           </li>
           <li
             key={"firstName"}
             onClick={sortFirstName}
-            className="p-2 hover:bg-purple-400 cursor-pointer"
+            className="p-2 hover:bg-purple-400 cursor-pointer h-[44px] flex items-center"
           >
             First Name
           </li>
           <li
             key={"score"}
             onClick={sortScore}
-            className="p-2 hover:bg-purple-400 cursor-pointer"
+            className="p-2 hover:bg-purple-400 cursor-pointer h-[44px] flex items-center"
           >
             Score
           </li>

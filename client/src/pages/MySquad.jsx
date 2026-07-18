@@ -16,6 +16,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ContactAvatar from "../components/ContactAvatar";
 import { apiFetch } from "../utils/apiUrl";
+import { PrimaryModal } from "../components/Modals";
 
 function FilterAndSearch({
   fetchSquad,
@@ -118,7 +119,7 @@ function FilterAndSearch({
         <li className={`${squadTotal === 0 ? "opacity-50" : ""}`}>
           <input
             type="search"
-            className="text-sm border border-inherit rounded-md px-3 py-2 -mr-3"
+            className="text-sm border border-inherit rounded-md px-3 py-2 -mr-3 mt-[3px]"
             placeholder="SEARCH CONTACTS"
             onChange={handleChange}
             value={searchValue}
@@ -211,138 +212,79 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
     }
   }
   return (
-    <div
-      id="add-contact"
-      aria-labelledby="add-contact"
-      className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
+    <PrimaryModal
+      windowTitle="Add New Contact"
+      closeModal={closeModal}
+      formId="add-contact-form"
+      submitButtonText="ADD CONTACT"
+      allowSubmit={squadTotal < 150}
+      isLoading={isLoading}
     >
-      <div className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></div>
-
-      <div
-        tabIndex="0"
-        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
-      >
-        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
-          <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start">
-              <div className="mt-0 sm:ml-4 text-left">
-                {/*Window title*/}
-                <h3
-                  id="dialog-title"
-                  className="text-base font-semibold text-gray-900"
-                >
-                  Add New Contact
-                </h3>
-                {isLoading ? (
-                  <CircularProgress color="#7D4C9F" />
-                ) : (
-                  <div className="mt-2 text-purple-300 text-sm">
-                    {/*form*/}
-                    {squadTotal < 150 ? (
-                      <form id="add-contact-form" onSubmit={createContact}>
-                        <div className="flex flex-col">
-                          <label
-                            htmlFor="contactFirstName"
-                            className="text-xs text-white"
-                          >
-                            First Name
-                          </label>
-                          <input
-                            type="text"
-                            id="contactFirstName"
-                            name="firstName"
-                            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                            required
-                          />
-                          <label
-                            htmlFor="contactLastName"
-                            className="text-xs text-white"
-                          >
-                            Last Name
-                          </label>
-                          <input
-                            type="text"
-                            id="contactLastName"
-                            name="lastName"
-                            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                            required
-                          />
-                          <label
-                            htmlFor="contactNickname"
-                            className="text-xs text-white"
-                          >
-                            Nickname
-                          </label>
-                          <input
-                            type="text"
-                            id="contactNickname"
-                            name="nickname"
-                            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          />
-                          <label
-                            htmlFor="connection-instinct"
-                            className="text-xs text-white"
-                          >
-                            How close are you?
-                          </label>
-                          <select
-                            name="connectionInstinct"
-                            id="connection-instinct"
-                            className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
-                            required
-                          >
-                            <option value="heartCore">Super close</option>
-                            <option value="rayLiables">Pretty close</option>
-                            <option value="buddies">Casual</option>
-                          </select>
-                          <label
-                            htmlFor="method-preference"
-                            className="text-xs text-white"
-                          >
-                            What is THEIR preferred contact method?
-                          </label>
-                          <select
-                            name="preferredMethod"
-                            id="method-preference"
-                            className="bg-(--c-violet-void) rounded-md px-3 py-2"
-                            required
-                          >
-                            <option value="socialMedia">Social media</option>
-                            <option value="textMessage">Text message</option>
-                            <option value="phoneCall">Phone call</option>
-                          </select>
-                        </div>
-                      </form>
-                    ) : (
-                      <p>Squad Limit Reached</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          {/*Window buttons*/}
-          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-            {squadTotal < 150 && (
-              <button
-                form="add-contact-form"
-                type="submit"
-                className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
-              >
-                ADD CONTACT
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={closeModal}
-              className="mt-3 inline-flex w-full justify-center rounded-md bg-(--c-violet-void-40) px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) sm:mt-0 sm:w-auto"
+      {/*form*/}
+      {squadTotal < 150 ? (
+        <form id="add-contact-form" onSubmit={createContact}>
+          <div className="flex flex-col">
+            <label htmlFor="contactFirstName" className="text-xs text-white">
+              First Name
+            </label>
+            <input
+              type="text"
+              id="contactFirstName"
+              name="firstName"
+              className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px]"
+              required
+            />
+            <label htmlFor="contactLastName" className="text-xs text-white">
+              Last Name
+            </label>
+            <input
+              type="text"
+              id="contactLastName"
+              name="lastName"
+              className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px]"
+              required
+            />
+            <label htmlFor="contactNickname" className="text-xs text-white">
+              Nickname
+            </label>
+            <input
+              type="text"
+              id="contactNickname"
+              name="nickname"
+              className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px]"
+            />
+            <label htmlFor="connection-instinct" className="text-xs text-white">
+              How close are you?
+            </label>
+            <select
+              name="connectionInstinct"
+              id="connection-instinct"
+              className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6 h-[44px]"
+              required
             >
-              Cancel
-            </button>
+              <option value="heartCore">Super close</option>
+              <option value="rayLiables">Pretty close</option>
+              <option value="buddies">Casual</option>
+            </select>
+            <label htmlFor="method-preference" className="text-xs text-white">
+              What is THEIR preferred contact method?
+            </label>
+            <select
+              name="preferredMethod"
+              id="method-preference"
+              className="bg-(--c-violet-void) rounded-md px-3 py-2 h-[44px]"
+              required
+            >
+              <option value="socialMedia">Social media</option>
+              <option value="textMessage">Text message</option>
+              <option value="phoneCall">Phone call</option>
+            </select>
           </div>
-        </div>
-      </div>
-    </div>
+        </form>
+      ) : (
+        <p>Squad Limit Reached</p>
+      )}
+    </PrimaryModal>
   );
 }
 
@@ -458,61 +400,19 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
     }
   }
   return (
-    <div
-      id="set-roles"
-      aria-labelledby="set-roles"
-      className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
+    <PrimaryModal
+      windowTitle="Set Friendship Roles"
+      closeModal={closeModal}
+      formId="friendship-roles-form"
+      submitButtonText="SAVE ROLES"
+      isLoading={isLoading}
+      outsideClick={closeModal}
     >
-      <div className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></div>
-
-      <div
-        tabIndex="0"
-        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
-      >
-        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
-          <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start">
-              <div className="mt-0 sm:ml-4 text-left ">
-                {/*Window title*/}
-                <h3
-                  id="dialog-title"
-                  className="text-base font-semibold text-gray-900"
-                >
-                  Set Friendship Roles
-                </h3>
-                {isLoading ? (
-                  <CircularProgress color="#7D4C9F" />
-                ) : (
-                  <div className="mt-2 text-purple-300 text-sm max-h-[500px] overflow-auto">
-                    {/*form*/}
-                    <form id="add-contact-form" onSubmit={setFriendshipRoles}>
-                      <div className="flex flex-col">{roleSelectors}</div>
-                    </form>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          {/*Window buttons*/}
-          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-            <button
-              form="add-contact-form"
-              type="submit"
-              className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
-            >
-              SAVE ROLES
-            </button>
-            <button
-              type="button"
-              onClick={closeModal}
-              className="mt-3 inline-flex w-full justify-center rounded-md bg-(--c-violet-void-40) px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) sm:mt-0 sm:w-auto"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      {/*form*/}
+      <form id="friendship-roles-form" onSubmit={setFriendshipRoles}>
+        <div className="flex flex-col">{roleSelectors}</div>
+      </form>
+    </PrimaryModal>
   );
 }
 
@@ -1474,7 +1374,7 @@ function FeaturedContact({
               }}
               className="text-(--c-violet-void)"
               style={{
-                "background-color": `var(${contactTheme})`,
+                backgroundColor: `var(${contactTheme})`,
               }}
             >
               <AccordionSummary
@@ -1706,832 +1606,648 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
   }
 
   return (
-    <div
-      id="edit-contact"
-      aria-labelledby="edit-contact"
-      className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
+    <PrimaryModal
+      windowTitle="Edit Contact Details"
+      closeModal={closeModal}
+      submitButtonText="SAVE DETAILS"
+      confirmOnClick={saveUserDetails}
+      isLoading={isLoading}
     >
-      <div className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></div>
-
-      <div
-        tabIndex="0"
-        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
-      >
-        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
-          <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start">
-              <div className="mt-0 sm:ml-4 text-left">
-                {/*Window title*/}
-                <h3
-                  id="dialog-title"
-                  className="text-base font-semibold text-gray-900"
-                >
-                  Edit Contact Details
-                </h3>
-                {isLoading ? (
-                  <CircularProgress color="#7D4C9F" />
-                ) : (
-                  <div className="mt-2 text-purple-300 text-sm max-h-[500px] overflow-auto">
-                    {/*form*/}
-                    <form id="edit-contact-form">
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor="contactFirstName"
-                          className="text-xs text-white"
-                        >
-                          First Name
-                        </label>
-                        <input
-                          type="text"
-                          name="contactFirstName"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.firstName}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              firstName: e.target.value,
-                            }))
-                          }
-                          required
-                        />
-                        <label
-                          htmlFor="contactLastName"
-                          className="text-xs text-white"
-                        >
-                          Last Name
-                        </label>
-                        <input
-                          type="text"
-                          name="contactLastName"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.lastName}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              lastName: e.target.value,
-                            }))
-                          }
-                          required
-                        />
-                        <label
-                          htmlFor="contactNickname"
-                          className="text-xs text-white"
-                        >
-                          Nickname
-                        </label>
-                        <input
-                          type="text"
-                          name="contactNickname"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.nickname}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              nickname: e.target.value,
-                            }))
-                          }
-                        />
-                        <fieldset className="flex flex-wrap max-w-[400px] mb-6">
-                          <legend className="text-xs text-white">
-                            Preferred Contact Days
-                          </legend>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="preferredMonday"
-                              name="preferredDays"
-                              value="monday"
-                              checked={contactDetails.preferredDay?.includes(
-                                "monday",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: [
-                                      ...prev.preferredDay,
-                                      "monday",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: prev.preferredDay.filter(
-                                      (day) => day !== "monday",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="preferredMonday">Monday</label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="preferredTuesday"
-                              name="preferredDays"
-                              value="tuesday"
-                              checked={contactDetails.preferredDay?.includes(
-                                "tuesday",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: [
-                                      ...prev.preferredDay,
-                                      "tuesday",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: prev.preferredDay.filter(
-                                      (day) => day !== "tuesday",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="preferredTuesday">Tuesday</label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="preferredWednesday"
-                              name="preferredDays"
-                              value="wednesday"
-                              checked={contactDetails.preferredDay?.includes(
-                                "wednesday",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: [
-                                      ...prev.preferredDay,
-                                      "wednesday",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: prev.preferredDay.filter(
-                                      (day) => day !== "wednesday",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="preferredWednesday">
-                              Wednesday
-                            </label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="preferredThursday"
-                              name="preferredDays"
-                              value="thursday"
-                              checked={contactDetails.preferredDay?.includes(
-                                "thursday",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: [
-                                      ...prev.preferredDay,
-                                      "thursday",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: prev.preferredDay.filter(
-                                      (day) => day !== "thursday",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="preferredThursday">Thursday</label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="preferredFriday"
-                              name="preferredDays"
-                              value="friday"
-                              checked={contactDetails.preferredDay?.includes(
-                                "friday",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: [
-                                      ...prev.preferredDay,
-                                      "friday",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: prev.preferredDay.filter(
-                                      (day) => day !== "friday",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="preferredFriday">Friday</label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="preferredSaturday"
-                              name="preferredDays"
-                              value="saturday"
-                              checked={contactDetails.preferredDay?.includes(
-                                "saturday",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: [
-                                      ...prev.preferredDay,
-                                      "saturday",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: prev.preferredDay.filter(
-                                      (day) => day !== "saturday",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="preferredSaturday">Saturday</label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="preferredSunday"
-                              name="preferredDays"
-                              value="sunday"
-                              checked={contactDetails.preferredDay?.includes(
-                                "sunday",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: [
-                                      ...prev.preferredDay,
-                                      "sunday",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    preferredDay: prev.preferredDay.filter(
-                                      (day) => day !== "sunday",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="preferredSunday">Sunday</label>
-                          </div>
-                        </fieldset>
-                        <label
-                          htmlFor="editPreferredMethod"
-                          className="text-xs text-white"
-                        >
-                          Preferred Contact Method
-                        </label>
-                        <select
-                          name="preferredMethod"
-                          id="editPreferredMethod"
-                          className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.preferredMethod}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              preferredMethod: e.target.value,
-                            }))
-                          }
-                          required
-                        >
-                          <option value="socialMedia">Social media</option>
-                          <option value="textMessage">Text message</option>
-                          <option value="phoneCall">Phone call</option>
-                        </select>
-                        <label
-                          htmlFor="editMobile"
-                          className="text-xs text-white"
-                        >
-                          Mobile Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          id="editMobile"
-                          name="mobilePhone"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.mobilePhone}
-                          onChange={(e) => {
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              mobilePhone: formatPhoneNumber(e.target.value),
-                            }));
-                          }}
-                        />
-                        <label
-                          htmlFor="editHomePhone"
-                          className="text-xs text-white"
-                        >
-                          Home Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          id="editHomePhone"
-                          name="homePhone"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.homePhone}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              homePhone: formatPhoneNumber(e.target.value),
-                            }))
-                          }
-                        />
-                        <label
-                          htmlFor="editWorkPhone"
-                          className="text-xs text-white"
-                        >
-                          Work Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          id="editWorkPhone"
-                          name="workPhone"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.workPhone}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              workPhone: formatPhoneNumber(e.target.value),
-                            }))
-                          }
-                        />
-                        <label
-                          htmlFor="editPrimaryEmail"
-                          className="text-xs text-white"
-                        >
-                          Primary Email
-                        </label>
-                        <input
-                          type="email"
-                          id="editPrimaryEmail"
-                          pattern=".+@example\.com"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.primaryEmail}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              primaryEmail: e.target.value,
-                            }))
-                          }
-                        />
-                        <label
-                          htmlFor="editBackupEmail"
-                          className="text-xs text-white"
-                        >
-                          Backup Email
-                        </label>
-                        <input
-                          type="email"
-                          id="editBackupEmail"
-                          pattern=".+@example\.com"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.backupEmail}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              backupEmail: e.target.value,
-                            }))
-                          }
-                        />
-                        <div className="flex flex-col">
-                          <p className="text-base text-white">Socials</p>
-                          <ul>{socialsList}</ul>
-                          {contactDetails.socials.length < 8 && (
-                            <button
-                              type="button"
-                              className="text-sm hover:text-white cursor-pointer"
-                              onClick={addSocials}
-                            >
-                              Other +
-                            </button>
-                          )}
-                        </div>
-                        <label
-                          htmlFor="editMyersBriggs"
-                          className="text-xs text-white mt-6"
-                        >
-                          Myers Briggs Type
-                        </label>
-                        <select
-                          name="myersBriggsType"
-                          id="editMyersBriggs"
-                          className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.myersBriggsType || ""}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              myersBriggsType: e.target.value,
-                            }))
-                          }
-                        >
-                          <option value="">-none-</option>
-                          <option value="intja">INTJ-A Architect</option>
-                          <option value="intjt">INTJ-T Architect</option>
-                          <option value="intpa">INTP-A Logician</option>
-                          <option value="intpt">INTP-T Logician</option>
-                          <option value="entja">ENTJ-A Commander</option>
-                          <option value="entjt">ENTJ-T Commander</option>
-                          <option value="entpa">ENTP-A Debater</option>
-                          <option value="entpt">ENTP-T Debater</option>
-                          <option value="infja">INFJ-A Advocate</option>
-                          <option value="infjt">INFJ-T Advocate</option>
-                          <option value="infpa">INFP-A Mediator</option>
-                          <option value="infpt">INFP-T Mediator</option>
-                          <option value="enfja">ENFJ-A Protagonist</option>
-                          <option value="enfjt">ENFJ-T Protagonist</option>
-                          <option value="enfpa">ENFP-A Campaigner</option>
-                          <option value="enfpt">ENFP-T Campaigner</option>
-                          <option value="istja">ISTJ-A Logistician</option>
-                          <option value="istjt">ISTJ-T Logistician</option>
-                          <option value="isfja">ISFJ-A Defender</option>
-                          <option value="isfjt">ISFJ-T Defender</option>
-                          <option value="estja">ESTJ-A Executive</option>
-                          <option value="estjt">ESTJ-T Executive</option>
-                          <option value="esfja">ESFJ-A Consul</option>
-                          <option value="esfjt">ESFJ-T Consul</option>
-                          <option value="istpa">ISTP-A Virtuoso</option>
-                          <option value="istpt">ISTP-T Virtuoso</option>
-                          <option value="isfpa">ISFP-A Advanturer</option>
-                          <option value="isfpt">ISFP-T Advanturer</option>
-                          <option value="estpa">ESTP-A Entrepreneur</option>
-                          <option value="estpt">ESTP-T Entrepreneur</option>
-                          <option value="esfpa">ESFP-A Entertainer</option>
-                          <option value="esfpt">ESFP-T Entertainer</option>
-                        </select>
-                        <fieldset className="flex flex-wrap max-w-[400px] mb-6">
-                          <legend className="text-xs text-white">
-                            Love Languages
-                          </legend>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="wordsOfAffirmation"
-                              name="wordsOfAffirmation"
-                              value="wordsOfAffirmation"
-                              checked={contactDetails.loveLanguages?.includes(
-                                "wordsOfAffirmation",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: [
-                                      ...prev.loveLanguages,
-                                      "wordsOfAffirmation",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: prev.loveLanguages.filter(
-                                      (ll) => ll !== "wordsOfAffirmation",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="wordsOfAffirmation">
-                              Words of Affirmation
-                            </label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="qualityTime"
-                              name="qualityTime"
-                              value="qualityTime"
-                              checked={contactDetails.loveLanguages?.includes(
-                                "qualityTime",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: [
-                                      ...prev.loveLanguages,
-                                      "qualityTime",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: prev.loveLanguages.filter(
-                                      (ll) => ll !== "qualityTime",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="qualityTime">Quality Time</label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="receivingGifts"
-                              name="receivingGifts"
-                              value="receivingGifts"
-                              checked={contactDetails.loveLanguages?.includes(
-                                "receivingGifts",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: [
-                                      ...prev.loveLanguages,
-                                      "receivingGifts",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: prev.loveLanguages.filter(
-                                      (ll) => ll !== "receivingGifts",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="receivingGifts">
-                              Receiving Gifts
-                            </label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="actsOfService"
-                              name="actsOfService"
-                              value="actsOfService"
-                              checked={contactDetails.loveLanguages?.includes(
-                                "actsOfService",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: [
-                                      ...prev.loveLanguages,
-                                      "actsOfService",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: prev.loveLanguages.filter(
-                                      (ll) => ll !== "actsOfService",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="actsOfService">
-                              Acts of Service
-                            </label>
-                          </div>
-                          <div className="flex gap-1 px-2 items-center">
-                            <input
-                              type="checkbox"
-                              id="physicalTouch"
-                              name="physicalTouch"
-                              value="physicalTouch"
-                              checked={contactDetails.loveLanguages?.includes(
-                                "physicalTouch",
-                              )}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: [
-                                      ...prev.loveLanguages,
-                                      "physicalTouch",
-                                    ],
-                                  }));
-                                } else {
-                                  setContactDetails((prev) => ({
-                                    ...prev,
-                                    loveLanguages: prev.loveLanguages.filter(
-                                      (ll) => ll !== "physicalTouch",
-                                    ),
-                                  }));
-                                }
-                              }}
-                            />
-                            <label htmlFor="physicalTouch">
-                              Physical Touch
-                            </label>
-                          </div>
-                        </fieldset>
-                        <label
-                          htmlFor="editAdditionalNotes"
-                          className="text-xs text-white"
-                        >
-                          Additional Notes
-                        </label>
-                        <textarea
-                          name="editAdditionalNotes"
-                          id="editAdditionalNotes"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.additionalNotes}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              additionalNotes: e.target.value,
-                            }))
-                          }
-                        ></textarea>
-                        <label
-                          htmlFor="editTags"
-                          className="text-xs text-white"
-                        >
-                          Tags
-                        </label>
-                        <ul className="flex">{contactTags}</ul>
-                        <select
-                          name="editTags"
-                          id="editTags"
-                          className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
-                          value={tagSelector}
-                          onChange={(e) => {
-                            if (
-                              !contactDetails.tags.includes(e.target.value) &&
-                              e.target.value !== ""
-                            ) {
-                              setContactDetails((prev) => ({
-                                ...prev,
-                                tags: [...prev.tags, e.target.value],
-                              }));
-                            }
-                          }}
-                        >
-                          <option value="">--Select a tag --</option>
-                          {tagList}
-                        </select>
-
-                        {!showTagInput && (
-                          <button
-                            type="button"
-                            className="text-sm hover:text-white cursor-pointer"
-                            onClick={() => setShowTagInput(true)}
-                          >
-                            Add Tag +
-                          </button>
-                        )}
-                        {showTagInput && (
-                          <>
-                            <label
-                              htmlFor="addTagInput"
-                              className="text-xs text-white"
-                            >
-                              Add tag
-                            </label>
-                            <div className="flex items-center mb-6">
-                              <input
-                                name="addTagInput"
-                                className="border border-purple-300 rounded-md px-3 py-2 "
-                                value={tagInputValue}
-                                onChange={(e) =>
-                                  setTagInputValue(e.target.value)
-                                }
-                              />
-                              <button
-                                className="border-inherit hover:bg-(--c-violet-void-60) hover:text-white text-sm ml-3 px-2 border rounded-lg h-[38px]"
-                                type="button"
-                                onClick={addTag}
-                              >
-                                ADD
-                              </button>
-                            </div>
-                          </>
-                        )}
-                        <label
-                          htmlFor="editBirthday"
-                          className="text-xs text-white mt-6"
-                        >
-                          Birthday
-                        </label>
-
-                        <input
-                          type="date"
-                          name="editBirthday"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          value={contactDetails.birthday}
-                          onChange={(e) =>
-                            setContactDetails((prev) => ({
-                              ...prev,
-                              birthday: e.target.value,
-                            }))
-                          }
-                        />
-                      </div>
-                    </form>
-                  </div>
-                )}
-              </div>
+      {/*form*/}
+      <form id="edit-contact-form">
+        <div className="flex flex-col">
+          <label htmlFor="contactFirstName" className="text-xs text-white">
+            First Name
+          </label>
+          <input
+            type="text"
+            name="contactFirstName"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.firstName}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                firstName: e.target.value,
+              }))
+            }
+            required
+          />
+          <label htmlFor="contactLastName" className="text-xs text-white">
+            Last Name
+          </label>
+          <input
+            type="text"
+            name="contactLastName"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.lastName}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                lastName: e.target.value,
+              }))
+            }
+            required
+          />
+          <label htmlFor="contactNickname" className="text-xs text-white">
+            Nickname
+          </label>
+          <input
+            type="text"
+            name="contactNickname"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.nickname}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                nickname: e.target.value,
+              }))
+            }
+          />
+          <fieldset className="flex flex-wrap max-w-[400px] mb-6">
+            <legend className="text-xs text-white">
+              Preferred Contact Days
+            </legend>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="preferredMonday"
+                name="preferredDays"
+                value="monday"
+                checked={contactDetails.preferredDay?.includes("monday")}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: [...prev.preferredDay, "monday"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: prev.preferredDay.filter(
+                        (day) => day !== "monday",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="preferredMonday">Monday</label>
             </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="preferredTuesday"
+                name="preferredDays"
+                value="tuesday"
+                checked={contactDetails.preferredDay?.includes("tuesday")}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: [...prev.preferredDay, "tuesday"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: prev.preferredDay.filter(
+                        (day) => day !== "tuesday",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="preferredTuesday">Tuesday</label>
+            </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="preferredWednesday"
+                name="preferredDays"
+                value="wednesday"
+                checked={contactDetails.preferredDay?.includes("wednesday")}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: [...prev.preferredDay, "wednesday"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: prev.preferredDay.filter(
+                        (day) => day !== "wednesday",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="preferredWednesday">Wednesday</label>
+            </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="preferredThursday"
+                name="preferredDays"
+                value="thursday"
+                checked={contactDetails.preferredDay?.includes("thursday")}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: [...prev.preferredDay, "thursday"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: prev.preferredDay.filter(
+                        (day) => day !== "thursday",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="preferredThursday">Thursday</label>
+            </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="preferredFriday"
+                name="preferredDays"
+                value="friday"
+                checked={contactDetails.preferredDay?.includes("friday")}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: [...prev.preferredDay, "friday"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: prev.preferredDay.filter(
+                        (day) => day !== "friday",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="preferredFriday">Friday</label>
+            </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="preferredSaturday"
+                name="preferredDays"
+                value="saturday"
+                checked={contactDetails.preferredDay?.includes("saturday")}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: [...prev.preferredDay, "saturday"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: prev.preferredDay.filter(
+                        (day) => day !== "saturday",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="preferredSaturday">Saturday</label>
+            </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="preferredSunday"
+                name="preferredDays"
+                value="sunday"
+                checked={contactDetails.preferredDay?.includes("sunday")}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: [...prev.preferredDay, "sunday"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      preferredDay: prev.preferredDay.filter(
+                        (day) => day !== "sunday",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="preferredSunday">Sunday</label>
+            </div>
+          </fieldset>
+          <label htmlFor="editPreferredMethod" className="text-xs text-white">
+            Preferred Contact Method
+          </label>
+          <select
+            name="preferredMethod"
+            id="editPreferredMethod"
+            className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
+            value={contactDetails.preferredMethod}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                preferredMethod: e.target.value,
+              }))
+            }
+            required
+          >
+            <option value="socialMedia">Social media</option>
+            <option value="textMessage">Text message</option>
+            <option value="phoneCall">Phone call</option>
+          </select>
+          <label htmlFor="editMobile" className="text-xs text-white">
+            Mobile Phone Number
+          </label>
+          <input
+            type="tel"
+            id="editMobile"
+            name="mobilePhone"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.mobilePhone}
+            onChange={(e) => {
+              setContactDetails((prev) => ({
+                ...prev,
+                mobilePhone: formatPhoneNumber(e.target.value),
+              }));
+            }}
+          />
+          <label htmlFor="editHomePhone" className="text-xs text-white">
+            Home Phone Number
+          </label>
+          <input
+            type="tel"
+            id="editHomePhone"
+            name="homePhone"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.homePhone}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                homePhone: formatPhoneNumber(e.target.value),
+              }))
+            }
+          />
+          <label htmlFor="editWorkPhone" className="text-xs text-white">
+            Work Phone Number
+          </label>
+          <input
+            type="tel"
+            id="editWorkPhone"
+            name="workPhone"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.workPhone}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                workPhone: formatPhoneNumber(e.target.value),
+              }))
+            }
+          />
+          <label htmlFor="editPrimaryEmail" className="text-xs text-white">
+            Primary Email
+          </label>
+          <input
+            type="email"
+            id="editPrimaryEmail"
+            pattern=".+@example\.com"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.primaryEmail}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                primaryEmail: e.target.value,
+              }))
+            }
+          />
+          <label htmlFor="editBackupEmail" className="text-xs text-white">
+            Backup Email
+          </label>
+          <input
+            type="email"
+            id="editBackupEmail"
+            pattern=".+@example\.com"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.backupEmail}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                backupEmail: e.target.value,
+              }))
+            }
+          />
+          <div className="flex flex-col">
+            <p className="text-base text-white">Socials</p>
+            <ul>{socialsList}</ul>
+            {contactDetails.socials.length < 8 && (
+              <button
+                type="button"
+                className="text-sm hover:text-white cursor-pointer"
+                onClick={addSocials}
+              >
+                Other +
+              </button>
+            )}
           </div>
-          {/*Window buttons*/}
-          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+          <label htmlFor="editMyersBriggs" className="text-xs text-white mt-6">
+            Myers Briggs Type
+          </label>
+          <select
+            name="myersBriggsType"
+            id="editMyersBriggs"
+            className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
+            value={contactDetails.myersBriggsType || ""}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                myersBriggsType: e.target.value,
+              }))
+            }
+          >
+            <option value="">-none-</option>
+            <option value="intja">INTJ-A Architect</option>
+            <option value="intjt">INTJ-T Architect</option>
+            <option value="intpa">INTP-A Logician</option>
+            <option value="intpt">INTP-T Logician</option>
+            <option value="entja">ENTJ-A Commander</option>
+            <option value="entjt">ENTJ-T Commander</option>
+            <option value="entpa">ENTP-A Debater</option>
+            <option value="entpt">ENTP-T Debater</option>
+            <option value="infja">INFJ-A Advocate</option>
+            <option value="infjt">INFJ-T Advocate</option>
+            <option value="infpa">INFP-A Mediator</option>
+            <option value="infpt">INFP-T Mediator</option>
+            <option value="enfja">ENFJ-A Protagonist</option>
+            <option value="enfjt">ENFJ-T Protagonist</option>
+            <option value="enfpa">ENFP-A Campaigner</option>
+            <option value="enfpt">ENFP-T Campaigner</option>
+            <option value="istja">ISTJ-A Logistician</option>
+            <option value="istjt">ISTJ-T Logistician</option>
+            <option value="isfja">ISFJ-A Defender</option>
+            <option value="isfjt">ISFJ-T Defender</option>
+            <option value="estja">ESTJ-A Executive</option>
+            <option value="estjt">ESTJ-T Executive</option>
+            <option value="esfja">ESFJ-A Consul</option>
+            <option value="esfjt">ESFJ-T Consul</option>
+            <option value="istpa">ISTP-A Virtuoso</option>
+            <option value="istpt">ISTP-T Virtuoso</option>
+            <option value="isfpa">ISFP-A Advanturer</option>
+            <option value="isfpt">ISFP-T Advanturer</option>
+            <option value="estpa">ESTP-A Entrepreneur</option>
+            <option value="estpt">ESTP-T Entrepreneur</option>
+            <option value="esfpa">ESFP-A Entertainer</option>
+            <option value="esfpt">ESFP-T Entertainer</option>
+          </select>
+          <fieldset className="flex flex-wrap max-w-[400px] mb-6">
+            <legend className="text-xs text-white">Love Languages</legend>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="wordsOfAffirmation"
+                name="wordsOfAffirmation"
+                value="wordsOfAffirmation"
+                checked={contactDetails.loveLanguages?.includes(
+                  "wordsOfAffirmation",
+                )}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: [
+                        ...prev.loveLanguages,
+                        "wordsOfAffirmation",
+                      ],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: prev.loveLanguages.filter(
+                        (ll) => ll !== "wordsOfAffirmation",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="wordsOfAffirmation">Words of Affirmation</label>
+            </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="qualityTime"
+                name="qualityTime"
+                value="qualityTime"
+                checked={contactDetails.loveLanguages?.includes("qualityTime")}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: [...prev.loveLanguages, "qualityTime"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: prev.loveLanguages.filter(
+                        (ll) => ll !== "qualityTime",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="qualityTime">Quality Time</label>
+            </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="receivingGifts"
+                name="receivingGifts"
+                value="receivingGifts"
+                checked={contactDetails.loveLanguages?.includes(
+                  "receivingGifts",
+                )}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: [...prev.loveLanguages, "receivingGifts"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: prev.loveLanguages.filter(
+                        (ll) => ll !== "receivingGifts",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="receivingGifts">Receiving Gifts</label>
+            </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="actsOfService"
+                name="actsOfService"
+                value="actsOfService"
+                checked={contactDetails.loveLanguages?.includes(
+                  "actsOfService",
+                )}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: [...prev.loveLanguages, "actsOfService"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: prev.loveLanguages.filter(
+                        (ll) => ll !== "actsOfService",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="actsOfService">Acts of Service</label>
+            </div>
+            <div className="flex gap-1 px-2 items-center">
+              <input
+                type="checkbox"
+                id="physicalTouch"
+                name="physicalTouch"
+                value="physicalTouch"
+                checked={contactDetails.loveLanguages?.includes(
+                  "physicalTouch",
+                )}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: [...prev.loveLanguages, "physicalTouch"],
+                    }));
+                  } else {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      loveLanguages: prev.loveLanguages.filter(
+                        (ll) => ll !== "physicalTouch",
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label htmlFor="physicalTouch">Physical Touch</label>
+            </div>
+          </fieldset>
+          <label htmlFor="editAdditionalNotes" className="text-xs text-white">
+            Additional Notes
+          </label>
+          <textarea
+            name="editAdditionalNotes"
+            id="editAdditionalNotes"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.additionalNotes}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                additionalNotes: e.target.value,
+              }))
+            }
+          ></textarea>
+          <label htmlFor="editTags" className="text-xs text-white">
+            Tags
+          </label>
+          <ul className="flex">{contactTags}</ul>
+          <select
+            name="editTags"
+            id="editTags"
+            className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6"
+            value={tagSelector}
+            onChange={(e) => {
+              if (
+                !contactDetails.tags.includes(e.target.value) &&
+                e.target.value !== ""
+              ) {
+                setContactDetails((prev) => ({
+                  ...prev,
+                  tags: [...prev.tags, e.target.value],
+                }));
+              }
+            }}
+          >
+            <option value="">--Select a tag --</option>
+            {tagList}
+          </select>
+
+          {!showTagInput && (
             <button
               type="button"
-              onClick={saveUserDetails}
-              className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
+              className="text-sm hover:text-white cursor-pointer"
+              onClick={() => setShowTagInput(true)}
             >
-              SAVE DETAILS
+              Add Tag +
             </button>
-            <button
-              type="button"
-              onClick={closeModal}
-              className="mt-3 inline-flex w-full justify-center rounded-md bg-(--c-violet-void-40) px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) sm:mt-0 sm:w-auto"
-            >
-              Cancel
-            </button>
-          </div>
+          )}
+          {showTagInput && (
+            <>
+              <label htmlFor="addTagInput" className="text-xs text-white">
+                Add tag
+              </label>
+              <div className="flex items-center mb-6">
+                <input
+                  name="addTagInput"
+                  className="border border-purple-300 rounded-md px-3 py-2 "
+                  value={tagInputValue}
+                  onChange={(e) => setTagInputValue(e.target.value)}
+                />
+                <button
+                  className="border-inherit hover:bg-(--c-violet-void-60) hover:text-white text-sm ml-3 px-2 border rounded-lg h-[38px]"
+                  type="button"
+                  onClick={addTag}
+                >
+                  ADD
+                </button>
+              </div>
+            </>
+          )}
+          <label htmlFor="editBirthday" className="text-xs text-white mt-6">
+            Birthday
+          </label>
+
+          <input
+            type="date"
+            name="editBirthday"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            value={contactDetails.birthday}
+            onChange={(e) =>
+              setContactDetails((prev) => ({
+                ...prev,
+                birthday: e.target.value,
+              }))
+            }
+          />
         </div>
-      </div>
-    </div>
+      </form>
+    </PrimaryModal>
   );
 }
 
 function SquadIntroModal({ closeModal, userName }) {
   return (
-    <div
-      id="squad-intro"
-      aria-labelledby="squad-intro"
-      className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
+    <PrimaryModal
+      windowTitle="Welcome to Squad Goals"
+      closeModal={closeModal}
+      allowSubmit={false}
     >
-      <div className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></div>
-
-      <div
-        tabIndex="0"
-        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
-      >
-        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
-          <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start">
-              <div className="mt-0 sm:ml-4 text-left">
-                {/*Window title*/}
-                <h3
-                  id="dialog-title"
-                  className="text-base font-semibold text-gray-900"
-                >
-                  Welcome to Squad Goals
-                </h3>
-
-                <div className="mt-2 text-purple-300 text-sm">
-                  Hi {userName}, thank goodness you are here! Human connection
-                  levels are low all over earth. We are in desperate need of
-                  people who can help us reinvigorate the ancient power of
-                  "staying in touch"! If you are ready to jump in, go ahead and
-                  start adding your friends and family as contacts.
-                </div>
-              </div>
-            </div>
-          </div>
-          {/*Window buttons*/}
-          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="mt-3 inline-flex w-full justify-center rounded-md bg-(--c-violet-void-40) px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) sm:mt-0 sm:w-auto"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      Hi {userName}, thank goodness you are here! Human connection levels are
+      low all over earth. We are in desperate need of people who can help us
+      reinvigorate the ancient power of "staying in touch"! If you are ready to
+      jump in, go ahead and start adding your friends and family as contacts.
+    </PrimaryModal>
   );
 }

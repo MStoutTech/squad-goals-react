@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 export default function GuestFooter() {
   return (
     <footer className="bg-[#100830] text-purple-300 p-6">
@@ -5,22 +6,22 @@ export default function GuestFooter() {
         <div className="flex gap-20 text-sm">
           <ul>
             <li className="py-1">
-              <a href="/index">Home</a>
+              <Link to="/">Home</Link>
             </li>
             <li className="py-1">
-              <a href="/human-connection">Human Connection</a>
+              <Link to="/human-connection">Human Connection</Link>
             </li>
             <li className="py-1">
-              <a href="/blog">Blog</a>
+              <Link to="/sg-blog">Blog</Link>
             </li>
           </ul>
 
           <ul>
             <li className="py-1">
-              <a href="/about">About</a>
+              <Link to="/about">About</Link>
             </li>
             <li className="py-1">
-              <a href="/about">Contact Us</a>
+              <Link to="/about">Contact Us</Link>
             </li>
             <li className="py-1">
               <a href="/careers">Careers</a>

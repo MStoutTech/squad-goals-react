@@ -2,7 +2,7 @@ import { PrimaryButton } from "../components/Buttons";
 import { AuthContext } from "../context/AuthContext";
 import { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import ConfirmLogoutModal from "../components/Modals";
+import { ConfirmLogoutModal } from "../components/Modals";
 
 export default function Profile() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);

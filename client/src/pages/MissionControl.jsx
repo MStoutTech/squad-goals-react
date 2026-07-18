@@ -10,13 +10,13 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ContactAvatar from "../components/ContactAvatar";
 import { apiFetch } from "../utils/apiUrl";
-
 import {
   AnimatedCallToAction,
   PrimaryButton,
   SortMissions,
   IconButton,
 } from "../components/Buttons";
+import { PrimaryModal } from "../components/Modals";
 
 function MissionStatistics({ statistics }) {
   const [today, setToday] = useState(new Date());
@@ -438,7 +438,7 @@ export default function MissionControl() {
   const activeMissions = missionList.map((mission) => (
     <li
       key={mission._id}
-      className={`${mission._id == featuredMission._id ? "mission-list-active" : "border-purple-300 hover:bg-(--c-violet-void-80) hover:text-white"} mission-list-item px-3 py-2 border rounded-lg flex justify-between`}
+      className={`${mission._id == featuredMission._id ? "mission-list-active" : "border-purple-300 hover:bg-(--c-violet-void-80) hover:text-white"} mission-list-item px-3 border rounded-lg flex items-center justify-between`}
       style={
         mission._id == featuredMission._id
           ? { "--highlight-color": `var(${contactTheme})` }
@@ -510,7 +510,7 @@ export default function MissionControl() {
         <MissionStatistics statistics={statistics} />
         <News />
         <section className="my-6 lg:my-0 col-span-12 min-[1420px]:col-span-10 bg-(--c-violet-void-80) rounded-lg md:px-6 py-3">
-          <div className="flex justify-between mb-3 mx-6 md:mx-0">
+          <div className="flex justify-between items-center mb-3 mx-6 md:mx-0">
             <SortMissions
               missionList={missionList}
               setMissionList={setMissionList}
@@ -724,7 +724,7 @@ function ContactMissionForm({ missionStart, contact }) {
       <select
         name="missionTimeLimit"
         id="time-select"
-        className="bg-(--c-violet-void) rounded-md px-3 py-2"
+        className="bg-(--c-violet-void) rounded-md px-3 py-2 h-[44px]"
       >
         <option key={5} value="5">
           5 min
@@ -745,7 +745,7 @@ function ContactMissionForm({ missionStart, contact }) {
       <select
         name="methodOfContact"
         id="method-select"
-        className="bg-(--c-violet-void) rounded-md px-3 py-2"
+        className="bg-(--c-violet-void) rounded-md px-3 py-2 h-[44px]"
       >
         {socialOptions}
         <option value="phone">phone call</option>
@@ -877,136 +877,78 @@ function AddMissionModal({ closeModal, fetchMissions }) {
     }
   }
   return (
-    <div
-      id="add-mission-modal"
-      aria-labelledby="add-mission-modal"
-      className="fixed inset-0 z-50 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent"
+    <PrimaryModal
+      windowTitle="Add New Mission"
+      closeModal={closeModal}
+      formId="add-mission-form"
+      submitButtonText="ADD MISSION"
+      isLoading={isLoading}
+      outsideClick={closeModal}
     >
-      <div
-        className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-        onClick={closeModal}
-      ></div>
+      {/*form*/}
+      <form id="add-mission-form" onSubmit={addNewMission}>
+        <div className="flex flex-col">
+          <p className="text-xs text-white">Mission Target</p>
+          {selectedContact ? (
+            <div
+              id="selected-contact"
+              className="flex justify-between mb-6 items-center p-2 border border-purple-300 rounded-md"
+            >
+              <ContactAvatar
+                className="inline size-6 border-2 rounded-full"
+                contact={selectedContact}
+              />
 
-      <div
-        tabIndex="0"
-        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
-      >
-        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
-          <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start">
-              <div className=" mt-0 sm:ml-4 text-left ">
-                {/*Window title*/}
-                <h3
-                  id="dialog-title"
-                  className="text-base font-semibold text-gray-900"
-                >
-                  Add New Mission
-                </h3>
-                {isLoading ? (
-                  <CircularProgress color="#7D4C9F" />
-                ) : (
-                  <div className="mt-2 text-purple-300 text-sm">
-                    {/*form*/}
-                    <form id="add-mission-form" onSubmit={addNewMission}>
-                      <div className="flex flex-col">
-                        <p className="text-xs text-white">Mission Target</p>
-                        {selectedContact ? (
-                          <div
-                            id="selected-contact"
-                            className="flex justify-between mb-6 items-center p-2 border border-purple-300 rounded-md"
-                          >
-                            <ContactAvatar
-                              className="inline size-6 border-2 rounded-full"
-                              contact={selectedContact}
-                            />
-
-                            <span id="selected-contact-name">
-                              {selectedContact?.firstName}{" "}
-                              {selectedContact?.lastName}
-                            </span>
-                            <button
-                              type="button"
-                              id="clear-selected-contact"
-                              className="text-(--c-violet-void) font-bold"
-                              onClick={clearSelectedContact}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ) : (
-                          <ContactSearch
-                            onSelect={setSelectedContact}
-                            ref={contactSearchRef}
-                          />
-                        )}
-
-                        <input
-                          type="hidden"
-                          name="missionContact"
-                          id="mission-contact-id"
-                          value={selectedContact?._id || ""}
-                        />
-
-                        <label
-                          htmlFor="scheduledFor"
-                          className="text-xs text-white"
-                        >
-                          Schedule For
-                        </label>
-                        <input
-                          type="date"
-                          id="scheduledFor"
-                          name="scheduledFor"
-                          className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-                          required
-                        />
-                        <p className="text-xs text-white">Mission Type</p>
-                        <div className="flex gap-2">
-                          <label>
-                            <input
-                              type="radio"
-                              name="missionType"
-                              value="contact"
-                            />
-                            Contact Mission
-                          </label>
-                          <label>
-                            <input
-                              type="radio"
-                              name="missionType"
-                              value="field"
-                              required
-                            />
-                            Field Mission
-                          </label>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                )}
-              </div>
+              <span id="selected-contact-name">
+                {selectedContact?.firstName} {selectedContact?.lastName}
+              </span>
+              <button
+                type="button"
+                id="clear-selected-contact"
+                className="text-(--c-violet-void) font-bold"
+                onClick={clearSelectedContact}
+              >
+                ✕
+              </button>
             </div>
-          </div>
-          {/*Window buttons*/}
-          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-            <button
-              form="add-mission-form"
-              type="submit"
-              className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
-            >
-              ADD MISSION
-            </button>
-            <button
-              type="button"
-              onClick={closeModal}
-              className="mt-3 inline-flex w-full justify-center rounded-md bg-(--c-violet-void-40) px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) sm:mt-0 sm:w-auto"
-            >
-              Cancel
-            </button>
+          ) : (
+            <ContactSearch
+              onSelect={setSelectedContact}
+              ref={contactSearchRef}
+            />
+          )}
+
+          <input
+            type="hidden"
+            name="missionContact"
+            id="mission-contact-id"
+            value={selectedContact?._id || ""}
+          />
+
+          <label htmlFor="scheduledFor" className="text-xs text-white">
+            Schedule For
+          </label>
+          <input
+            type="date"
+            id="scheduledFor"
+            name="scheduledFor"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+            required
+          />
+          <p className="text-xs text-white">Mission Type</p>
+          <div className="flex gap-2">
+            <label>
+              <input type="radio" name="missionType" value="contact" />
+              Contact Mission
+            </label>
+            <label>
+              <input type="radio" name="missionType" value="field" required />
+              Field Mission
+            </label>
           </div>
         </div>
-      </div>
-    </div>
+      </form>
+    </PrimaryModal>
   );
 }
 function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
@@ -1061,182 +1003,84 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
     }
   }
   return (
-    <div
-      id="mission-debreif-modal"
-      aria-labelledby="mission-debreif-modal"
-      className="fixed inset-0 z-50 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent"
+    <PrimaryModal
+      windowTitle="Mission Debrief"
+      closeModal={closeModal}
+      formId="complete-mission-form"
+      submitButtonText="COMPLETE MISSION"
+      allowSubmit={!isLoading}
+      isLoading={isLoading}
+      outsideClick={isLoading ? () => {} : closeModal}
+      showConfirmation={showConfirmation}
+      confirmationText="MISSION COMPLETE!"
+      confirmationImg="/imgs/icons/star.png"
+      confirmationAlt="star icon"
     >
-      <div
-        className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-        onClick={isLoading ? "" : closeModal}
-      ></div>
+      <form id="complete-mission-form" onSubmit={completeMission}>
+        <div className="flex flex-col">
+          <p
+            id="debrief-contact-name"
+            className="text-xs text-white"
+          >{`${featuredMission?.contact?.firstName} ${featuredMission?.contact?.lastName}`}</p>
+          <input
+            type="hidden"
+            name="debriefContactId"
+            id="debrief-contact-id"
+            value={featuredMission?.contact?._id}
+          />
 
-      <div
-        tabIndex="0"
-        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center sp-0"
-      >
-        {showConfirmation ? (
-          <div
-            className="z-50 bg-black/60 shadow-xl w-[100%]"
-            onClick={closeModal}
-          >
-            <div className="bg-(--c-purple-tech-40) w-[100%] flex flex-col py-6 items-center">
-              <h1 className="my-3 text-3xl">MISSION COMPLETE!</h1>
-              <img
-                src="/imgs/icons/star.png"
-                alt="star icon"
-                className="w-[40px] block"
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
-            <div className="bg-(--c-purple-tech-40)/40  px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div className="sm:flex sm:items-start">
-                <div className="mt-0 sm:ml-4 text-left ">
-                  {/*Window title*/}
-                  <h3
-                    id="dialog-title"
-                    className="text-base font-semibold text-gray-900"
-                  >
-                    Mission Debrief
-                  </h3>
-                  <div className="mt-2 text-purple-300 text-sm">
-                    {isLoading ? (
-                      <CircularProgress color="#7D4C9F" />
-                    ) : (
-                      <form
-                        id="complete-mission-form"
-                        onSubmit={completeMission}
-                      >
-                        <div className="flex flex-col">
-                          <p
-                            id="debrief-contact-name"
-                            className="text-xs text-white"
-                          >{`${featuredMission.contact.firstName} ${featuredMission.contact.lastName}`}</p>
-                          <input
-                            type="hidden"
-                            name="debriefContactId"
-                            id="debrief-contact-id"
-                            value={featuredMission.contact._id}
-                          />
+          <p id="debrief-mission-type" className="text-xs text-white">
+            {featuredMission?.missionType === "field"
+              ? "Field Mission"
+              : "Contact Mission"}
+          </p>
+          <input
+            type="hidden"
+            name="debriefMissionType"
+            id="debrief-mission-type-input"
+            value={featuredMission?.missionType}
+          />
 
-                          <p
-                            id="debrief-mission-type"
-                            className="text-xs text-white"
-                          >
-                            {featuredMission.missionType === "field"
-                              ? "Field Mission"
-                              : "Contact Mission"}
-                          </p>
-                          <input
-                            type="hidden"
-                            name="debriefMissionType"
-                            id="debrief-mission-type-input"
-                            value={featuredMission.missionType}
-                          />
-
-                          <label
-                            htmlFor="debriefNotes"
-                            className="text-xs text-white"
-                          >
-                            Notes
-                          </label>
-                          <textarea
-                            id="debrief-notes"
-                            name="debriefNotes"
-                            className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-48 resize-none overflow-y-auto"
-                            placeholder="Add some specifics about your mission experience"
-                            required
-                          ></textarea>
-                        </div>
-                      </form>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/*Window buttons*/}
-            {!isLoading && (
-              <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button
-                  form="complete-mission-form"
-                  type="submit"
-                  className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
-                >
-                  COMPLETE MISSION
-                </button>
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="mt-3 inline-flex w-full justify-center rounded-md bg-(--c-violet-void-40) px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) sm:mt-0 sm:w-auto"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+          <label htmlFor="debriefNotes" className="text-xs text-white">
+            Notes
+          </label>
+          <textarea
+            id="debrief-notes"
+            name="debriefNotes"
+            className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-48 resize-none overflow-y-auto"
+            placeholder="Add some specifics about your mission experience"
+            required
+          ></textarea>
+        </div>
+      </form>
+    </PrimaryModal>
   );
 }
 
 function MissionIntroModal({ closeModal, featuredMission }) {
   return (
-    <div
-      id="mission-intro"
-      aria-labelledby="squad-intro"
-      className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
+    <PrimaryModal
+      windowTitle="Welcome to Mission Control"
+      closeModal={closeModal}
+      allowSubmit={false}
     >
-      <div className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></div>
-
-      <div
-        tabIndex="0"
-        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
-      >
-        <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
-          <div className="bg-(--c-purple-tech-40)/40 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start">
-              <div className="mt-0 sm:ml-4 text-left">
-                {/*Window title*/}
-                <h3
-                  id="dialog-title"
-                  className="text-base font-semibold text-gray-900"
-                >
-                  Welcome to Mission Control
-                </h3>
-
-                <div className="mt-2 text-purple-300 text-sm">
-                  {!featuredMission ? (
-                    <p>
-                      This is where you will see your 'mission' assignments to
-                      contact or hang out with your squad. Contact missions are
-                      automatically scheduled, but you can schedule either a
-                      contact mission or a field (hangout) mission yourself.{" "}
-                      <br /> <br />
-                      You don't have any assigned missions at the moment, why
-                      not add one for TODAY?
-                    </p>
-                  ) : (
-                    "Begin a mission by clicking the `Start Mission` button. Contact missions will have a timer encouraging you not to get distracted by scrolling. When you are done with a mission click `debrief` to add details about how it went."
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-          {/*Window buttons*/}
-          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="mt-3 inline-flex w-full justify-center rounded-md bg-(--c-violet-void-40) px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) sm:mt-0 sm:w-auto"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      {!featuredMission ? (
+        <p>
+          This is where you will see your 'mission' assignments to contact or
+          hang out with your squad. Contact missions are automatically
+          scheduled, but you can schedule either a contact mission or a field
+          (hangout) mission yourself. <br /> <br />
+          You don't have any assigned missions at the moment, why not add one
+          for TODAY?
+        </p>
+      ) : (
+        <p>
+          "Begin a mission by clicking the `Start Mission` button. Contact
+          missions will have a timer encouraging you not to get distracted by
+          scrolling. When you are done with a mission click `debrief` to add
+          details about how it went."
+        </p>
+      )}
+    </PrimaryModal>
   );
 }
