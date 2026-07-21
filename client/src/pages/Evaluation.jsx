@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { ToastContext } from "../context/ToastContext";
+import { PrimaryModal } from "../components/Modals";
 import { PrimaryButton } from "../components/Buttons";
 import ContactSearch from "../components/Search";
 import ContactAvatar from "../components/ContactAvatar";
@@ -883,7 +884,14 @@ function CustomSelectionModal({
   setQuestionnaireType,
   setSelectedTopic,
 }) {
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+
   function startEvaluation() {
+    if (!customGroup.length) {
+      setShowErrorMessage(true);
+      return;
+    }
+    setShowErrorMessage(false);
     setQuestionnaireType("custom");
     setSelectedTopic("");
     closeModal();
@@ -904,62 +912,31 @@ function CustomSelectionModal({
   ));
 
   return (
-    <div
-      id="custom-selection-modal"
-      aria-labelledby="custom-list-selection"
-      className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
+    <PrimaryModal
+      windowTitle="Custom List Selection"
+      closeModal={closeModal}
+      formId=""
+      submitButtonText="START EVALUATION"
+      outsideClick={closeModal}
+      confirmOnClick={startEvaluation}
     >
-      <div
-        className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-        onClick={closeModal}
-      ></div>
+      {customGroup.length < 15 ? (
+        <ContactSearch
+          onSelect={(contact) => {
+            setShowErrorMessage(false);
+            setCustomGroup((prev) => [...prev, contact]);
+          }}
+          excludeIds={customGroup.map((contact) => contact._id)}
+          clearOnSelect={true}
+        />
+      ) : (
+        <p>Custom List Limit Reached</p>
+      )}
 
-      <div
-        tabIndex="0"
-        className="flex min-h-full justify-center p-4 text-center focus:outline-none items-center p-0"
-      >
-        <div className="relative transform border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
-          <div className="bg-(--c-purple-tech-40)/40 min-h-[200px] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="mt-0 sm:ml-4 text-left ">
-              {/*Window title*/}
-              <h3
-                id="dialog-title"
-                className="text-base font-semibold text-gray-900"
-              >
-                Custom List Selection
-              </h3>
-
-              <div className="mt-2 text-purple-300 text-sm ">
-                {customGroup.length < 15 ? (
-                  <ContactSearch
-                    onSelect={(contact) =>
-                      setCustomGroup((prev) => [...prev, contact])
-                    }
-                    excludeIds={customGroup.map((contact) => contact._id)}
-                    clearOnSelect={true}
-                  />
-                ) : (
-                  <p>Custom List Limit Reached</p>
-                )}
-                <div className="flex flex-col max-h-[500px] overflow-auto">
-                  {selectedList}
-                </div>
-              </div>
-            </div>
-          </div>
-          {/*Window buttons*/}
-          <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-            <button
-              form="add-contact-form"
-              type="button"
-              onClick={startEvaluation}
-              className="inline-flex w-full justify-center rounded-md action-button sm:ml-3 sm:w-auto px-3 py-2 text-sm shadow-xs hover:bg-(--c-violet-void)"
-            >
-              START EVALUATION
-            </button>
-          </div>
-        </div>
+      <div className="flex flex-col max-h-[500px] overflow-auto">
+        {showErrorMessage && <span>Must Select Contacts</span>}
+        {selectedList}
       </div>
-    </div>
+    </PrimaryModal>
   );
 }
