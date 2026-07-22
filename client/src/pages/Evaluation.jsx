@@ -3,7 +3,7 @@ import { ToastContext } from "../context/ToastContext";
 import { PrimaryModal } from "../components/Modals";
 import { PrimaryButton } from "../components/Buttons";
 import ContactSearch from "../components/Search";
-import ContactAvatar from "../components/ContactAvatar";
+import { ContactAvatar } from "../components/ContactAvatar";
 import { apiFetch } from "../utils/apiUrl";
 
 function InfoSection({ children }) {

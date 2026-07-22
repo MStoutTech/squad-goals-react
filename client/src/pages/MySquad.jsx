@@ -14,9 +14,13 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ContactAvatar from "../components/ContactAvatar";
+import {
+  ContactAvatar,
+  SelectedContactChip,
+} from "../components/ContactAvatar";
 import { apiFetch } from "../utils/apiUrl";
 import { PrimaryModal } from "../components/Modals";
+import { ModalTextInput, ModalSelectInput } from "../components/Inputs";
 
 function FilterAndSearch({
   fetchSquad,
@@ -224,61 +228,50 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
       {squadTotal < 150 ? (
         <form id="add-contact-form" onSubmit={createContact}>
           <div className="flex flex-col">
-            <label htmlFor="contactFirstName" className="text-xs text-white">
-              First Name
-            </label>
-            <input
-              type="text"
-              id="contactFirstName"
-              name="firstName"
-              className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px]"
-              required
+            <ModalTextInput
+              labelText="First Name"
+              inputId="contactFirstName"
+              inputName="firstName"
+              required={true}
             />
-            <label htmlFor="contactLastName" className="text-xs text-white">
-              Last Name
-            </label>
-            <input
-              type="text"
-              id="contactLastName"
-              name="lastName"
-              className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px]"
-              required
+            <ModalTextInput
+              labelText="Last Name"
+              inputId="contactLastName"
+              inputName="lastName"
+              required={true}
             />
-            <label htmlFor="contactNickname" className="text-xs text-white">
-              Nickname
-            </label>
-            <input
-              type="text"
-              id="contactNickname"
-              name="nickname"
-              className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px]"
+            <ModalTextInput
+              labelText="Nickname"
+              inputId="contactNickname"
+              inputName="nickname"
+              required={false}
             />
-            <label htmlFor="connection-instinct" className="text-xs text-white">
-              How close are you?
-            </label>
-            <select
-              name="connectionInstinct"
-              id="connection-instinct"
-              className="bg-(--c-violet-void) rounded-md px-3 py-2 mb-6 h-[44px]"
-              required
+            <ModalSelectInput
+              labelText="How close are you?"
+              inputId="connection-instinct"
+              inputName="connectionInstinct"
+              required={true}
             >
-              <option value="heartCore">Super close</option>
-              <option value="rayLiables">Pretty close</option>
-              <option value="buddies">Casual</option>
-            </select>
-            <label htmlFor="method-preference" className="text-xs text-white">
-              What is THEIR preferred contact method?
-            </label>
-            <select
-              name="preferredMethod"
-              id="method-preference"
-              className="bg-(--c-violet-void) rounded-md px-3 py-2 h-[44px]"
-              required
+              <option key="heartCore" value="heartCore">
+                Super close
+              </option>
+              <option key="rayLiables" value="rayLiables">
+                Pretty close
+              </option>
+              <option key="buddies" value="buddies">
+                Casual
+              </option>
+            </ModalSelectInput>
+            <ModalSelectInput
+              labelText="What is THEIR preferred contact method?"
+              inputId="method-preference"
+              inputName="preferredMethod"
+              required={true}
             >
               <option value="socialMedia">Social media</option>
               <option value="textMessage">Text message</option>
               <option value="phoneCall">Phone call</option>
-            </select>
+            </ModalSelectInput>
           </div>
         </form>
       ) : (
@@ -310,7 +303,7 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
     nonJudgementalBestie: `The Non-judgemental Bestie has your back at your best and your worst,
         reminding you that you are always worthy of love and support.`,
     brutallyHonestFriend: `Always gives you the truth no matter how hard it is to hear`,
-    careerMentor: `Who you can turn to advice when it comes to job offers, career switches, education, or recommending you as a reference`,
+    careerMentor: `Who you can turn to for advice when it comes to job offers, career switches, education, or recommending you as a reference`,
     tirelessCheerleader: `This person is rooting for you to have the best results in life no matter your path`,
     inCaseOfEmergency: `Someone who lives close to you that will always show up in a crisis`,
     healthcareProfessional: `Someone who's opinion you trust when it comes to medical issues`,
@@ -324,25 +317,12 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
         {roleLabels[role]}
       </label>
       {selectedRoles[role] ? (
-        <div className="flex justify-between mb-6 items-center p-2 border border-purple-300 rounded-md">
-          <ContactAvatar
-            className="inline size-6 border-2 rounded-full"
-            contact={selectedRoles[role]}
-          />
-
-          <span id="selected-contact-name">
-            {selectedRoles[role]?.firstName} {selectedRoles[role]?.lastName}
-          </span>
-          <button
-            type="button"
-            className="text-(--c-violet-void) font-bold"
-            onClick={() =>
-              setSelectedRoles((prev) => ({ ...prev, [role]: null }))
-            }
-          >
-            ✕
-          </button>
-        </div>
+        <SelectedContactChip
+          contactObject={selectedRoles[role]}
+          removeFunction={() =>
+            setSelectedRoles((prev) => ({ ...prev, [role]: null }))
+          }
+        />
       ) : (
         <ContactSearch
           onSelect={(contact) =>
@@ -1616,13 +1596,10 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
       {/*form*/}
       <form id="edit-contact-form">
         <div className="flex flex-col">
-          <label htmlFor="contactFirstName" className="text-xs text-white">
-            First Name
-          </label>
-          <input
-            type="text"
-            name="contactFirstName"
-            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
+          <ModalTextInput
+            labelText="First Name"
+            inputId="contactFirstName"
+            inputName="contactFirstName"
             value={contactDetails.firstName}
             onChange={(e) =>
               setContactDetails((prev) => ({
@@ -1630,7 +1607,7 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
                 firstName: e.target.value,
               }))
             }
-            required
+            required={true}
           />
           <label htmlFor="contactLastName" className="text-xs text-white">
             Last Name

@@ -3,7 +3,7 @@
 // Sizing/rounding is controlled entirely by the caller via `className` on the
 // wrapper div -- this component doesn't hardcode a size or border-radius.
 
-export default function ContactAvatar({ contact, className = "" }) {
+export function ContactAvatar({ contact, className = "" }) {
   const imageUrl = contact?.image;
 
   return (
@@ -15,7 +15,7 @@ export default function ContactAvatar({ contact, className = "" }) {
           className="w-full h-full object-cover"
         />
       ) : (
-        // ---- FALLBACK ICON: swap this <svg> out any time ----
+        // ---- FALLBACK ICON ----
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -31,6 +31,31 @@ export default function ContactAvatar({ contact, className = "" }) {
         </svg>
         // ---- END FALLBACK ICON ----
       )}
+    </div>
+  );
+}
+
+export function SelectedContactChip({ contactObject, removeFunction }) {
+  return (
+    <div
+      key={contactObject?._id}
+      className="flex justify-between my-2 items-center pl-4 pr-2 border border-purple-300 rounded-md"
+    >
+      <ContactAvatar
+        className="block size-6 border-2 rounded-full shrink-0"
+        contact={contactObject}
+      />
+
+      <span id="selected-contact-name">
+        {contactObject?.firstName} {contactObject?.lastName}
+      </span>
+      <button
+        type="button"
+        className="hover:text-white font-bold min-h-[44px] min-w-[44px]"
+        onClick={removeFunction}
+      >
+        ✕
+      </button>
     </div>
   );
 }
