@@ -1,53 +1,51 @@
 import { Link } from "react-router-dom";
+
+function FooterLink({ linkText, linkTo }) {
+  return (
+    <li>
+      <Link to={linkTo} className="h-[44px] flex items-center">
+        {linkText}
+      </Link>
+    </li>
+  );
+}
+
+function SocialMediaIcon({ link, iconClassName }) {
+  return (
+    <a href={link}>
+      <li className="rounded-full bg-purple-300 text-[#100830] size-14 text-center p-4">
+        <span className={`icon ${iconClassName}`}></span>
+      </li>
+    </a>
+  );
+}
+
 export default function GuestFooter() {
   return (
     <footer className="bg-[#100830] text-purple-300 p-6">
       <div className="flex flex-col md:flex-row justify-between lg:px-20">
         <div className="flex gap-20 text-sm">
           <ul>
-            <li className="py-1">
-              <Link to="/">Home</Link>
-            </li>
-            <li className="py-1">
-              <Link to="/human-connection">Human Connection</Link>
-            </li>
-            <li className="py-1">
-              <Link to="/sg-blog">Blog</Link>
-            </li>
+            <FooterLink linkText="Home" linkTo="/" />
+            <FooterLink
+              linkText="Human Connection"
+              linkTo="/human-connection"
+            />
+            <FooterLink linkText="Blog" linkTo="/sg-blog" />
           </ul>
 
           <ul>
-            <li className="py-1">
-              <Link to="/about">About</Link>
-            </li>
-            <li className="py-1">
-              <Link to="/about">Contact Us</Link>
-            </li>
-            <li className="py-1">
-              <a href="/careers">Careers</a>
-            </li>
-            <li className="py-1">
-              <a href="/policies">Policies</a>
-            </li>
+            <FooterLink linkText="About" linkTo="/about" />
+            <FooterLink linkText="Contact Us" linkTo="/about" />
+            <FooterLink linkText="Careers" linkTo="/careers" />
+            <FooterLink linkText="Policies" linkTo="/policies" />
           </ul>
         </div>
 
         <ul className="flex gap-4 self-center my-10 md:my-0 text-sm">
-          <a href="#">
-            <li className="rounded-full bg-purple-300 text-[#100830] size-14 text-center p-4">
-              <span className="icon icon-facebook"></span>
-            </li>
-          </a>
-          <a href="#">
-            <li className="rounded-full bg-purple-300 text-[#100830] size-14 text-center p-4">
-              <span className="icon icon-linkedin"></span>
-            </li>
-          </a>
-          <a href="#">
-            <li className="rounded-full bg-purple-300 text-[#100830] size-14 text-center p-4">
-              <span className="icon icon-bluesky"></span>
-            </li>
-          </a>
+          <SocialMediaIcon link="#" iconClassName="icon-facebook" />
+          <SocialMediaIcon link="#" iconClassName="icon-linkedin" />
+          <SocialMediaIcon link="#" iconClassName="icon-bluesky" />
         </ul>
       </div>
 

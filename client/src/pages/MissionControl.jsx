@@ -8,7 +8,10 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { ContactAvatar } from "../components/ContactAvatar";
+import {
+  ContactAvatar,
+  SelectedContactChip,
+} from "../components/ContactAvatar";
 import { apiFetch } from "../utils/apiUrl";
 import {
   AnimatedCallToAction,
@@ -17,6 +20,11 @@ import {
   IconButton,
 } from "../components/Buttons";
 import { PrimaryModal } from "../components/Modals";
+import {
+  ModalDateInput,
+  ModalRadio,
+  ModalTextarea,
+} from "../components/Inputs";
 
 function MissionStatistics({ statistics }) {
   const [today, setToday] = useState(new Date());
@@ -890,27 +898,10 @@ function AddMissionModal({ closeModal, fetchMissions }) {
         <div className="flex flex-col">
           <p className="text-xs text-white">Mission Target</p>
           {selectedContact ? (
-            <div
-              id="selected-contact"
-              className="flex justify-between mb-6 items-center p-2 border border-purple-300 rounded-md"
-            >
-              <ContactAvatar
-                className="inline size-6 border-2 rounded-full"
-                contact={selectedContact}
-              />
-
-              <span id="selected-contact-name">
-                {selectedContact?.firstName} {selectedContact?.lastName}
-              </span>
-              <button
-                type="button"
-                id="clear-selected-contact"
-                className="text-(--c-violet-void) font-bold"
-                onClick={clearSelectedContact}
-              >
-                ✕
-              </button>
-            </div>
+            <SelectedContactChip
+              contactObject={selectedContact}
+              removeFunction={clearSelectedContact}
+            />
           ) : (
             <ContactSearch
               onSelect={setSelectedContact}
@@ -924,27 +915,25 @@ function AddMissionModal({ closeModal, fetchMissions }) {
             id="mission-contact-id"
             value={selectedContact?._id || ""}
           />
-
-          <label htmlFor="scheduledFor" className="text-xs text-white">
-            Schedule For
-          </label>
-          <input
-            type="date"
-            id="scheduledFor"
-            name="scheduledFor"
-            className="border border-purple-300 rounded-md px-3 py-2 mb-6"
-            required
+          <ModalDateInput
+            labelText="Schedule For"
+            inputName="scheduledFor"
+            required={true}
           />
+
           <p className="text-xs text-white">Mission Type</p>
-          <div className="flex gap-2">
-            <label>
-              <input type="radio" name="missionType" value="contact" />
-              Contact Mission
-            </label>
-            <label>
-              <input type="radio" name="missionType" value="field" required />
-              Field Mission
-            </label>
+          <div className="flex gap-6">
+            <ModalRadio
+              labelText="Contact Mission"
+              inputName="missionType"
+              value="contact"
+            />
+            <ModalRadio
+              labelText="Field Mission"
+              inputName="missionType"
+              value="field"
+              required={true}
+            />
           </div>
         </div>
       </form>
@@ -1040,17 +1029,14 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
             id="debrief-mission-type-input"
             value={featuredMission?.missionType}
           />
-
-          <label htmlFor="debriefNotes" className="text-xs text-white">
-            Notes
-          </label>
-          <textarea
-            id="debrief-notes"
-            name="debriefNotes"
-            className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-48 resize-none overflow-y-auto"
+          <ModalTextarea
+            lableText="Notes"
+            inputId="debrief-notes"
+            inputName="debriefNotes"
+            required={true}
+            className="h-48 resize-none overflow-y-auto"
             placeholder="Add some specifics about your mission experience"
-            required
-          ></textarea>
+          />
         </div>
       </form>
     </PrimaryModal>

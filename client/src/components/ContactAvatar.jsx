@@ -7,7 +7,7 @@ export function ContactAvatar({ contact, className = "" }) {
   const imageUrl = contact?.image;
 
   return (
-    <div className={`overflow-hidden ${className}`}>
+    <div className={`overflow-hidden shrink-0 ${className}`}>
       {imageUrl ? (
         <img
           src={imageUrl}
@@ -42,7 +42,7 @@ export function SelectedContactChip({ contactObject, removeFunction }) {
       className="flex justify-between my-2 items-center pl-4 pr-2 border border-purple-300 rounded-md"
     >
       <ContactAvatar
-        className="block size-6 border-2 rounded-full shrink-0"
+        className="block size-6 border-2 rounded-full"
         contact={contactObject}
       />
 

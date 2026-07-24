@@ -51,21 +51,26 @@ export function IconButton({ svg, onClick, text }) {
   );
 }
 
-export function PrimaryButton({ innerText, onClick, isActive, isGlowing }) {
+export function PrimaryButton({
+  innerText,
+  onClick,
+  isActive,
+  isGlowing,
+  buttonClassName,
+  divClassName,
+}) {
   return (
-    <>
-      <button
-        type="button"
-        onClick={onClick}
-        className="min-h-[44px] min-w-[44px]"
+    <button
+      type="button"
+      onClick={onClick}
+      className={`${buttonClassName} min-h-[44px] min-w-[44px] flex items-center`}
+    >
+      <div
+        className={`${isActive == true ? "border-white text-white drop-shadow-white" : " hover:bg-(--c-violet-void-60) hover:text-white"} ${isGlowing && "glow-walkthrough"} ${divClassName} text-sm p-2 border rounded-lg`}
       >
-        <div
-          className={`${isActive == true ? "border-white text-white drop-shadow-white" : " hover:bg-(--c-violet-void-60) hover:text-white"} ${isGlowing && "glow-walkthrough"} text-sm p-2 border rounded-lg`}
-        >
-          {innerText.toUpperCase()}
-        </div>
-      </button>
-    </>
+        {innerText.toUpperCase()}
+      </div>
+    </button>
   );
 }
 

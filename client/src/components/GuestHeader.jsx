@@ -102,7 +102,7 @@ export default function GuestHeader() {
               <span className="sr-only">Squad Goals</span>
               <img
                 src="/imgs/SGHalfShield.svg"
-                alt="Squad Goals"
+                alt="Squad Goals Shield Logo, home"
                 className="h-8 w-auto"
               />
             </a>

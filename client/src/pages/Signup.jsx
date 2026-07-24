@@ -72,7 +72,7 @@ export default function Signup() {
               type="text"
               id="userName"
               name="userName"
-              className="border border-inherit rounded-md px-3 py-2 w-full mb-6"
+              className="border border-inherit rounded-md px-3 py-2 w-full mb-6 h-[44px]"
             />
             <label htmlFor="signupInputEmail1" className="form-label">
               Email address
@@ -82,7 +82,7 @@ export default function Signup() {
               id="signupInputEmail1"
               aria-describedby="emailHelp"
               name="email"
-              className="border border-inherit rounded-md px-3 py-2 w-full"
+              className="border border-inherit rounded-md px-3 py-2 w-full h-[44px]"
             />
             <div id="emailHelp" className="text-xs mb-6">
               We'll never share your email with anyone else.
@@ -92,14 +92,14 @@ export default function Signup() {
               type="password"
               id="password"
               name="password"
-              className="border border-inherit rounded-md px-3 py-2 w-full mb-6"
+              className="border border-inherit rounded-md px-3 py-2 w-full h-[44px] mb-6"
             />
             <label htmlFor="confirmPassword">Confirm Password</label>
             <input
               type="password"
               id="confirmPassword"
               name="confirmPassword"
-              className="border border-inherit rounded-md px-3 py-2 w-full mb-6"
+              className="border border-inherit rounded-md px-3 py-2 w-full h-[44px] mb-6"
             />
 
             <div className="flex justify-center my-3">

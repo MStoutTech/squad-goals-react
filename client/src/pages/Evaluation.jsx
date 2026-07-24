@@ -3,7 +3,10 @@ import { ToastContext } from "../context/ToastContext";
 import { PrimaryModal } from "../components/Modals";
 import { PrimaryButton } from "../components/Buttons";
 import ContactSearch from "../components/Search";
-import { ContactAvatar } from "../components/ContactAvatar";
+import {
+  ContactAvatar,
+  SelectedContactChip,
+} from "../components/ContactAvatar";
 import { apiFetch } from "../utils/apiUrl";
 
 function InfoSection({ children }) {
@@ -74,8 +77,9 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         )
           return null;
         return question.options.map((option) => (
-          <div
-            className="flex gap-1 px-2 items-center"
+          <label
+            htmlFor={`contact${index}${option.text}`}
+            className="flex gap-1 px-2 items-center h-[44px]"
             key={`contact${index}${option.text}`}
           >
             <input
@@ -118,10 +122,9 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
                 }
               }}
             />
-            <label htmlFor={`contact${index}${option.text}`}>
-              {option.text.charAt(0).toUpperCase() + option.text.slice(1)}
-            </label>
-          </div>
+
+            {option.text.charAt(0).toUpperCase() + option.text.slice(1)}
+          </label>
         ));
       }
       case "radio": {
@@ -131,8 +134,9 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         )
           return null;
         return question.options.map((option) => (
-          <div
-            className="flex gap-1 px-2 items-center"
+          <label
+            htmlFor={`contact${index}${option.text}`}
+            className="flex gap-1 px-2 items-center h-[44px]"
             key={`contact${index}${option.text}`}
           >
             <input
@@ -166,10 +170,9 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
                 }
               }}
             />
-            <label htmlFor={`contact${index}${option.text}`}>
-              {option.text.charAt(0).toUpperCase() + option.text.slice(1)}
-            </label>{" "}
-          </div>
+
+            {option.text.charAt(0).toUpperCase() + option.text.slice(1)}
+          </label>
         ));
       }
       case "slider": {
@@ -345,6 +348,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
     </datalist>
   ) : (
     <datalist id="sliderValues">
+      {/*TODO: label conditional on screen size */}
       {pageQuestionSubject.options?.map((option, index) => (
         <option
           key={index}
@@ -688,7 +692,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         <select
           name="questionChange"
           id="questionChange"
-          className="bg-(--c-violet-void) rounded-md px-3 py-2 text-(--c-purple-tech-20) text-xs md:w-[400px]"
+          className="bg-(--c-violet-void) rounded-md px-3 py-2 text-purple-300 text-xs md:w-[400px] h-[44px]"
           value={
             questionnaireType != "contacts"
               ? pageQuestionSubject?._id
@@ -809,6 +813,7 @@ export default function Evaluation() {
               setSelectedTopic("");
             }}
             isActive={"allQuestions" == questionnaireType}
+            divClassName="w-full"
           />
           <PrimaryButton
             innerText="one friend at a time"
@@ -817,6 +822,7 @@ export default function Evaluation() {
               setSelectedTopic("");
             }}
             isActive={"contacts" == questionnaireType}
+            divClassName="w-full"
           />
           <PrimaryButton
             innerText={
@@ -828,6 +834,7 @@ export default function Evaluation() {
               toggleShowTopics();
             }}
             isActive={"topic" == questionnaireType}
+            divClassName="w-full"
           />
           {showTopicsList && (
             <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-1 text-white max-h-40 overflow-y-auto text-sm">
@@ -840,6 +847,7 @@ export default function Evaluation() {
               setIsCustomSelectModalOpen(true);
             }}
             isActive={"custom" == questionnaireType}
+            divClassName="w-full"
           />
         </div>
         <InfoSection>
@@ -898,17 +906,13 @@ function CustomSelectionModal({
   }
 
   const selectedList = customGroup.map((contact) => (
-    <div className="flex mb-2" key={contact._id}>
-      <span className="mr-3">{`${contact.firstName} ${contact.lastName}`}</span>
-      <span
-        className="cursor-pointer border-1 rounded px-2"
-        onClick={() =>
-          setCustomGroup((prev) => prev.filter((c) => c._id != contact._id))
-        }
-      >
-        X
-      </span>
-    </div>
+    <SelectedContactChip
+      contactObject={contact}
+      removeFunction={() =>
+        setCustomGroup((prev) => prev.filter((c) => c._id != contact._id))
+      }
+      key={contact._id}
+    />
   ));
 
   return (
