@@ -289,9 +289,9 @@ export default function MissionControl() {
   }
 
   const themeColor = {
-    heartCore: "--c-deep-cerise",
+    heartCore: "--c-deep-cerise-80",
     rayLiables: "--c-light-coral",
-    buddies: "--c-green-sheen",
+    buddies: "--c-green-sheen-80",
   };
   const contactTheme =
     themeColor[
@@ -302,7 +302,7 @@ export default function MissionControl() {
   const activeMissionsMobile = missionList.map((mission) => (
     <li
       key={mission._id}
-      className="bg-(--c-light-coral-80)/25 border-(--c-light-coral) border rounded-lg p-3 featured-mission-section"
+      className="bg-(--c-light-coral-80)/20 border-(--c-light-coral) border rounded-lg p-3 featured-mission-section"
       style={{
         "--highlight-color": `var(${
           themeColor[
@@ -561,7 +561,7 @@ export default function MissionControl() {
               }
             >
               {!featuredMission._id ? (
-                <section className="bg-(--c-light-coral-80)/25 border-(--c-light-coral) flex min-h-[402px] border-dashed border-r-1 border-l-1 p-3 featured-mission-section">
+                <section className="bg-(--c-light-coral-80)/20 border-(--c-light-coral) flex min-h-[402px] border-dashed border-r-1 border-l-1 p-3 featured-mission-section">
                   {!hasContacts ? (
                     <p className="p-4 rounded-lg bg-(--c-light-coral) text-(--c-violet-void) mb-2 self-center w-[100%]">
                       No available contacts. Add contacts on squad page
@@ -572,7 +572,7 @@ export default function MissionControl() {
                 </section>
               ) : (
                 <section
-                  className={`${featuredMission._id ? "" : "bg-(--c-light-coral-80)/25 border-(--c-light-coral)"} flex min-h-[402px] border-dashed border-r-1 border-l-1 p-3 featured-mission-section flex-wrap-reverse`}
+                  className={`${featuredMission._id ? "" : "bg-(--c-light-coral-80)/20 border-(--c-light-coral)"} flex min-h-[402px] border-dashed border-r-1 border-l-1 p-3 featured-mission-section flex-wrap-reverse`}
                   id="featured-section"
                   style={
                     featuredMission._id

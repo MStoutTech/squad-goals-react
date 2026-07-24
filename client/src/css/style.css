@@ -47,7 +47,7 @@ button {
 }
 
 .mission-list-active {
-    background-color: color-mix(in srgb, var(--highlight-color) 30%, transparent);
+    background-color: color-mix(in srgb, var(--highlight-color) 20%, transparent);
     border-color: var(--highlight-color);
     color: white;
 }
@@ -58,8 +58,9 @@ button {
 }
 
 .featured-mission-section {
-    background-color: color-mix(in srgb, var(--highlight-color) 30%, transparent);
+    background-color: color-mix(in srgb, var(--highlight-color) 20%, transparent);
     border-color: var(--highlight-color);
+    color: color-mix(in oklab, white 40%, var(--highlight-color))
 }
 
 /* ICONS to use like font-awesome, icons from susty icons*/

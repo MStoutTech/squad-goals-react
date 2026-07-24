@@ -3,10 +3,10 @@
    COLOR VARIABLES
 ------------------------------------------ */
 :root {
-  --c-deep-cerise: #D43D8A;
-  --c-deep-cerise-80: #ED6BAD;
-  --c-deep-cerise-60: #FF9ED0;
-  --c-deep-cerise-40: #FFC3E2;
+  --c-deep-cerise: #FF2C8D;
+  --c-deep-cerise-80: #FF509C;
+  --c-deep-cerise-60: #FF71AA;
+  --c-deep-cerise-40: #FFC3dc;
   --c-deep-cerise-20: #FFE5F3;
   --c-light-coral-x3: #E7100C;
   --c-light-coral-x2: #E5403D;
@@ -23,9 +23,9 @@
   --c-purple-tech-60: #AB7BCC;
   --c-purple-tech-40: #D4ACF0;
   --c-purple-tech-20: #F4E4FF;
-  --c-violet-void: #100830;
-  --c-violet-void-80: #1E0F5A;
-  --c-violet-void-60: #39248D;
+  --c-violet-void: #09041B;
+  --c-violet-void-80: #1a0d4e;
+  --c-violet-void-60: #2c1d70;
   --c-violet-void-40: #644FB9;
   --c-violet-void-20: #C2B2FF;
 }

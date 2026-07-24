@@ -57,7 +57,7 @@ export function Toast({
       className={`${isEntering ? "opacity-0 scale-50" : isExiting ? "transition duration-300 ease-in-out opacity-0 -translate-y-10" : "transition duration-100 ease-in-out opacity-100 scale-100"} ${type === "error" ? "text-(--c-deep-cerise-20) font-bold" : "text-white"} fixed right-0 mr-6 z-100  text-xs bg-black/75 mt-20 rounded-lg shadow-md/20`}
     >
       <div
-        className={`flex p-3 items-center gap-2  border rounded-lg ${type === "error" ? "border-(--c-light-coral) bg-(--c-light-coral-60)/40" : "border-purple-300 bg-(--c-purple-tech-40)/40"}`}
+        className={`flex p-3 items-center gap-2  border rounded-lg ${type === "error" ? "border-(--c-light-coral) bg-(--c-light-coral-60)/40" : "border-purple-300 bg-(--c-violet-void-40)/30"}`}
       >
         <p>{message}</p>
         <button

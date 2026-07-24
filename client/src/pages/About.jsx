@@ -7,7 +7,7 @@ export default function About() {
       <GuestHeader />
 
       <div className="flex flex-col  mx-6 md:mx-auto max-w-2xl py-10">
-        <h1 className="mt-2 text-5xl font-semibold tracking-tight text-pretty text-purple-300 text-shadow-sm text-center my-10">
+        <h1 className="mt-2 text-5xl font-semibold tracking-tight text-pretty text-shadow-sm text-shadow-purple-300 text-center my-10 ">
           Our Team
         </h1>
         <img

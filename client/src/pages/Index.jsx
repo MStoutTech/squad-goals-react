@@ -5,7 +5,7 @@ import { AnimatedCallToAction } from "../components/Buttons";
 export default function Index() {
   return (
     <>
-      <div className="bg-[#100830] text-purple-300">
+      <div className="bg-(--c-violet-void) text-purple-300">
         <GuestHeader />
         <div className="relative isolate px-6 pt-14 lg:px-8">
           <div
@@ -102,7 +102,7 @@ export default function Index() {
       </section>
 
       {/*Mobile App Section*/}
-      <section className="bg-[#100830] text-purple-300">
+      <section className="bg-(--c-violet-void) text-purple-300">
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-20">
           <div className="flex items-center justify-between px-6 lg:px-0">
             <a href="#">

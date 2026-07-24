@@ -89,12 +89,12 @@ export function PrimaryModal({
           </div>
         ) : (
           <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
-            <div className="bg-(--c-purple-tech-40)/40  px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-5">
+            <div className="bg-(--c-violet-void-40)/30  px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-5">
               <div className="mt-0 sm:ml-4 text-left">
                 {/*Window title*/}
                 <h3
                   id="dialog-title"
-                  className="text-base font-semibold text-gray-900"
+                  className="text-base font-semibold text-(--c-purple-tech-40) "
                 >
                   {windowTitle}
                 </h3>
@@ -110,7 +110,7 @@ export function PrimaryModal({
             </div>
             {/*Window buttons*/}
             {!isLoading && (
-              <div className="bg-(--c-violet-void-40) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+              <div className="bg-(--c-violet-void-60) px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 {submitButtonText && allowSubmit && (
                   <button
                     form={formId}
@@ -128,7 +128,7 @@ export function PrimaryModal({
                   onClick={closeModal}
                   className="w-full sm:w-auto mt-3 sm:mt-0 inline-flex justify-center items-center h-[44px]"
                 >
-                  <div className="px-3 py-2 text-sm font-semibold text-purple-400 shadow-xs inset-ring inset-ring-purple-400 hover:bg-(--c-violet-void-20) w-full sm:w-auto rounded-md bg-(--c-violet-void-40)">
+                  <div className="px-3 py-2 text-sm font-semibold text-(--c-violet-void-40) shadow-xs inset-ring inset-ring-purple-300 hover:bg-(--c-violet-void-80) w-full sm:w-auto rounded-md bg-(--c-violet-void-60)">
                     Cancel
                   </div>
                 </button>

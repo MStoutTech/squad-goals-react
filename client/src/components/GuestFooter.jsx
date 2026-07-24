@@ -13,7 +13,7 @@ function FooterLink({ linkText, linkTo }) {
 function SocialMediaIcon({ link, iconClassName }) {
   return (
     <a href={link}>
-      <li className="rounded-full bg-purple-300 text-[#100830] size-14 text-center p-4">
+      <li className="rounded-full bg-purple-300 text-(--c-violet-void) size-14 text-center p-4">
         <span className={`icon ${iconClassName}`}></span>
       </li>
     </a>
@@ -22,7 +22,7 @@ function SocialMediaIcon({ link, iconClassName }) {
 
 export default function GuestFooter() {
   return (
-    <footer className="bg-[#100830] text-purple-300 p-6">
+    <footer className="bg-(--c-violet-void) text-purple-300 p-6">
       <div className="flex flex-col md:flex-row justify-between lg:px-20">
         <div className="flex gap-20 text-sm">
           <ul>

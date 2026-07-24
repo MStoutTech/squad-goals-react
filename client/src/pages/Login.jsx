@@ -41,7 +41,7 @@ export default function Login() {
     <>
       <GuestHeader />
       <div className="px-6">
-        <main className="bg-(--c-violet-void-40) rounded-lg max-w-[550px] mx-auto mt-10 mb-40 lg:mt-20 text-sm text-purple-300 p-10 flex flex-col gap-1">
+        <main className="bg-(--c-violet-void-60) rounded-lg max-w-[550px] mx-auto mt-10 mb-40 lg:mt-20 text-sm text-purple-300 p-10 flex flex-col gap-1">
           {messages.length > 0 &&
             messages.map((el, index) => (
               <div className="alert alert-danger" key={index}>
