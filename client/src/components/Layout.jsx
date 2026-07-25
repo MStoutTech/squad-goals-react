@@ -114,11 +114,7 @@ export default function AuthLayout() {
               onClick={() => setShowUserOptions(!showUserOptions)}
               className="flex gap-2 items-center justify-end h-full cursor-pointer"
             >
-              <img
-                src="/imgs/icons/profile.png"
-                alt="profile icon"
-                className="block"
-              />
+              <img src="/imgs/icons/profile.png" alt="" className="block" />
               <span className="block">{userName}</span>
             </p>
           </li>

@@ -793,7 +793,7 @@ export default function Evaluation() {
           <h3 className="text-center mb-2">What's This?</h3>
           <div className="flex items-center justify-center gap-1 flex-wrap-reverse">
             <div className="w-[90px] m-x-auto shrink-0">
-              <img src="imgs/thinker.png" className="w-full" />
+              <img src="imgs/thinker.png" className="w-full" alt="" />
             </div>
             <div className="text-xs flex-1 min-w-[90px]">
               <p>
@@ -854,7 +854,7 @@ export default function Evaluation() {
           <h3 className="text-center mb-2">Notes</h3>
           <div className="flex items-center justify-center gap-1 flex-wrap-reverse">
             <div className="w-[90px] m-x-auto shrink-0">
-              <img src="imgs/takeevaluation.png" className="w-full" />
+              <img src="imgs/takeevaluation.png" className="w-full" alt="" />
             </div>
 
             <ul className="text-xs flex-1 min-w-[90px]">

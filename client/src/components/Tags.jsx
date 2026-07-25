@@ -3,6 +3,7 @@ export function RoleTag({ text, img }) {
     <span className="text-base inline border-2 rounded-xl py-1 px-3 text-white bg-(--c-violet-void-60) flex">
       <img
         src={img}
+        alt=""
         className="inline h-[20px] w-[20px] mr-2 -translate-y-[1px]"
       />
       {text}

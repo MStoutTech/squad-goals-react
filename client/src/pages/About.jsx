@@ -12,7 +12,7 @@ export default function About() {
         </h1>
         <img
           src="/imgs/team.png"
-          alt="astronaut team of two"
+          alt="silly astronaut team of two"
           className="mx-10"
         />
         <p>

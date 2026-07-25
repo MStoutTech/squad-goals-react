@@ -61,7 +61,7 @@ export default function SGBlog() {
         <div className="bg-[#100830] text-purple-300 m-6 md:mx-auto p-10 max-w-2xl sm:my-18 lg:mb-20 lg:max-w-4xl flex flex-col justify-center rounded-lg max-h-[400px]">
           <img
             src="/imgs/blog-slide1.png"
-            alt="someone posing with pointer finger up, phone text convo in the background"
+            alt=""
             className="self-center shrink h-50"
           />
           <p className="md:p-10 lg:px-30 shrink">

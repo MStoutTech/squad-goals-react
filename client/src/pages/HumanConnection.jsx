@@ -20,7 +20,7 @@ export default function HumanConnection() {
               <div className="max-w-32 max-h-32 p-2">
                 <img
                   src="/imgs/lonely-user.png"
-                  alt="illustration longingly looking at phone"
+                  alt="someone longingly looking at phone"
                   className=""
                 />
               </div>
@@ -31,7 +31,7 @@ export default function HumanConnection() {
               <div className="max-w-32 max-h-32 p-2">
                 <img
                   src="/imgs/unhappy-user.png"
-                  alt="sad illustrated girl holding hands up shrugging"
+                  alt="sad person shrugging"
                   className=""
                 />
               </div>
@@ -44,7 +44,7 @@ export default function HumanConnection() {
               <div className="max-w-32 max-h-32 p-2">
                 <img
                   src="/imgs/mental-health.png"
-                  alt="illustration showing someone talking about mental health"
+                  alt="someone talking to a counselor"
                   className=""
                 />
               </div>
@@ -87,7 +87,7 @@ export default function HumanConnection() {
           <div className="flex flex-col md:flex-row mb-10">
             <img
               src="imgs/interactions.png"
-              alt="illustration of people walking by each other, wireframe connections in the background"
+              alt=""
               className="md:w-1/3 self-center"
             />
             <p className="py-5 md:w-2/3">
@@ -102,7 +102,7 @@ export default function HumanConnection() {
 
           <img
             src="/imgs/dunbars-number.png"
-            alt="diagram showing sweet spot of strong bonds being about 150 people"
+            alt="diagram of Dunbar's number, emphasising sweet spot of strong bonds being about 150 people"
           />
           <div className="flex flex-col md:flex-row my-10">
             <p className="py-5 md:w-2/3">
@@ -117,7 +117,7 @@ export default function HumanConnection() {
             </p>
             <img
               src="/imgs/online-friends.png"
-              alt="illustration of girl kneeling by a large laptop showing users with star rankings"
+              alt=""
               className="md:w-1/3 self-center"
             />
           </div>
@@ -133,10 +133,7 @@ export default function HumanConnection() {
         </div>
 
         <div className="mx-auto my-6 px-6 max-w-2xl sm:my-18 lg:my-20 lg:max-w-4xl flex flex-col justify-center">
-          <img
-            src="/imgs/community-group.png"
-            alt="illustration of a group of 4 diverse people talking"
-          />
+          <img src="/imgs/community-group.png" alt="" />
           <h3 className="py-5 text-xl mx-auto">Stay socially connected to:</h3>
           <ul className="list-disc pl-6 mx-auto">
             <li className="my-3">Improve quality of life</li>

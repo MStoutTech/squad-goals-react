@@ -11,7 +11,9 @@ export function ContactAvatar({ contact, className = "" }) {
       {imageUrl ? (
         <img
           src={imageUrl}
-          alt={`${contact?.firstName || ""} ${contact?.lastName || ""}`.trim()}
+          alt={
+            "" /*`${contact?.firstName || ""} ${contact?.lastName || ""}`.trim()*/
+          }
           className="w-full h-full object-cover"
         />
       ) : (

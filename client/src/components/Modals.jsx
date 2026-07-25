@@ -54,7 +54,6 @@ export function PrimaryModal({
   showConfirmation,
   confirmationText,
   confirmationImg,
-  confirmationAlt,
   children,
 }) {
   const modalId = windowTitle.split(" ").join("-") + "-modal";
@@ -80,11 +79,7 @@ export function PrimaryModal({
           >
             <div className="bg-(--c-purple-tech-40) w-[100%] flex flex-col py-6 items-center">
               <h1 className="my-3 text-3xl">{confirmationText}</h1>
-              <img
-                src={confirmationImg}
-                alt={confirmationAlt}
-                className="w-[40px] block"
-              />
+              <img src={confirmationImg} alt="" className="w-[40px] block" />
             </div>
           </div>
         ) : (

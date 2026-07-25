@@ -4,7 +4,7 @@ function ArticleCard({ title, preview }) {
       <div className="border-2 border-(--c-purple-tech-40) rounded-lg w-[175px] h-[120px] self-center">
         <img
           src="../imgs/article.png"
-          alt="article image"
+          alt=""
           className="w-[100%] justify-self-center"
         />
       </div>
