@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import useFocusReturn from "../utils/useFocusReturn";
 
 export function AnimatedCallToAction(props) {
   const isButton = props.type === "button";
@@ -58,12 +59,16 @@ export function PrimaryButton({
   isGlowing,
   buttonClassName,
   divClassName,
+  ariaControls,
+  ariaExpanded,
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={`${buttonClassName} min-h-[44px] min-w-[44px] flex items-center`}
+      aria-controls={ariaControls}
+      aria-expanded={ariaExpanded}
     >
       <div
         className={`${isActive == true ? "border-white text-white drop-shadow-white" : " hover:bg-(--c-violet-void-60) hover:text-white"} ${isGlowing && "glow-walkthrough"} ${divClassName} text-sm p-2 border rounded-lg`}
@@ -76,8 +81,17 @@ export function PrimaryButton({
 
 export function SortMissions({ missionList, setMissionList }) {
   const [showList, setShowList] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const { saveFocus, restoreFocus } = useFocusReturn();
+
+  const menuRef = useRef(null);
 
   function toggleList() {
+    if (!showList) {
+      saveFocus();
+    } else {
+      restoreFocus();
+    }
     setShowList((showList) => !showList);
   }
 
@@ -113,31 +127,69 @@ export function SortMissions({ missionList, setMissionList }) {
     );
     toggleList();
   }
+
+  useEffect(() => {
+    if (!menuRef.current) {
+      return;
+    }
+    const focusArray = Array.from(
+      menuRef.current.querySelectorAll("button:not([disabled])"),
+    );
+    focusArray[focusedIndex].focus();
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowDown" || e.key === "Tab") {
+        e.preventDefault();
+        setFocusedIndex((prev) => (prev + 1) % focusArray.length);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setFocusedIndex(
+          (prev) => (prev - 1 + focusArray.length) % focusArray.length,
+        );
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showList, focusedIndex]);
+
   return (
     <>
-      <PrimaryButton innerText="sort" onClick={toggleList} />
+      <PrimaryButton
+        innerText="sort"
+        onClick={toggleList}
+        ariaControls={"sort-menu"}
+        ariaExpanded={showList}
+      />
       {showList && (
-        <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-45 text-white overflow-y-auto text-sm">
-          <li
-            key={"lastName"}
-            onClick={sortLastName}
-            className="p-2 hover:bg-purple-400 cursor-pointer h-[44px] flex items-center"
-          >
-            Last Name
+        <ul
+          ref={menuRef}
+          id="sort-menu"
+          className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-45 text-white overflow-y-auto text-sm"
+        >
+          <li key={"lastName"}>
+            <button
+              onClick={sortLastName}
+              className="p-2 hover:bg-purple-400 focus:bg-purple-400 cursor-pointer h-[44px] flex items-center w-[100%]"
+            >
+              Last Name
+            </button>
           </li>
-          <li
-            key={"firstName"}
-            onClick={sortFirstName}
-            className="p-2 hover:bg-purple-400 cursor-pointer h-[44px] flex items-center"
-          >
-            First Name
+          <li key={"firstName"}>
+            <button
+              onClick={sortFirstName}
+              className="p-2 hover:bg-purple-400 focus:bg-purple-400 cursor-pointer h-[44px] flex items-center w-[100%]"
+            >
+              First Name
+            </button>
           </li>
-          <li
-            key={"score"}
-            onClick={sortScore}
-            className="p-2 hover:bg-purple-400 cursor-pointer h-[44px] flex items-center"
-          >
-            Score
+          <li key={"score"}>
+            <button
+              onClick={sortScore}
+              className="p-2 hover:bg-purple-400 focus:bg-purple-400 cursor-pointer h-[44px] flex items-center w-[100%]"
+            >
+              Score
+            </button>
           </li>
         </ul>
       )}

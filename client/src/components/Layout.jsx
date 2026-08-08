@@ -15,7 +15,7 @@ export function PageTab({ pageTitle, pageName, link, icon, iconAlt, text }) {
             active
               ? "text-white border-b-1 border-white p-2"
               : "hover:rounded-md hover:bg-(--c-violet-void-80) --c-purple-tech-40 border-b-1 border-(--c-violet-void) p-2 "
-          } min-h-[44px] hover:text-white flex`}
+          } min-h-[44px] hover:text-white flex cursor-pointer`}
       >
         <div className="mr-3 w-[28px]">
           <img src={icon} alt={iconAlt} />
@@ -65,7 +65,7 @@ export default function AuthLayout() {
     "/evaluation": "Evaluation",
     "/train": "Train",
     "/settings": "Settings",
-    "/profile": "Settings > Profile",
+    "/settings/profile": "Settings > Profile",
   };
   const pageTitle = titles[locationPath] || "Squad Goals";
   const { user } = useContext(AuthContext);
@@ -103,20 +103,21 @@ export default function AuthLayout() {
             iconAlt="settings icon"
             text="Settings"
           />
-          <li
-            className={
-              pageTitle === "Profile"
-                ? "text-white border-b-1 border-white p-2 flex items-center gap-2"
-                : "hover:rounded-md hover:bg-(--c-violet-void-80) hover:text-white border-b-1 border-(--c-violet-void) p-2 flex items-center "
-            }
-          >
-            <p
+          <li>
+            <button
+              type="button"
+              className={`${
+                pageTitle === "Settings > Profile"
+                  ? "text-white border-white "
+                  : "hover:rounded-md hover:bg-(--c-violet-void-80) hover:text-white border-(--c-violet-void) "
+              } border-b-1 block flex items-center p-2 cursor-pointer min-h-[44px]`}
               onClick={() => setShowUserOptions(!showUserOptions)}
-              className="flex gap-2 items-center justify-end h-full cursor-pointer"
             >
-              <img src="/imgs/icons/profile.png" alt="" className="block" />
-              <span className="block">{userName}</span>
-            </p>
+              <div className="mr-1 w-[28px]">
+                <img src="/imgs/icons/profile.png" alt="" />
+              </div>
+              {userName}
+            </button>
           </li>
           {showUserOptions && (
             <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 w-26 rounded-md mt-26 ml-42 text-white max-h-40 text-sm">
@@ -129,14 +130,17 @@ export default function AuthLayout() {
                   Profile
                 </Link>
               </li>
-              <li
-                className="p-2 hover:bg-purple-400 cursor-pointer"
-                onClick={() => {
-                  setShowUserOptions(false);
-                  setIsLogoutModalOpen(true);
-                }}
-              >
-                Logout
+              <li>
+                <button
+                  role="button"
+                  className="flex justify-start p-2 block hover:bg-purple-400 cursor-pointer w-full"
+                  onClick={() => {
+                    setShowUserOptions(false);
+                    setIsLogoutModalOpen(true);
+                  }}
+                >
+                  Logout
+                </button>
               </li>
             </ul>
           )}

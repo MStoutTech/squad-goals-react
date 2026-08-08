@@ -3,11 +3,11 @@ import { ToastContext } from "../context/ToastContext";
 import { AuthContext } from "../context/AuthContext";
 import { WalkthroughContext } from "../context/WalkthroughContext";
 import { AnimatedCallToAction, PrimaryButton } from "../components/Buttons";
-import CircularProgress from "@mui/material/CircularProgress";
 import { CategoryTag, RoleTag } from "../components/Tags";
 import ContactSearch from "../components/Search";
 import { roleLabels } from "../utils/roleHelpers";
 import { formatPhoneNumber } from "../utils/formatPhoneNumber";
+import CircularProgress from "@mui/material/CircularProgress";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Accordion from "@mui/material/Accordion";
@@ -20,6 +20,7 @@ import {
 } from "../components/ContactAvatar";
 import { apiFetch } from "../utils/apiUrl";
 import { PrimaryModal } from "../components/Modals";
+import useFocusReturn from "../utils/useFocusReturn";
 import {
   ModalTextInput,
   ModalSelectInput,
@@ -27,6 +28,7 @@ import {
   ModalCheckbox,
   ModalTextarea,
   ModalDateInput,
+  MultipleSelectChip,
 } from "../components/Inputs";
 
 function FilterAndSearch({
@@ -42,17 +44,19 @@ function FilterAndSearch({
   setTagFilter,
   squadTotal,
 }) {
+  const { saveFocus, restoreFocus } = useFocusReturn();
   const [isAddContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
   const [showTagsList, setShowTagsList] = useState(false);
 
   const userTagsList = [...tags, ...evalTags].map((tag) => (
-    <li
-      key={tag}
-      onClick={() => selectTag(tag)}
-      className="p-2 hover:bg-purple-400 cursor-pointer"
-    >
-      {tag}
+    <li key={tag}>
+      <button
+        onClick={() => selectTag(tag)}
+        className="p-2 hover:bg-purple-400 cursor-pointer w-[100%] text-left"
+      >
+        {tag}
+      </button>
     </li>
   ));
 
@@ -64,12 +68,15 @@ function FilterAndSearch({
   function closeModal() {
     setIsContactModalOpen(false);
     setIsRolesModalOpen(false);
+    restoreFocus();
   }
   function openAddContactModal() {
     setIsContactModalOpen(true);
+    saveFocus();
   }
   function openRolesModal() {
     setIsRolesModalOpen(true);
+    saveFocus();
   }
 
   const handleChange = (event) => {
@@ -326,7 +333,7 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
   const roleSelectors = Object.keys(selectedRoles).map((role) => (
     <div key={role}>
       <p className="text-xs">{roleDescription[role]}</p>
-      <label htmlFor={{ role }} className="text-xs text-white">
+      <label htmlFor={role} className="text-xs text-white">
         {roleLabels[role]}
       </label>
       {selectedRoles[role] ? (
@@ -441,15 +448,15 @@ function ContactList({
   const styledContacts = activeList.map((contact) => (
     <li
       key={contact._id}
-      className={`${contact._id == featuredContact._id ? "bg-(--c-violet-void-60)" : "bg-(--c-violet-void)"}  rounded-lg hover:bg-(--c-violet-void-60) `}
+      className={`${contact._id == featuredContact._id ? "bg-(--c-violet-void-60)" : "bg-(--c-violet-void)"} rounded-lg`}
     >
-      <div
-        className={`${contact._id == featuredContact._id ? "text-white" : ""} flex gap-2 cursor-pointer px-3 py-2 hover:text-white`}
+      <button
+        className={`${contact._id == featuredContact._id ? "text-white" : ""} block flex gap-2 focus:bg-(--c-violet-void-60) hover:bg-(--c-violet-void-60) cursor-pointer px-3 py-2 hover:text-white rounded-lg`}
         onClick={() => toggleSelect(contact)}
       >
         <ContactAvatar className="size-6 mt-3 mx-3" contact={contact} />
 
-        <div className="w-[150px]">
+        <div className="flex flex-col items-start w-[150px]">
           <h4 className="text-sm">
             {contact.nickname ? contact.nickname : contact.firstName}
           </h4>
@@ -458,7 +465,7 @@ function ContactList({
           </p>
           <p className="text-sm">Score: {contact.evalScore}</p>
         </div>
-        <div className="w-[150px] hidden xl:block">
+        <div className=" flex-col items-start w-[150px] hidden xl:flex">
           <p>
             <svg
               width="20"
@@ -495,7 +502,7 @@ function ContactList({
               : "N/A"}
           </p>
         </div>
-      </div>
+      </button>
       <div className="block md:hidden">
         {featuredContact._id == contact._id && (
           <FeaturedContact
@@ -946,6 +953,7 @@ function FeaturedContact({
   evalTags,
   evalTotal,
 }) {
+  const { saveFocus, restoreFocus } = useFocusReturn();
   const [contactHistory, setContactHistory] = useState([]);
   const [isMissionHistoryLoading, setIsMissionHistoryLoading] = useState(false);
   const [isEditContactOpen, setIsEditContactOpen] = useState(false);
@@ -1053,6 +1061,7 @@ function FeaturedContact({
 
   function closeEditModal() {
     setIsEditContactOpen(false);
+    restoreFocus();
   }
   function getZodiacSign(birthDate) {
     const zodiacSigns = [
@@ -1113,7 +1122,10 @@ function FeaturedContact({
                   <div className="block md:hidden">
                     <PrimaryButton
                       innerText="edit"
-                      onClick={() => setIsEditContactOpen(true)}
+                      onClick={() => {
+                        setIsEditContactOpen(true);
+                        saveFocus();
+                      }}
                     />
                   </div>
                   {featuredContact.friendshipRole && (
@@ -1430,34 +1442,6 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
   const [tagSelector, setTagSelector] = useState("");
   const [showTagInput, setShowTagInput] = useState(false);
   const [tagInputValue, setTagInputValue] = useState("");
-
-  const tagList =
-    userTags && userTags.length > 0 ? (
-      userTags.map((tag) => (
-        <option key={tag} value={tag}>
-          {tag}
-        </option>
-      ))
-    ) : (
-      <option key={"no-tags"} value="none" disabled>
-        no tags
-      </option>
-    );
-
-  const contactTags = contactDetails.tags.map((tag, i) => (
-    <li
-      key={tag}
-      className="min-w-[44px] min-h-[44px] flex items-center"
-      onClick={() => removeTag(i)}
-    >
-      <div className="text-xs font-bold rounded m-1 py-1 px-2 text-(--c-violet-void-80) bg-(--c-purple-tech-80)">
-        {tag}
-        <button type="button" className="cursor-pointer pl-2">
-          x
-        </button>
-      </div>
-    </li>
-  ));
 
   const socialsList = contactDetails.socials.map((entry, index) => (
     <li className="flex gap-2" key={`${index}${entry.platform}`}>
@@ -1988,31 +1972,13 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
             }
           />
 
-          <label htmlFor="editTags" className="text-xs text-white">
-            Tags
-          </label>
-          <ul className="flex">{contactTags}</ul>
-          <ModalSelectInput
-            inputId="editTags"
-            inputName="editTags"
-            value={tagSelector}
-            onChange={(e) => {
-              if (
-                !contactDetails.tags.includes(e.target.value) &&
-                e.target.value !== ""
-              ) {
-                setContactDetails((prev) => ({
-                  ...prev,
-                  tags: [...prev.tags, e.target.value],
-                }));
-              }
-            }}
-          >
-            <option key={"tag-selectTag"} value="">
-              --Select a tag --
-            </option>
-            {tagList}
-          </ModalSelectInput>
+          <MultipleSelectChip
+            tags={userTags}
+            selectedTags={contactDetails.tags}
+            updateTags={(value) =>
+              setContactDetails((prev) => ({ ...prev, tags: value }))
+            }
+          />
           {!showTagInput && (
             <PrimaryButton
               innerText="+ Add Tag"

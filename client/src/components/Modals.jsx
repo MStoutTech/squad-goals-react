@@ -1,7 +1,8 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import useFocusReturn from "../utils/useFocusReturn";
 
 export function ConfirmLogoutModal({ closeModal }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -57,6 +58,51 @@ export function PrimaryModal({
   children,
 }) {
   const modalId = windowTitle.split(" ").join("-") + "-modal";
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (!modalRef.current) {
+      return;
+    }
+    function refreshList() {
+      return Array.from(
+        modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+    }
+    let elementList = refreshList();
+    elementList[0]?.focus();
+    const handleKeyDown = (e) => {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        elementList = refreshList();
+
+        if (
+          (e.key === "Tab" && !elementList.includes(document.activeElement)) ||
+          (e.key === "Tab" &&
+            document.activeElement === elementList[elementList.length - 1])
+        ) {
+          elementList[0].focus();
+        } else if (
+          e.shiftKey &&
+          e.key === "Tab" &&
+          document.activeElement === elementList[0]
+        ) {
+          elementList[elementList.length - 1].focus();
+        } else if (e.shiftKey && e.key === "Tab") {
+          elementList[elementList.indexOf(document.activeElement) - 1].focus();
+        } else {
+          elementList[elementList.indexOf(document.activeElement) + 1].focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [modalRef]);
+
   return (
     <div
       id={modalId}
@@ -83,7 +129,11 @@ export function PrimaryModal({
             </div>
           </div>
         ) : (
-          <div className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95">
+          <div
+            ref={modalRef}
+            onClick={(e) => e.stopPropagation()}
+            className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95"
+          >
             <div className="bg-(--c-violet-void-40)/30  px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-5">
               <div className="mt-0 sm:ml-4 text-left">
                 {/*Window title*/}

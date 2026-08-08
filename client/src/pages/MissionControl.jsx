@@ -20,6 +20,7 @@ import {
   IconButton,
 } from "../components/Buttons";
 import { PrimaryModal } from "../components/Modals";
+import useFocusReturn from "../utils/useFocusReturn";
 import {
   ModalDateInput,
   ModalRadio,
@@ -164,6 +165,7 @@ function CompletedMissions({ completedList }) {
 }
 
 export default function MissionControl() {
+  const { saveFocus, restoreFocus } = useFocusReturn();
   const { showToast } = useContext(ToastContext);
   const { hasContacts, user, setAuthIssue } = useContext(AuthContext);
   const { dismissedIntros, dismissIntro } = useContext(WalkthroughContext);
@@ -446,6 +448,8 @@ export default function MissionControl() {
   const activeMissions = missionList.map((mission) => (
     <li
       key={mission._id}
+      tabIndex="0"
+      role="button"
       className={`${mission._id == featuredMission._id ? "mission-list-active" : "border-purple-300 hover:bg-(--c-violet-void-80) hover:text-white"} mission-list-item px-3 border rounded-lg flex items-center justify-between`}
       style={
         mission._id == featuredMission._id
@@ -456,6 +460,12 @@ export default function MissionControl() {
       data-friendlist={
         mission.contact.friendList || mission.contact.connectionInstinct
       }
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleMissionClick(mission);
+        }
+      }}
     >
       {mission.contact.firstName} {mission.contact.lastName}
       <IconButton
@@ -505,6 +515,7 @@ export default function MissionControl() {
     }
     setIsAddMissionModalOpen(false);
     setIsMissionDebriefModalOpen(false);
+    restoreFocus();
   }
   return (
     <>
@@ -529,7 +540,10 @@ export default function MissionControl() {
             {/*ADD Mission*/}
             <PrimaryButton
               innerText="add"
-              onClick={openAddMissionModal}
+              onClick={() => {
+                saveFocus();
+                openAddMissionModal();
+              }}
               isGlowing={
                 hasContacts && !featuredMission?._id && !completedList.length
               }
@@ -662,7 +676,10 @@ export default function MissionControl() {
                       />
                       {featuredMission.missionType == "field" ? (
                         <MissionDebriefButton
-                          openMissionDebrief={openMissionDebrief}
+                          openMissionDebrief={() => {
+                            saveFocus();
+                            openMissionDebrief();
+                          }}
                           width="w-[100%]"
                         />
                       ) : !missionStarted ? (
@@ -674,7 +691,10 @@ export default function MissionControl() {
                         <TimerDisplay
                           missionTimer={missionTimer}
                           missionStartOver={missionStartOver}
-                          openMissionDebrief={openMissionDebrief}
+                          openMissionDebrief={() => {
+                            saveFocus();
+                            openMissionDebrief();
+                          }}
                           isMissionPaused={isMissionPaused}
                         />
                       )}

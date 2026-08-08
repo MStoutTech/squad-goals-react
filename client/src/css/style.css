@@ -190,3 +190,7 @@ button {
   animation: glow-pulse-walkthrough 1.8s ease-in-out infinite;
 }
 
+:focus-visible {
+  outline-style: solid;
+  outline-color: #3574e9;
+}
