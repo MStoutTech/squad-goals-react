@@ -28,6 +28,8 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
   const { showToast } = useContext(ToastContext);
   const [isSaving, setIsSaving] = useState(false);
 
+  const lastKeyRef = useRef(null);
+
   const pageTitle =
     questionnaireType == "contacts"
       ? `${pageContactSubject?.firstName} ${pageContactSubject?.nickname && pageContactSubject?.nickname} ${pageContactSubject?.lastName}`
@@ -204,6 +206,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
                     : question.options[Math.floor(question.options.length / 2)]
                         .baseScore
                 }
+                onKeyDown={(e) => (lastKeyRef.current = e.key)}
                 onChange={(e) => {
                   const snapScore = snapSliderValue(
                     e.target.value,
@@ -467,14 +470,18 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
   function snapSliderValue(slider, valueArray) {
     let minDiff = Infinity;
     let snapTo = "";
-    valueArray.forEach((value) => {
+    const filteredArray =
+      lastKeyRef.current === "ArrowUp" || lastKeyRef.current === "ArrowRight"
+        ? valueArray.filter((value) => Number(value) >= Number(slider))
+        : valueArray;
+    filteredArray.forEach((value) => {
       if (Math.abs(Number(slider) - Number(value)) < minDiff) {
         snapTo = value;
         minDiff = Math.abs(Number(slider) - Number(value));
       }
     });
 
-    return snapTo;
+    return snapTo || valueArray[valueArray.length - 1];
   }
 
   const saveAnswers = async () => {
