@@ -815,22 +815,19 @@ function TimerDisplay({
     return () => clearInterval(countdownInterval.current);
   }, [isMissionPaused]);
   return (
-    <div id="mission-timer" className="text-center mt-4">
+    <div id="mission-timer" className="text-center my-4">
       <h2 className="text-xl text-white mb-4" id="timer-header">
         Time Remaining:
       </h2>
-      <div id="timer-display" className="text-4xl font-bold text-purple-300">
+      <div
+        id="timer-display"
+        className="mb-4 text-4xl font-bold text-purple-300"
+      >
         {`${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`}
       </div>
 
       <div className="flex justify-center gap-4 mt-6">
-        <button
-          onClick={missionStartOver}
-          id="start-over"
-          className="action-button px-4 py-2"
-        >
-          Start Over
-        </button>
+        <PrimaryButton onClick={missionStartOver} innerText="Restart" />
         <MissionDebriefButton openMissionDebrief={openMissionDebrief} />
       </div>
     </div>
@@ -844,7 +841,7 @@ function MissionDebriefButton({ openMissionDebrief, width }) {
       onClick={openMissionDebrief}
       className={`${width} action-button px-4 py-2`}
     >
-      MISSION DEBRIEF
+      DEBRIEF
     </button>
   );
 }

@@ -15,12 +15,12 @@ export function AnimatedCallToAction(props) {
       {isButton ? (
         <button
           type="submit"
-          className="action-button text-lg py-2 px-15 shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 z-10 relative"
+          className="action-button text-sm md:text-lg py-2 px-15 shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 z-10 relative"
         >
           {props.text.toUpperCase()}
         </button>
       ) : (
-        <span className="action-button text-lg py-2 px-15 shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 z-10 relative">
+        <span className="action-button text-sm md:text-lg py-2 px-15 shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 z-10 relative">
           {props.text.toUpperCase()}
         </span>
       )}
