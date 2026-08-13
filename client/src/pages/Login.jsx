@@ -55,14 +55,14 @@ export default function Login() {
               type="email"
               id="loginInputEmail1"
               name="email"
-              className="border border-purple-300 rounded-md px-3 py-2 w-full h-[44px] mb-6"
+              className="text-[16px] md:text-sm border border-purple-300 rounded-md px-3 py-2 w-full h-[44px] mb-6"
             />
             <label htmlFor="loginInputPassword1">Password</label>
             <input
               type="password"
               id="loginInputPassword1"
               name="password"
-              className="border border-purple-300 rounded-md px-3 py-2 w-full h-[44px] mb-6"
+              className="text-[16px] md:text-sm border border-purple-300 rounded-md px-3 py-2 w-full h-[44px] mb-6"
             />
             <div className="flex justify-center mt-3">
               <AnimatedCallToAction type="button" text="Login" />
