@@ -29,7 +29,7 @@ export function ModalTextInput({
           id={inputId}
           name={inputName}
           value={value}
-          className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px] w-full"
+          className="text-[16px] md:text-sm border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px] w-full"
           onChange={onChange ? onChange : ""}
           required={required}
         />
@@ -38,7 +38,7 @@ export function ModalTextInput({
           type={type}
           id={inputId}
           name={inputName}
-          className="border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px]"
+          className="text-[16px] md:text-sm border border-purple-300 rounded-md px-3 py-2 mb-6 h-[44px]"
           required={required}
         />
       )}
@@ -133,7 +133,7 @@ export function ModalTextarea({
         <textarea
           name={inputName}
           id={inputId}
-          className={`${className} border border-purple-300 rounded-md px-3 py-2 mb-6`}
+          className={`${className} text-[16px] md:text-sm border border-purple-300 rounded-md px-3 py-2 mb-6`}
           value={value}
           onChange={onChange}
           required={required}
@@ -143,7 +143,7 @@ export function ModalTextarea({
         <textarea
           name={inputName}
           id={inputId}
-          className={`${className} border border-purple-300 rounded-md px-3 py-2 mb-6`}
+          className={`${className} text-[16px] md:text-sm border border-purple-300 rounded-md px-3 py-2 mb-6`}
           required={required}
           placeholder={placeholder}
         ></textarea>
@@ -168,7 +168,7 @@ export function ModalDateInput({
         <input
           type="date"
           name={inputName}
-          className="border border-purple-300 rounded-md px-3 py-2 mb-6 min-h-[44px]"
+          className="text-[16px] md:text-sm border border-purple-300 rounded-md px-3 py-2 mb-6 min-h-[44px]"
           value={value}
           onChange={onChange}
           required={required}
@@ -177,7 +177,7 @@ export function ModalDateInput({
         <input
           type="date"
           name={inputName}
-          className="border border-purple-300 rounded-md px-3 py-2 mb-6 min-h-[44px]"
+          className="text-[16px] md:text-sm border border-purple-300 rounded-md px-3 py-2 mb-6 min-h-[44px]"
           required={required}
         />
       )}
