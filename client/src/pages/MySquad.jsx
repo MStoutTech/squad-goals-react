@@ -818,7 +818,7 @@ export default function MySquad() {
           "& .MuiTab-root": {
             color: "var(--c-purple-tech-60)",
             fontFamily: "Georama",
-            fontSize: 17,
+            fontSize: 14,
           },
           "& .MuiTabs-indicator": { backgroundColor: "white" },
         }}
@@ -1101,7 +1101,7 @@ function FeaturedContact({
     >
       <div className="p-2 md:p-0 bg-(--c-violet-void) rounded md:min-w-[450px] w-[100%] lg:min-h-[400px] lg:max-h-[calc(100vh-13.5rem)] lg:overflow-auto">
         {/*Top Basic Info Section*/}
-        <div className="md:flex md:flex-wrap gap-4 p-3">
+        <div className="md:flex md:flex-wrap gap-4 px-2 md:p-3">
           {/*ID and scheduling */}
           <div className="md:flex md:flex-wrap justify-between gap-x-10 gap-y-2 md:min-w-[450px]">
             {/*Img and name*/}
@@ -1214,7 +1214,7 @@ function FeaturedContact({
           )}
         </div>
         {/*Main Area*/}
-        <div className="flex flex-col md:flex-row md:flex-wrap-reverse p-4 gap-x-4 md:gap-y-2 ">
+        <div className="flex flex-col md:flex-row md:flex-wrap-reverse px-2 md:p-4 gap-x-4 md:gap-y-2 ">
           {/*History */}
           <div className="basis-8 min-w-[300px] grow-1 hidden md:block">
             <h4>Mission History</h4>
@@ -1232,7 +1232,7 @@ function FeaturedContact({
           </div>
           {/*Contact details */}
           <div
-            className="basis-7 grow-1 min-w-[300px]"
+            className="basis-7 grow-1 w-[100%] md:min-w-[300px] my-4 md:my-0"
             style={{ color: `var(${contactTheme})` }}
           >
             <h4 className="border-b-4 text-base">Details</h4>
