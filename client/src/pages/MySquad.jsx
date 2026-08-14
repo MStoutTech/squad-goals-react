@@ -129,7 +129,7 @@ function FilterAndSearch({
             isActive={"tag" == activeFilter}
           />
           {showTagsList && (
-            <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-1 text-white max-h-40 overflow-y-auto text-sm">
+            <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-1 text-white max-h-40 overflow-y-auto text-sm -translate-x-4 md:-translate-x-0">
               {userTagsList}
             </ul>
           )}
