@@ -687,9 +687,9 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
 
   return (
     <div
-      className={`${isSaving && "cursor-progress"} rounded-xl bg-(--c-purple-tech-20) md:w-[1000px] py-7 px-7 lg:px-15 flex flex-col lg:min-h-[450px] lg:max-h-[calc(100vh-6rem)] mb-20 lg:mb-0`}
+      className={`${isSaving && "cursor-progress"} rounded-xl bg-(--c-purple-tech-20) md:w-[1000px] p-4 md:p-7 lg:px-15 flex flex-col lg:min-h-[450px] lg:max-h-[calc(100vh-6rem)] mb-20 lg:mb-0`}
     >
-      <div className="flex flex-col md:flex-row md:items-center justify-end">
+      <div className="flex flex-col md:flex-row md:items-center justify-end mb-3">
         <label htmlFor="questionChange" className="text-xs mr-2">
           {/*Question or Contact */}
           {questionnaireType == "contacts"
@@ -793,7 +793,7 @@ export default function Evaluation() {
     setIsCustomSelectModalOpen(false);
   }
   return (
-    <main className="flex flex-col md:flex-row gap-5 p-2 md:p-4 lg:pt-12">
+    <main className="flex flex-col md:flex-row gap-5 py-2 md:p-4 lg:pt-12">
       {/*Side section */}
       <div className="md:max-w-[400px] flex flex-col gap-4">
         <InfoSection>
@@ -932,14 +932,20 @@ function CustomSelectionModal({
       confirmOnClick={startEvaluation}
     >
       {customGroup.length < 15 ? (
-        <ContactSearch
-          onSelect={(contact) => {
-            setShowErrorMessage(false);
-            setCustomGroup((prev) => [...prev, contact]);
-          }}
-          excludeIds={customGroup.map((contact) => contact._id)}
-          clearOnSelect={true}
-        />
+        <label
+          htmlFor="contact-search-input"
+          className="text-xs text-white w-full"
+        >
+          Search Contacts
+          <ContactSearch
+            onSelect={(contact) => {
+              setShowErrorMessage(false);
+              setCustomGroup((prev) => [...prev, contact]);
+            }}
+            excludeIds={customGroup.map((contact) => contact._id)}
+            clearOnSelect={true}
+          />
+        </label>
       ) : (
         <p>Custom List Limit Reached</p>
       )}
