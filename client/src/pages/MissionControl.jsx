@@ -304,7 +304,7 @@ export default function MissionControl() {
   const activeMissionsMobile = missionList.map((mission) => (
     <li
       key={mission._id}
-      className="bg-(--c-light-coral-80)/20 border-(--c-light-coral) border rounded-lg p-3 featured-mission-section"
+      className="bg-(--c-light-coral-80)/20 border-(--c-light-coral) border rounded-lg p-4 featured-mission-section max-w-[343px]"
       style={{
         "--highlight-color": `var(${
           themeColor[
@@ -327,7 +327,7 @@ export default function MissionControl() {
           </h4>
 
           <ContactAvatar
-            className="size-24 border-3 rounded-sm"
+            className="size-20 md:size-24 border-3 rounded-sm"
             contact={mission.contact}
           />
           <span className="text-sm">
@@ -354,7 +354,7 @@ export default function MissionControl() {
           />
         </div>
         {/*mission actions*/}
-        <section className="min-w-[260px]">
+        <section>
           <span className="text-sm text-white" id="featured-last-contact">
             Last Contact:{" "}
             {mission.contact.lastContact
@@ -531,7 +531,7 @@ export default function MissionControl() {
         <MissionStatistics statistics={statistics} />
         <News />
         <section className="my-6 lg:my-0 col-span-12 min-[1420px]:col-span-10 bg-(--c-violet-void-80) rounded-lg md:px-6 py-3">
-          <div className="flex justify-between items-center mb-3 mx-6 md:mx-0">
+          <div className="flex justify-between items-center mb-3 mx-4 md:mx-0">
             <SortMissions
               missionList={missionList}
               setMissionList={setMissionList}
@@ -746,7 +746,7 @@ function ContactMissionForm({ missionStart, contact }) {
     <form
       onSubmit={missionStart}
       id="mission-form"
-      className="text-sm flex flex-col gap-2"
+      className="text-sm flex flex-col gap-2 "
     >
       <label htmlFor="time-select" className="text-xs text-white">
         Time
@@ -782,7 +782,7 @@ function ContactMissionForm({ missionStart, contact }) {
       </select>
       <div className="flex justify-center my-3">
         <div className="particle-hover mx-auto text-center">
-          <AnimatedCallToAction type="button" text="Start Mission" />
+          <AnimatedCallToAction type="button" text="Start" />
         </div>
       </div>
     </form>

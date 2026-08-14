@@ -151,7 +151,7 @@ export default function AuthLayout() {
           )}
         </ul>
       </header>
-      <div className="px-6 lg:px-0 pt-16 lg:pt-6 flex">
+      <div className="px-4 lg:px-0 pt-16 lg:pt-6 flex">
         <aside className="hidden lg:flex text-purple-300 min-h-[calc(100vh-2rem)] flex-col w-[210px] pr-6 shrink-0 border-r-1 border-inherit justify-between pb-16">
           <ul className="flex flex-col gap-12 pl-9 my-12">
             <PageTab
