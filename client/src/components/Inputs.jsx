@@ -234,7 +234,7 @@ export function MultipleSelectChip({ tags, selectedTags, updateTags }) {
 
   return (
     <div>
-      <FormControl sx={{ m: 0, width: 446 }}>
+      <FormControl sx={{ m: 0, mb: 2, width: "100%" }}>
         <InputLabel
           id="contact-tags-input"
           className="text-md text-white font-[Armata]"
@@ -247,6 +247,7 @@ export function MultipleSelectChip({ tags, selectedTags, updateTags }) {
           sx={{
             "& .MuiOutlinedInput-notchedOutline": {
               borderColor: "var(--c-purple-tech-40)",
+              borderRadius: "5px",
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
               borderColor: "var(--c-purple-tech-60)",
