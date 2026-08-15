@@ -48,6 +48,7 @@ function FilterAndSearch({
   const [isAddContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
   const [showTagsList, setShowTagsList] = useState(false);
+  const openTagsListNode = useRef(null);
 
   const userTagsList = [...tags, ...evalTags].map((tag) => (
     <li key={tag}>
@@ -88,6 +89,22 @@ function FilterAndSearch({
     setShowTagsList((showTagsList) => !showTagsList);
   }
 
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (!openTagsListNode.current.contains(e.target)) {
+        {
+          setShowTagsList(false);
+        }
+      }
+    }
+    if (showTagsList) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showTagsList]);
+
   return (
     <div className="w-full mb-2 md:mb-6">
       <ul className="flex flex-wrap gap-2">
@@ -119,7 +136,10 @@ function FilterAndSearch({
             isActive={"date" == activeFilter}
           />
         </li>
-        <li className={`${squadTotal === 0 ? "opacity-50" : ""}`}>
+        <li
+          className={`${squadTotal === 0 ? "opacity-50" : ""}`}
+          ref={openTagsListNode}
+        >
           <PrimaryButton
             innerText={tagFilter !== "" ? `tag: ${tagFilter}` : "tag"}
             onClick={() => {

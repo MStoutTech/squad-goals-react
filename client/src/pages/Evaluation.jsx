@@ -759,6 +759,7 @@ export default function Evaluation() {
   const [showTopicsList, setShowTopicsList] = useState(false);
   const [customGroup, setCustomGroup] = useState([]);
   const [isCustomSelectModalOpen, setIsCustomSelectModalOpen] = useState(false);
+  const openTopicsNode = useRef(null);
 
   const topics = {
     emotionalSafety: "Emotional Safety and Depth",
@@ -792,6 +793,23 @@ export default function Evaluation() {
   function closeModal() {
     setIsCustomSelectModalOpen(false);
   }
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (!openTopicsNode.current.contains(e.target)) {
+        {
+          setShowTopicsList(false);
+        }
+      }
+    }
+    if (showTopicsList) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showTopicsList]);
+
   return (
     <main className="flex flex-col md:flex-row gap-5 py-2 md:p-4 lg:pt-12">
       {/*Side section */}
@@ -831,23 +849,25 @@ export default function Evaluation() {
             isActive={"contacts" == questionnaireType}
             divClassName="w-full"
           />
-          <PrimaryButton
-            innerText={
-              selectedTopic !== ""
-                ? `topic: ${topics[selectedTopic].split(" ")[0]}`
-                : "topic specific"
-            }
-            onClick={() => {
-              toggleShowTopics();
-            }}
-            isActive={"topic" == questionnaireType}
-            divClassName="w-full"
-          />
-          {showTopicsList && (
-            <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-1 text-white max-h-40 overflow-y-auto text-sm">
-              {topicsList}
-            </ul>
-          )}
+          <div className="w-full flex flex-col relative" ref={openTopicsNode}>
+            <PrimaryButton
+              innerText={
+                selectedTopic !== ""
+                  ? `topic: ${topics[selectedTopic].split(" ")[0]}`
+                  : "topic specific"
+              }
+              onClick={() => {
+                toggleShowTopics();
+              }}
+              isActive={"topic" == questionnaireType}
+              divClassName="w-full"
+            />
+            {showTopicsList && (
+              <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-[44px] text-white max-h-40 overflow-y-auto text-sm">
+                {topicsList}
+              </ul>
+            )}
+          </div>
           <PrimaryButton
             innerText="custom friend group"
             onClick={() => {

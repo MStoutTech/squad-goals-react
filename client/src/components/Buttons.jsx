@@ -85,6 +85,7 @@ export function SortMissions({ missionList, setMissionList }) {
   const { saveFocus, restoreFocus } = useFocusReturn();
 
   const menuRef = useRef(null);
+  const openMenuNode = useRef(null);
 
   function toggleList() {
     if (!showList) {
@@ -129,6 +130,22 @@ export function SortMissions({ missionList, setMissionList }) {
   }
 
   useEffect(() => {
+    function handleClickOutside(e) {
+      if (!openMenuNode.current.contains(e.target)) {
+        {
+          setShowList(false);
+        }
+      }
+    }
+    if (showList) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showList]);
+
+  useEffect(() => {
     if (!menuRef.current) {
       return;
     }
@@ -154,7 +171,7 @@ export function SortMissions({ missionList, setMissionList }) {
   }, [showList, focusedIndex]);
 
   return (
-    <>
+    <div ref={openMenuNode}>
       <PrimaryButton
         innerText="sort"
         onClick={toggleList}
@@ -165,7 +182,7 @@ export function SortMissions({ missionList, setMissionList }) {
         <ul
           ref={menuRef}
           id="sort-menu"
-          className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md mt-45 text-white overflow-y-auto text-sm"
+          className="absolute z-50 bg-(--c-violet-void) border border-purple-300 rounded-md  text-white overflow-y-auto text-sm"
         >
           <li key={"lastName"}>
             <button
@@ -193,6 +210,6 @@ export function SortMissions({ missionList, setMissionList }) {
           </li>
         </ul>
       )}
-    </>
+    </div>
   );
 }

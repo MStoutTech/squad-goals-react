@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ConfirmLogoutModal } from "../components/Modals";
 
@@ -72,6 +72,23 @@ export default function AuthLayout() {
   const userName = user.userName;
   const [showUserOptions, setShowUserOptions] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const openUserMenuNode = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (!openUserMenuNode.current.contains(e.target)) {
+        {
+          setShowUserOptions(false);
+        }
+      }
+    }
+    if (showUserOptions) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showUserOptions]);
 
   useEffect(() => {
     document.body.classList.add("bg-(--c-violet-void)");
@@ -103,7 +120,7 @@ export default function AuthLayout() {
             iconAlt="settings icon"
             text="Settings"
           />
-          <li>
+          <li ref={openUserMenuNode}>
             <button
               type="button"
               className={`${
@@ -118,32 +135,33 @@ export default function AuthLayout() {
               </div>
               {userName}
             </button>
+
+            {showUserOptions && (
+              <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 w-26 rounded-md text-white max-h-40 text-sm">
+                <li>
+                  <Link
+                    to="/settings/profile"
+                    onClick={() => setShowUserOptions(false)}
+                    className="p-2 block hover:bg-purple-400 cursor-pointer"
+                  >
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    role="button"
+                    className="flex justify-start p-2 block hover:bg-purple-400 cursor-pointer w-full"
+                    onClick={() => {
+                      setShowUserOptions(false);
+                      setIsLogoutModalOpen(true);
+                    }}
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            )}
           </li>
-          {showUserOptions && (
-            <ul className="absolute z-50 bg-(--c-violet-void) border border-purple-300 w-26 rounded-md mt-26 ml-42 text-white max-h-40 text-sm">
-              <li>
-                <Link
-                  to="/settings/profile"
-                  onClick={() => setShowUserOptions(false)}
-                  className="p-2 block hover:bg-purple-400 cursor-pointer"
-                >
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <button
-                  role="button"
-                  className="flex justify-start p-2 block hover:bg-purple-400 cursor-pointer w-full"
-                  onClick={() => {
-                    setShowUserOptions(false);
-                    setIsLogoutModalOpen(true);
-                  }}
-                >
-                  Logout
-                </button>
-              </li>
-            </ul>
-          )}
           {isLogoutModalOpen && (
             <ConfirmLogoutModal
               closeModal={() => setIsLogoutModalOpen(false)}
