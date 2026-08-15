@@ -1,8 +1,65 @@
-import { useState, useContext, useEffect, useRef } from "react";
+import {
+  useState,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import useFocusReturn from "../utils/useFocusReturn";
+
+function useBodyScrollLock(isOpen) {
+  const scrollPositionRef = useRef(null);
+
+  useLayoutEffect(() => {
+    if (isOpen) {
+      //Check if it is IOS
+
+      function iOS() {
+        return (
+          [
+            "iPad Simulator",
+            "iPhone Simulator",
+            "iPod Simulator",
+            "iPad",
+            "iPhone",
+            "iPod",
+          ].includes(navigator.platform) ||
+          // iPad on iOS 13 detection
+          (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+        );
+      }
+
+      const isIOS = iOS();
+
+      //if it is not ios, use the overflow: hidden on body
+      if (!isIOS) {
+        document.body.style.overflow = "hidden";
+      }
+
+      //if it is, capture scroll position,
+      else {
+        scrollPositionRef.current =
+          document.body.scrollTop !== 0
+            ? document.body.scrollTop
+            : window.pageYOffset;
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollPositionRef.current}`;
+      }
+    }
+    //non-null only when ios branch ran and set a scroll position.
+    return () => {
+      if (scrollPositionRef.current != null) {
+        document.body.style.position = "static";
+        document.body.scrollTop = `${scrollPositionRef.current}`;
+      } else {
+        document.body.style.overflow = "visible";
+      }
+    };
+  }, [isOpen]);
+}
 
 export function ConfirmLogoutModal({ closeModal }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -59,6 +116,8 @@ export function PrimaryModal({
 }) {
   const modalId = windowTitle.split(" ").join("-") + "-modal";
   const modalRef = useRef(null);
+
+  useBodyScrollLock(true);
 
   useEffect(() => {
     if (!modalRef.current) {
