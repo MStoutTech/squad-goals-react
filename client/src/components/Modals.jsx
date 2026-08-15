@@ -191,7 +191,7 @@ export function PrimaryModal({
           <div
             ref={modalRef}
             onClick={(e) => e.stopPropagation()}
-            className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-20 data-closed:sm:scale-95"
+            className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-100 md:mb-20 data-closed:sm:scale-95"
           >
             <div className="bg-(--c-violet-void-40)/30  px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-5">
               <div className="mt-0 sm:ml-4 text-left">
