@@ -562,7 +562,13 @@ export default function MissionControl() {
                 {activeMissions}
               </ul>
               <ul className="flex items-start md:hidden gap-3 overflow-x-auto overflow-y-hidden ">
-                {activeMissionsMobile}
+                {activeMissionsMobile.length ? (
+                  activeMissionsMobile
+                ) : (
+                  <li key="none" className="rounded-xl p-6 w-[375px] h-[200px]">
+                    All done for today!
+                  </li>
+                )}
               </ul>
             </section>
             {/*Featured Mission*/}

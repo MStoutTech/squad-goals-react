@@ -57,29 +57,29 @@ export default function Index() {
         </h3>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
           <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-            <div className="relative pl-16">
+            <div className="relative px-8 md:pl-16">
               <img src="imgs/phoneapp.png" alt="" />
               <dd className="mt-2 text-base/7">
                 Set and receive reminders to keep in touch with everyone
                 important in your life
               </dd>
             </div>
-            <div className="relative pl-16">
+            <div className="relative px-8 md:pl-16">
               <img src="imgs/socialize.png" alt="" />
               <dd className="mt-2 text-base/7">
                 Complete contact and field missions by hanging out with friends
                 and using the social apps you already have
               </dd>
             </div>
-            <div className="relative pl-16">
+            <div className="relative px-8 md:pl-16">
               <img src="imgs/training.png" alt="" />
               <dd className="mt-2 text-base/7">
                 Increase your social prowess with training activities and
                 articles geared to make your interactions even better
               </dd>
             </div>
-            <div className="relative pl-16">
-              <img src="imgs/analytics.png" alt="" />
+            <div className="relative px-8 md:pl-16">
+              <img src="imgs/analytics.png" alt="" className="mx-auto" />
               <dd className="mt-2 text-base/7">
                 Use evaluation questions to discover relationships that need
                 nurturing or boundaries
@@ -91,7 +91,7 @@ export default function Index() {
 
       {/*Mobile App Section*/}
       <section className="bg-(--c-violet-void) text-purple-300">
-        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-20">
+        <div className="mx-auto w-[100%] py-16 md:py-32 sm:py-48 lg:py-20">
           <div className="flex items-center justify-between px-6 lg:px-0">
             <a href="#">
               <img
@@ -108,18 +108,18 @@ export default function Index() {
               />
             </a>
           </div>
-          <div className="bg-[url(/imgs/ui-background.png)] relative pt-30">
+          <div className="bg-[url(/imgs/ui-background.png)] bg-contain relative pt-30">
             <img
               src="/imgs/SGShield.svg"
               alt="hovering squad goals app shield logo"
-              className="absolute left-1/2 -translate-x-1/2"
+              className="absolute left-1/2 -translate-x-1/2 -translate-y-6 w-[30%] md:translate-y-0"
             />
             <img src="/imgs/HyperspaceHologram.svg" alt="" />
-            <h2 className="text-5xl font-semibold my-10 px-6 lg:px-0">
+            <h2 className="text-5xl font-semibold my-10 px-10 lg:px-0">
               Get the app
             </h2>
           </div>
-          <p className="px-6 lg:px-0">
+          <p className="px-10 lg:px-0">
             Offline notifications and seamless integration with all your
             favorite social apps, this is the best way to keep up to date with
             your squad on the go.
@@ -131,7 +131,7 @@ export default function Index() {
       <section className="text-center">
         <div className="my-20 flex flex-col items-center justify-center mx-auto max-w-2xl">
           <AnimatedCallToAction url="/signup" text="Sign up" type="link" />
-          <p className="pt-10 px-30">
+          <p className="pt-10 px-12 md:px-30">
             Get started transforming your social circles now! It’s free to sign
             up and all premium features are unlocked for your first 30 days!
           </p>

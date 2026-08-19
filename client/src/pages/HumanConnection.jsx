@@ -150,7 +150,7 @@ export default function HumanConnection() {
       <section className="text-center">
         <div className="my-20 flex flex-col items-center justify-center mx-auto max-w-2xl">
           <AnimatedCallToAction url="/signup" text="Sign up" type="link" />
-          <p className="pt-10 px-30">
+          <p className="pt-10 px-10 md:px-30">
             Get started transforming your social circles now! It’s free to sign
             up and all premium features are available for your first 30 days!
           </p>

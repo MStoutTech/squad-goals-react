@@ -471,7 +471,7 @@ function ContactList({
       className={`${contact._id == featuredContact._id ? "bg-(--c-violet-void-60)" : "bg-(--c-violet-void)"} rounded-lg`}
     >
       <button
-        className={`${contact._id == featuredContact._id ? "text-white" : ""} block flex gap-2 focus:bg-(--c-violet-void-60) hover:bg-(--c-violet-void-60) cursor-pointer px-3 py-2 hover:text-white rounded-lg`}
+        className={`${contact._id == featuredContact._id ? "text-white" : ""} block flex gap-2 focus:bg-(--c-violet-void-60) hover:bg-(--c-violet-void-60) cursor-pointer px-3 py-2 hover:text-white rounded-lg w-[100%]`}
         onClick={() => toggleSelect(contact)}
       >
         <ContactAvatar className="size-6 mt-3 mx-3" contact={contact} />
