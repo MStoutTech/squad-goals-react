@@ -169,6 +169,7 @@ export default function MissionControl() {
   const { showToast } = useContext(ToastContext);
   const { hasContacts, user, setAuthIssue } = useContext(AuthContext);
   const { dismissedIntros, dismissIntro } = useContext(WalkthroughContext);
+  const [isFetching, setIsFetching] = useState(true);
   const [missionList, setMissionList] = useState([]);
   const [completedList, setCompletedList] = useState([]);
   const [statistics, setStatistics] = useState({});
@@ -195,6 +196,7 @@ export default function MissionControl() {
     setIsHistoryOpen(false);
     setMissionStarted(false);
     setStatistics(data.statistics);
+    setIsFetching(false);
     if (data.missionList.length > 0) {
       setFeaturedMission(data.missionList[0]);
     } else {
@@ -545,7 +547,10 @@ export default function MissionControl() {
                 openAddMissionModal();
               }}
               isGlowing={
-                hasContacts && !featuredMission?._id && !completedList.length
+                hasContacts &&
+                !featuredMission?._id &&
+                !completedList.length &&
+                !isFetching
               }
             />
           </div>
@@ -559,15 +564,24 @@ export default function MissionControl() {
               </div>
 
               <ul className="hidden md:flex flex-col gap-2 min-[1048px]:max-h-[410px] overflow-auto">
-                {activeMissions}
+                {!isFetching ? (
+                  activeMissions
+                ) : (
+                  <li className="skeleton-animation rounded-lg width-[100%] h-[400px]"></li>
+                )}
               </ul>
               <ul className="flex items-start md:hidden gap-3 overflow-x-auto overflow-y-hidden ">
                 {activeMissionsMobile.length ? (
                   activeMissionsMobile
-                ) : (
+                ) : !isFetching ? (
                   <li key="none" className="rounded-xl p-6 w-[375px] h-[200px]">
                     All done for today!
                   </li>
+                ) : (
+                  <li
+                    key="none"
+                    className="rounded-xl w-[375px] h-[200px] skeleton-animation"
+                  ></li>
                 )}
               </ul>
             </section>
@@ -588,8 +602,10 @@ export default function MissionControl() {
                     <p className="p-4 rounded-lg bg-(--c-light-coral) text-(--c-violet-void) mb-2 self-center w-[100%]">
                       No available contacts. Add contacts on squad page
                     </p>
-                  ) : (
+                  ) : !isFetching ? (
                     <h5 className="text-base">All done for today!</h5>
+                  ) : (
+                    <p className="p-4 rounded-lg h-[400px] mb-2 self-center w-[100%] skeleton-animation"></p>
                   )}
                 </section>
               ) : (

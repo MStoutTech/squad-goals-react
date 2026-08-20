@@ -33,6 +33,7 @@ import {
 
 function FilterAndSearch({
   fetchSquad,
+  isFetching,
   activeFilter,
   setActiveFilter,
   searchValue,
@@ -172,7 +173,7 @@ function FilterAndSearch({
             <PrimaryButton
               innerText="add"
               onClick={openAddContactModal}
-              isGlowing={squadTotal === 0 && true}
+              isGlowing={squadTotal === 0 && !isFetching && true}
             />
           </li>
           {isAddContactModalOpen && (
@@ -437,6 +438,7 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
 }
 
 function ContactList({
+  isFetching,
   themeColor,
   contactList,
   tabValue,
@@ -550,7 +552,7 @@ function ContactList({
           <div className="flex flex-col gap-2 lg:max-h-[calc(100vh-14rem)] lg:min-h-[393px] lg:overflow-auto">
             {activeList.length > 0 ? (
               styledContacts
-            ) : (
+            ) : !isFetching ? (
               <li className="bg-(--c-violet-void) px-3 py-2 rounded-lg min-w-[230px] w-[100%] min-[1545px]:w-[388px] h-[156px] flex-column justify-center">
                 <h3 className="h-[60px]">
                   {searchTerm != ""
@@ -558,6 +560,8 @@ function ContactList({
                     : "List empty, add more contacts!"}
                 </h3>
               </li>
+            ) : (
+              <li className="skeleton-animation rounded-lg min-w-[230px] w-[100%] min-[1545px]:w-[388px] h-[156px] flex-column justify-center"></li>
             )}
           </div>
         </ul>
@@ -594,6 +598,7 @@ function ContactList({
 export default function MySquad() {
   const { user, setAuthIssue } = useContext(AuthContext);
   const { dismissedIntros, dismissIntro } = useContext(WalkthroughContext);
+  const [isFetching, setIsFetching] = useState(true);
   const [heartCoreList, setHeartCoreList] = useState([]);
   const [rayLiablesList, setRayLiablesList] = useState([]);
   const [buddiesList, setBuddiesList] = useState([]);
@@ -630,6 +635,7 @@ export default function MySquad() {
     setEvalTags(data.evalTags);
     setEvalTotal(data.evalQuestionCount);
     filterContacts(data.heartCoreList, data.rayLiablesList, data.buddiesList);
+    setIsFetching(false);
     if (featuredContact._id) {
       const updatedFeaturedContact = [
         ...data.heartCoreList,
@@ -814,6 +820,7 @@ export default function MySquad() {
         )}
       <FilterAndSearch
         fetchSquad={fetchSquad}
+        isFetching={isFetching}
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
         searchValue={searchValue}
@@ -881,6 +888,7 @@ export default function MySquad() {
           (!featuredContact.friendList &&
             featuredContact.connectionInstinct === "heartCore")) && (
           <ContactList
+            isFetching={isFetching}
             title="Heart-Core Friends"
             themeColor="--c-deep-cerise"
             tabValue="heartCore"
@@ -906,6 +914,7 @@ export default function MySquad() {
           (!featuredContact.friendList &&
             featuredContact.connectionInstinct === "rayLiables")) && (
           <ContactList
+            isFetching={isFetching}
             title="Ray-liables"
             themeColor="--c-light-coral"
             tabValue="rayLiables"
@@ -931,6 +940,7 @@ export default function MySquad() {
           (!featuredContact.friendList &&
             featuredContact.connectionInstinct === "buddies")) && (
           <ContactList
+            isFetching={isFetching}
             title="Bud-dies"
             themeColor="--c-green-sheen"
             tabValue="buddies"

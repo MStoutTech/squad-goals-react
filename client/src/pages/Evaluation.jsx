@@ -18,6 +18,7 @@ function InfoSection({ children }) {
 }
 
 function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
+  const [isFetching, setIsFetching] = useState(true);
   const [allQuestions, setAllQuestions] = useState([]);
   const [questionsByTopic, setQuestionsByTopic] = useState([]);
   const [contacts, setContacts] = useState([]);
@@ -430,6 +431,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
                 }),
         ),
       );
+      setIsFetching(false);
     }
   };
 
@@ -736,10 +738,25 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
       <ul className="grow overflow-auto pt-3 min-h-[200px]">
         {contacts.length > 0 ? (
           answerInput
-        ) : (
+        ) : !isFetching ? (
           <li className="p-4 rounded-lg bg-(--c-light-coral) mb-2">
             No available contacts. Add contacts on squad page
           </li>
+        ) : (
+          <>
+            <li
+              key="empty1"
+              className="skeleton-animation h-[100px] w-[100%] rounded-lg mb-2"
+            ></li>
+            <li
+              key="empty2"
+              className="skeleton-animation h-[100px] w-[100%] rounded-lg mb-2"
+            ></li>
+            <li
+              key="empty3"
+              className="skeleton-animation h-[100px] w-[100%] rounded-lg mb-2"
+            ></li>
+          </>
         )}
       </ul>
 

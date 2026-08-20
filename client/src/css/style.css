@@ -191,6 +191,35 @@ button {
   animation: glow-pulse-walkthrough 1.8s ease-in-out infinite;
 }
 
+@-webkit-keyframes skeleton-pulse {
+  0%, 100% {
+    background-color: #1a0d4e;
+
+  }
+  50% {
+    background-color: #2c1d70;
+
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    background-color: #1a0d4e;
+
+  }
+  50% {
+    background-color: #2c1d70;
+
+  }
+}
+
+.skeleton-animation {
+-webkit-animation: skeleton-pulse 1.8s ease-in-out infinite;
+  animation: skeleton-pulse 1.8s ease-in-out infinite;
+}
+
+
+
 :focus-visible {
   outline-style: solid;
   outline-color: #3574e9;
