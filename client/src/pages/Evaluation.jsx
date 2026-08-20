@@ -687,7 +687,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
 
   return (
     <div
-      className={`${isSaving && "cursor-progress"} rounded-xl bg-(--c-purple-tech-20) md:w-[1000px] p-4 md:p-7 lg:px-15 flex flex-col lg:min-h-[450px] lg:max-h-[calc(100vh-6rem)] mb-20 lg:mb-0`}
+      className={`${isSaving && "cursor-progress"} rounded-xl bg-(--c-purple-tech-20) md:w-[1000px] p-4 md:p-7 lg:px-15 flex flex-col lg:min-h-[450px] lg:max-h-[800px] mb-20 lg:mb-0`}
     >
       <div className="flex flex-col md:flex-row md:items-center justify-end mb-3">
         <label htmlFor="questionChange" className="text-xs mr-2">
@@ -733,7 +733,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
             </p>
           ))}
       {pageQuestionSubject.displayType == "slider" && sliderValues}
-      <ul className="grow overflow-auto pt-3">
+      <ul className="grow overflow-auto pt-3 min-h-[200px]">
         {contacts.length > 0 ? (
           answerInput
         ) : (

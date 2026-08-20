@@ -558,7 +558,7 @@ export default function MissionControl() {
                 <span>Snooze</span>
               </div>
 
-              <ul className="hidden md:flex flex-col gap-2 max-h-[376px] overflow-auto">
+              <ul className="hidden md:flex flex-col gap-2 min-[1048px]:max-h-[410px] overflow-auto">
                 {activeMissions}
               </ul>
               <ul className="flex items-start md:hidden gap-3 overflow-x-auto overflow-y-hidden ">
@@ -608,7 +608,7 @@ export default function MissionControl() {
                   <section style={{ flex: 1 }}>
                     <h5 className="text-base">Mission History</h5>
                     <ul
-                      className="text-xs lg:max-h-[354px] overflow-y-auto"
+                      className="text-xs min-[1048px]:max-h-[385px] overflow-y-auto"
                       style={{ width: "100%" }}
                     >
                       {isMissionHistoryLoading && (

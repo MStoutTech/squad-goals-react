@@ -485,7 +485,7 @@ function ContactList({
           </p>
           <p className="text-sm">Score: {contact.evalScore}</p>
         </div>
-        <div className=" flex-col items-start w-[150px] hidden xl:flex">
+        <div className=" flex-col items-start w-[150px] hidden min-[1545px]:flex">
           <p>
             <svg
               width="20"
@@ -551,7 +551,7 @@ function ContactList({
             {activeList.length > 0 ? (
               styledContacts
             ) : (
-              <li className="bg-(--c-violet-void) px-3 py-2 rounded-lg w-[388px] h-[156px] flex-column justify-center">
+              <li className="bg-(--c-violet-void) px-3 py-2 rounded-lg min-w-[230px] w-[100%] min-[1545px]:w-[388px] h-[156px] flex-column justify-center">
                 <h3 className="h-[60px]">
                   {searchTerm != ""
                     ? "No contact matches to search"
@@ -873,7 +873,7 @@ export default function MySquad() {
       </Tabs>
 
       <main
-        className={`${squadTotal === 0 ? "opacity-50" : ""} flex gap-4 justify-center xl:justify-start w-full md:overflow-x-auto`}
+        className={`${squadTotal === 0 ? "opacity-50" : ""} flex gap-4 justify-center min-[1545px]:justify-start w-full md:overflow-x-auto`}
       >
         {/*Inner Circle or "Heart" core freiends*/}
         {(!featuredContact._id ||
@@ -1069,7 +1069,7 @@ function FeaturedContact({
         </h4>
       </div>
 
-      <p className="pl-3 py-2 border-l-2 border-dashed border-(--c-violet-void) ml-3">
+      <p className="pl-3 py-2 border-l-2 border-dashed border-(--c-violet-void) md:border-purple-300 ml-3">
         {entry.noteText}
       </p>
     </li>
@@ -1123,7 +1123,7 @@ function FeaturedContact({
         {/*Top Basic Info Section*/}
         <div className="md:flex md:flex-wrap gap-4 px-2 md:p-3">
           {/*ID and scheduling */}
-          <div className="md:flex md:flex-wrap justify-between gap-x-10 gap-y-2 md:min-w-[450px]">
+          <div className="md:flex md:flex-wrap-reverse justify-between gap-x-10 gap-y-2 md:min-w-[450px]">
             {/*Img and name*/}
             <div className="flex gap-3">
               {/*Img wrapper */}
@@ -1256,7 +1256,7 @@ function FeaturedContact({
             style={{ color: `var(${contactTheme})` }}
           >
             <h4 className="border-b-4 text-base">Details</h4>
-            <div className="border rounded-b p-2 text-sm lg:max-h-[478px] overflow-auto">
+            <div className="border rounded-b p-2 text-sm ">
               <p className="border-b-1 py-2">
                 Preferred Contact Method:{" "}
                 <span className="text-(--c-purple-tech-40)">
