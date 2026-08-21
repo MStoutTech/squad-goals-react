@@ -91,7 +91,7 @@ export default function Index() {
 
       {/*Mobile App Section*/}
       <section className="bg-(--c-violet-void) text-purple-300">
-        <div className="mx-auto w-[100%] py-16 md:py-32 sm:py-48 lg:py-20">
+        <div className="mx-auto w-[100%] md:max-w-2xl py-16 md:py-32 sm:py-48 lg:py-20">
           <div className="flex items-center justify-between px-6 lg:px-0">
             <a href="#">
               <img
@@ -114,7 +114,11 @@ export default function Index() {
               alt="hovering squad goals app shield logo"
               className="absolute left-1/2 -translate-x-1/2 -translate-y-6 w-[30%] md:translate-y-0"
             />
-            <img src="/imgs/HyperspaceHologram.svg" alt="" />
+            <img
+              src="/imgs/HyperspaceHologram.svg"
+              alt=""
+              className="mx-auto"
+            />
             <h2 className="text-5xl font-semibold my-10 px-10 lg:px-0">
               Get the app
             </h2>
