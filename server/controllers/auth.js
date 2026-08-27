@@ -1,7 +1,8 @@
 const passport = require("passport");
 const validator = require("validator");
 const User = require("../models/User");
-const Contact = require("../models/Contact")
+const Contact = require("../models/Contact");
+const { generateToken } = require("../middleware/csrf");
 
 
 exports.postLogin = async (req, res, next) => {
@@ -12,7 +13,7 @@ exports.postLogin = async (req, res, next) => {
     validationErrors.passwordMsg =  "Password cannot be blank." ;
 
   if (Object.keys(validationErrors).length) {
-    return res.status(400).json(validationErrors);
+    return res.status(400).json({...validationErrors, token:generateToken(req, true)});
   }
   req.body.email = validator.normalizeEmail(req.body.email, {
     gmail_remove_dots: false,
@@ -26,7 +27,7 @@ exports.postLogin = async (req, res, next) => {
       })(req, res, next);
     });
       if (!user) {;
-        return res.status(401).json({info: info, user:null});
+        return res.status(401).json({info: info, user:null, token:generateToken(req, true)});
       }
         
       await new Promise ((resolve, reject) => {
@@ -39,7 +40,7 @@ exports.postLogin = async (req, res, next) => {
       const contactCheck = await Contact.exists({user: req.user._id})
       const hasContacts = !!contactCheck
 
-      res.status(200).json({user: req.user, hasContacts: hasContacts});  
+      res.status(200).json({user: req.user, hasContacts: hasContacts, token:generateToken(req, true)});  
   } catch (err){
     return next(err);
   };
@@ -82,7 +83,7 @@ exports.postSignup = async (req, res, next) => {
     validationErrors.UNMsg =  "User Name cannot be blank." ;
 
   if (Object.keys(validationErrors).length) {
-    return res.status(400).json(validationErrors);
+    return res.status(400).json({...validationErrors, token:generateToken(req, true)});
   }
   req.body.email = validator.normalizeEmail(req.body.email, {
     gmail_remove_dots: false,
@@ -100,7 +101,7 @@ exports.postSignup = async (req, res, next) => {
     );
     
     if (existingUser) {
-      return res.status(409).json({error: "Account with that email address or username already exists."});
+      return res.status(409).json({error: "Account with that email address or username already exists.", token:generateToken(req, true)});
     }
     
     await user.save();
@@ -112,7 +113,7 @@ exports.postSignup = async (req, res, next) => {
       });
     });
     
-    res.status(201).json({user: req.user, hasContacts: false});
+    res.status(201).json({user: req.user, hasContacts: false, token:generateToken(req, true)});
     
     
   } catch (err) {        
@@ -124,8 +125,8 @@ exports.getUser = async (req, res) => {
     if (req.isAuthenticated()) {
       const contactCheck = await Contact.exists({user: req.user._id})
       const hasContacts = !!contactCheck
-      return res.json({user: req.user, hasContacts: hasContacts})
+      return res.json({user: req.user, hasContacts: hasContacts, token:generateToken(req)})
     }
-    else { return res.status(401).json({user:null});}
+    else { return res.status(401).json({user:null, token:generateToken(req)});}
 }
 

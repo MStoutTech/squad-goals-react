@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
 import { useEffect } from "react";
-import { apiFetch } from "../utils/apiUrl";
+import { apiFetch, setCurrentToken } from "../utils/apiUrl";
 
 export const AuthContext = createContext({
   user: null,
@@ -25,15 +25,20 @@ export function AuthProvider({ children }) {
       },
       body: JSON.stringify({ email: email, password: password }),
     });
+    if (response.status === 403) {
+      return response;
+    }
     const data = await response.json();
     setUser(data.user);
     setHasContacts(data.hasContacts);
+    setCurrentToken(data.token);
     return data;
   }
   async function logout() {
     const response = await apiFetch("/api/logout");
     const data = await response.json();
     setUser(data.user);
+    setCurrentToken(data.token || null);
     return data;
   }
 
@@ -46,6 +51,7 @@ export function AuthProvider({ children }) {
       const data = await response.json();
       setUser(data.user);
       setHasContacts(data.hasContacts);
+      setCurrentToken(data.token);
       setIsLoading(false);
     };
     fetchUser();

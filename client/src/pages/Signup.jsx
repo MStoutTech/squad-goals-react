@@ -5,10 +5,12 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { apiFetch } from "../utils/apiUrl";
+import { ToastContext } from "../context/ToastContext";
 
 export default function Signup() {
   const [errors, setErrors] = useState({});
   const { setUser, user, isLoading } = useContext(AuthContext);
+  const { showToast } = useContext(ToastContext);
   const navigate = useNavigate();
   const messages = Object.values(errors);
 
@@ -28,6 +30,10 @@ export default function Signup() {
         confirmPassword: formData.get("confirmPassword"),
       }),
     });
+    if (response.status === 403) {
+      showToast(`Could not submit form. Refresh and try again.`, "error");
+      return;
+    }
     const data = await response.json();
     if (data.info) {
       setErrors({ info: data.info.msg });

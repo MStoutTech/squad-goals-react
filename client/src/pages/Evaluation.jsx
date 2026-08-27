@@ -365,6 +365,11 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
 
   const fetchEvaluation = async () => {
     const response = await apiFetch("/api/evaluation/getEvaluation");
+    if (response.status === 403) {
+      showToast(`Could not get evaluation. Refresh and try again.`, "error");
+      return;
+    }
+
     const data = await response.json();
 
     if (data.contacts) {
@@ -530,7 +535,7 @@ function Questionnaire({ selectedTopic, questionnaireType, customGroup }) {
         );
         showToast("Saved answers", "success");
       }
-      if (response.status === 500) {
+      if (response.status === 500 || response.status === 403) {
         showToast(`Could not save answers. Refresh and try again.`, "error");
       }
       setIsSaving(false);

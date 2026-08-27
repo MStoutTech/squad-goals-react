@@ -90,6 +90,7 @@ This project is split into two independently deployed services with no shared or
 - **connect-mongo** — stores session data in MongoDB rather than in memory
 - **bcrypt** — hashes and salts passwords (instead of plain text) before storing them
 - **cors** — controls which frontend origin(s) may make cross-origin requests to the API
+- **csrf-sync** — double submit CSRF protection
 - **dotenv** — loads environment variables from `.env` files
 - **express-flash** — one-time flash messages (used for form error messaging)
 - **morgan** — logs incoming requests to the console for debugging

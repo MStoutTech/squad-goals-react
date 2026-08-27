@@ -4,10 +4,12 @@ import { AnimatedCallToAction } from "../components/Buttons";
 import { useState, useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { ToastContext } from "../context/ToastContext";
 
 export default function Login() {
   const [errors, setErrors] = useState({});
   const { login, user, isLoading, hasContacts } = useContext(AuthContext);
+  const { showToast } = useContext(ToastContext);
   const navigate = useNavigate();
   const messages = Object.values(errors);
 
@@ -19,6 +21,11 @@ export default function Login() {
       formData.get("email"),
       formData.get("password"),
     );
+    if (response.status === 403) {
+      showToast(`Could not login. Refresh and try again.`, "error");
+      return;
+    }
+
     if (response.info) {
       setErrors({ info: response.info.msg });
     }

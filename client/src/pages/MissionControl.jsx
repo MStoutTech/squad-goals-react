@@ -190,6 +190,10 @@ export default function MissionControl() {
       setAuthIssue(true);
       return;
     }
+    if (response.status === 403) {
+      showToast(`Could not get missions. Refresh and try again.`, "error");
+      return;
+    }
     const data = await response.json();
     setMissionList(data.missionList);
     setCompletedList(data.completedList);
@@ -210,6 +214,10 @@ export default function MissionControl() {
       const response = await apiFetch(`/api/contact/${contactId}/history`);
       const data = await response.json();
       setIsMissionHistoryLoading(false);
+      if (response.status === 403) {
+        showToast(`Could not get history. Refresh and try again.`, "error");
+        return;
+      }
       setFeaturedMissionHistory(data);
     } catch (err) {
       setIsMissionHistoryLoading(false);
@@ -281,7 +289,7 @@ export default function MissionControl() {
         fetchMissions();
         showToast("Mission snoozed", "success");
       }
-      if (response.status === 500) {
+      if (response.status === 500 || response.status === 403) {
         showToast("Could not snooze mission", "error");
       }
     } catch (err) {
@@ -910,7 +918,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
         const messageResponse = await response.json();
         showToast(`${messageResponse.message}`, "error");
       }
-      if (response.status === 500) {
+      if (response.status === 500 || response.status === 403) {
         showToast(
           `Mission could not be created. Refresh and try again.`,
           "error",
@@ -1017,7 +1025,7 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
         const messageResponse = await response.json();
         showToast(`${messageResponse.message}`, "error");
       }
-      if (response.status === 500) {
+      if (response.status === 500 || response.status === 403) {
         showToast(
           `Failed to submit mission debrief. Refresh and try again.`,
           "error",

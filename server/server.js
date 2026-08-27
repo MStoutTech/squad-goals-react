@@ -26,6 +26,7 @@ const contactRoutes = require("./routes/contacts");
 const lessonRoutes = require("./routes/lessons");
 const userRoutes = require("./routes/user");
 const evalRoutes = require("./routes/evaluation");
+const { csrfSynchronisedProtection } = require("./middleware/csrf");
 
 
 
@@ -62,6 +63,9 @@ app.use(passport.session());
 
 //Use flash messages for errors, info, ect...
 app.use(flash());
+
+//csrf protection
+app.use(csrfSynchronisedProtection)
 
 //Setup Routes For Which The Server Is Listening
 app.use("/api", mainRoutes);

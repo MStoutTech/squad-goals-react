@@ -238,7 +238,7 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
         const messageResponse = await response.json();
         showToast(`${messageResponse.message}`, "error");
       }
-      if (response.status === 500) {
+      if (response.status === 500 || response.status === 403) {
         showToast(`Could not add contact. Refresh and try again.`, "error");
       }
       setIsLoading(false);
@@ -408,7 +408,7 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
         closeModal();
         showToast("Friendship Roles Saved!", "success");
       }
-      if (response.status === 500) {
+      if (response.status === 500 || response.status === 403) {
         showToast(`Roles not saved. Refresh and try again.`, "error");
       }
       setIsLoading(false);
@@ -624,6 +624,10 @@ export default function MySquad() {
     const response = await apiFetch("/api/contact/getSquad");
     if (response.status === 401) {
       setAuthIssue(true);
+      return;
+    }
+    if (response.status === 403) {
+      showToast(`Could not get contacts. Refresh and try again.`, "error");
       return;
     }
     const data = await response.json();
@@ -992,6 +996,11 @@ function FeaturedContact({
   const fetchMissionHistory = async (contactId) => {
     setIsMissionHistoryLoading(true);
     const response = await apiFetch(`/api/contact/${contactId}/history`);
+    if (response.status === 403) {
+      showToast(`Could not get history. Refresh and try again.`, "error");
+      setIsMissionHistoryLoading(false);
+      return;
+    }
     const data = await response.json();
     setIsMissionHistoryLoading(false);
     setContactHistory(data);
@@ -1534,6 +1543,14 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
         },
         body: JSON.stringify({ tag: tagInputValue.toLowerCase() }),
       });
+      if (response.status === 500 || response.status === 403) {
+        showToast(`Could not add tag. Refresh and try again.`, "error");
+        return;
+      }
+      if (response.status === 409) {
+        showToast(`${response.json().message}`, "error");
+        return;
+      }
       if (response.status === 200) {
         setTagInputValue("");
         setShowTagInput(false);
@@ -1591,7 +1608,7 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
         const messageResponse = await response.json();
         showToast(`${messageResponse.message}`, "error");
       }
-      if (response.status === 500) {
+      if (response.status === 500 || response.status === 403) {
         showToast(
           `Details could not be saved. Refresh and try again.`,
           "error",
