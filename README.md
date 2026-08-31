@@ -9,11 +9,73 @@ In the spirit of a CRM (Customer Relationship Management) app, Squad Goals seeks
 
 ## Features
 
+### Missions
+
+![Missions screenshot/GIF placeholder]
+
+As the hero of your relationships, your daily missions are to reach out to your contacts. Every contact will always have a scheduled "next" missions that is either picked automatically by the scheduling algorithm, or set manually by you. When a mission is complete, the app immidiately schedules the next one.
+
+The three friendship tiers have their own default contact frequency:
+
+- **Heart-cores** : weekly
+- **Ray-liables** : monthly
+- **Bud-dies** : quarterly
+
+And there are two mission types, depending on how you are spending time with your contacts:
+
+- **Contact missions** : remote check-ins via text, call, social media. These have a countdown timer keeping you focused on the task at hand (hopefully a deterrant from disctracting feed scrolling)
+- **Field missions** : in-person meetups, these have no timer
+
+**Notable pattern:** The next mission scheduling algorith muses a layered set of rules in a priority order for setting the next mission.
+
+1. **Birthday first** If the contact's birthday falls within the upcoming frequency window (this week, this month, or this quarter), the mission is scheduled on the birthday and no further logic is run.
+2. **Preferred days** If the contact has set preferred contact days of the week, only those specific days within the window are considered candidates. Otherwise, every day in the window is a candidate.
+3. **Load balancing** Among all the candidate days, the algorithm counds how many missions are already scheduled on each one, and picks whichever day currently has the fewest in order to spread out your missions, never over-loading the first day of the week, month, or quarter.
+
+Adding a mission will check for an upcoming mission with the status "new" and deletes it before scheduling the new mission. This way there is no silent doubling of scheduled outreach.
+
+Snoozing also operates on the assumed goal of needing to keep up with the assigned frequency of contacting your squad. Instead of pushing the mission back by a fixed number of days, the frequency window is anchored to the last-contact date and attempts to schedule within the next required frequency window. If that due window is already passed (maybe the mission was left in the queue too long), the next mission is rolled over into the next frequency window instead of attempting to schedule for a date in the past.
+
+### Relationship Evaluation & Scoring
+
+![Evaluation screenshot/GIF placeholder]
+
+Squad Goals scores your relationships to help you to rank and prioritize healthy relationships that enrich your life the most, and also to notice blind spots, where connection might be slipping even if it doesn't feel that way day-to-day.
+
+Every contact starts with your own **connection instinct** your gut read on the relationship. This is heavily weighted and determines the contact's initial tier placement (Heart-cores, Ray-liables, or Bud-dies). From there, you answer evaluation questions that will add or subtract to the initial score based on your answers. Then the updated score will move your contacts up or down on the tier placement giving you insight to where relationships may be struggling.
+
+Because the full evaluation is nearly 100 questions, it was designed to have a way to chip away in small pieces instead of one long sitting.
+
+- You can evaluate **all contacts at once**, **one contact at a time**, or a **custom group** of contacts you choose.
+- In "all contacts" or "custom group" modes, the dropdown lets you jump directly to a specific question. For "one contact at a time", the dropdown allows you to switch between contacts as the evaluation would be showing you the full set of questions for that single contact.
+- Questions are not presented in a fixed order so no topic feels stale or repetitive. The app will automatically show the next question with the fewest recorded answers by default (and if you want to go back and change an answer or simply change the question, you can use the drop down)
+- You can save and stop at any point, or save and immediately continue to the next question.
+- Some questions don't have a score, but instead assign a community **role tag** that can be used to filter contacts on your squad page and is viewed in the contact details.
+
+**Notable pattern:** Because the evaluation can be entered from so many different modes, the UI needs to know which setter function and which answer array to update. Rather than having a separate handler at every entry point, the app uses a dynamic `activeSetter` / `activeAnswerArray` pattern where the correct setter and answer array are selected based on the context with a ternary:
+
+```js
+const activeAnswerArray =
+  questionnaireType == "contacts" ? singleContactAnswers : allContactsAnswers;
+const activeSetter =
+  questionnaireType == "contacts"
+    ? setSingleContactAnswers
+    : setAllContactsAnswers;
+```
+
+The arrays hold the same shape but different meanings:
+
+- `singleContactAnswers` : one contact, many questions; indexed by question
+- `allContactsAnswers` : one question, many contacts; indexed by contact
+
+Since the arrays hold the same shape, the answer-input can be the same (checkbox/radio/slider) and write through the necessary active setter. The population happens with a useEffect for the questionnaire type and not the answer input rows, avoiding a possible render loop on every change.
+
+### Other Features
+
 - User sessions: sign up, log in, personalized profile page
 - Organizing info and memo history of your contacts and recent interactions
 - Algorithmically suggested "missions" to remind you to reach out
 - Mission timer to help you focus and avoid the trap of infinite scrolling
-- Relationship evaluation questions to rank and prioritize healthy relationships that enrich your life the most
 - Mini articles to spark better communication
 
 ## Tech Stack
@@ -70,10 +132,31 @@ This project is split into two independently deployed services with no shared or
 - Session cookies use `sameSite: "none"` and `secure: true` in production so the session cookie can travel cross-origin over HTTPS — this requires `NODE_ENV=production` to be set explicitly on whatever platform hosts the backend, since not all hosts set this automatically.
 - The frontend never uses relative fetch paths; all API calls go through a shared `apiFetch` utility (`client/src/utils/apiUrl.js`) that prepends `VITE_API_URL` and always sends `credentials: "include"`, so session cookies are included on every request.
 
+## Architecture Decisions
+
+### Dynamic `.populate()` chaining
+
+The schema for friendship roles can change over time, and what roles exist for a user may be inconsistent. If a user doesn't have a particular role set, a hardcoded list of roles would cause the query to fall out of sync with the data model. To populate the roles dynamically, the app builds the populate chain dynamically.
+
+```js
+let userQuery = User.findById(req.user.id);
+for (const role of Object.keys(req.user.friendshipRoles)) {
+  userQuery = userQuery.populate(
+    `friendshipRoles.${role}`,
+    "firstName lastName image",
+  );
+}
+const populatedUser = await userQuery.lean();
+```
+
+The chain always reflects whatever roles exist right now rather than an assumption about the data made at write-time.
+
+### CSRF Protection: Synchronizer Token
+
+This app uses server-side sessions (express-session) instead of stateless auth. For this reason csrf-sync was suggested over csrf-csrf by the developers of the package. Guest sessions need tokens as well because `postLogin` and `postSignup` are POST requests (vulnerable to CSRF) therefore `getUser` calls `generateToken(req)` and login and signup call with forced token rotation. `getUser` does not rotate to avoid overlapping bursts of calls that may rotate the token and invalidate other calls.
+
 ### Known Limitations / Next Steps
 
-- No CSRF protection yet. Given `sameSite: "none"` is required for cross-origin auth to work at all, and this app stores personal contact information, adding CSRF tokens on state-changing routes is a near-term priority rather than a someday item.
-- UX improvements like loading skeletons, toast confirmations, first login walkthroughs and empty states, basic accessibility pass
 - Component refactoring for easy readability and more dynamic styling
 - Performance improvements (lighthouse and green web scores)
 - Login/ security upgrades, deepen account settings capabilities
@@ -90,7 +173,7 @@ This project is split into two independently deployed services with no shared or
 - **connect-mongo** — stores session data in MongoDB rather than in memory
 - **bcrypt** — hashes and salts passwords (instead of plain text) before storing them
 - **cors** — controls which frontend origin(s) may make cross-origin requests to the API
-- **csrf-sync** — double submit CSRF protection
+- **csrf-sync** — synchronizer token pattern stateful csrf since app uses server-side sessions
 - **dotenv** — loads environment variables from `.env` files
 - **express-flash** — one-time flash messages (used for form error messaging)
 - **morgan** — logs incoming requests to the console for debugging
