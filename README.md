@@ -74,8 +74,6 @@ Since the arrays hold the same shape, the answer-input can be the same (checkbox
 
 - User sessions: sign up, log in, personalized profile page
 - Organizing info and memo history of your contacts and recent interactions
-- Algorithmically suggested "missions" to remind you to reach out
-- Mission timer to help you focus and avoid the trap of infinite scrolling
 - Mini articles to spark better communication
 
 ## Tech Stack
