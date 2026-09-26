@@ -116,6 +116,7 @@ export function PrimaryModal({
 }) {
   const modalId = windowTitle.split(" ").join("-") + "-modal";
   const modalRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   useBodyScrollLock(true);
 
@@ -162,6 +163,10 @@ export function PrimaryModal({
     };
   }, [modalRef]);
 
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
     <div
       id={modalId}
@@ -169,7 +174,7 @@ export function PrimaryModal({
       className="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent z-20"
     >
       <div
-        className="fixed inset-0 bg-black/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+        className={`${isVisible ? "opacity-100" : "opacity-0 translate-y-4"} fixed inset-0 bg-black/75 transition-opacity duration-300 ease-out`}
         onClick={outsideClick}
       ></div>
 
@@ -180,7 +185,10 @@ export function PrimaryModal({
         {showConfirmation ? (
           <div
             className="z-50 bg-black/60 shadow-xl w-[100%]"
-            onClick={closeModal}
+            onClick={() => {
+              setIsVisible(false);
+              setTimeout(closeModal, 300);
+            }}
           >
             <div className="bg-(--c-purple-tech-40) w-[100%] flex flex-col py-6 items-center">
               <h1 className="my-3 text-3xl">{confirmationText}</h1>
@@ -191,7 +199,7 @@ export function PrimaryModal({
           <div
             ref={modalRef}
             onClick={(e) => e.stopPropagation()}
-            className="relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 mt-16 mb-100 md:mb-20 data-closed:sm:scale-95"
+            className={`${isVisible ? "opacity-100" : "opacity-0 md:translate-y-4 scale-95 md:scale-100"} relative transform overflow-hidden border border-purple-300 rounded-lg bg-black/60 text-left shadow-xl transition-all duration-300 ease-out sm:my-8 sm:w-full sm:max-w-lg mt-16 mb-100 md:mb-20`}
           >
             <div className="bg-(--c-violet-void-40)/30  px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-5">
               <div className="mt-0 sm:ml-4 text-left">
@@ -219,7 +227,13 @@ export function PrimaryModal({
                   <button
                     form={formId}
                     type={confirmOnClick ? "button" : "submit"}
-                    onClick={confirmOnClick}
+                    onClick={
+                      confirmOnClick &&
+                      (() => {
+                        setIsVisible(false);
+                        setTimeout(confirmOnClick, 300);
+                      })
+                    }
                     className="inline-flex w-full justify-center items-center sm:ml-3 sm:w-auto h-[44px]"
                   >
                     <div className="px-3 py-2 w-full sm:w-auto text-sm shadow-xs action-button hover:bg-(--c-violet-void) rounded-md">
@@ -229,7 +243,10 @@ export function PrimaryModal({
                 )}
                 <button
                   type="button"
-                  onClick={closeModal}
+                  onClick={() => {
+                    setIsVisible(false);
+                    setTimeout(closeModal, 300);
+                  }}
                   className="w-full sm:w-auto mt-3 sm:mt-0 inline-flex justify-center items-center h-[44px]"
                 >
                   <div className="px-3 py-2 text-sm font-semibold text-(--c-violet-void-40) shadow-xs inset-ring inset-ring-purple-300 hover:bg-(--c-violet-void-80) w-full sm:w-auto rounded-md bg-(--c-violet-void-60)">
