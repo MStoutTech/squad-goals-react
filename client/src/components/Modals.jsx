@@ -1,5 +1,6 @@
 import {
   useState,
+  createContext,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -103,6 +104,7 @@ export function ConfirmLogoutModal({ closeModal }) {
 export function PrimaryModal({
   windowTitle,
   closeModal,
+  animateClose,
   formId,
   submitButtonText,
   confirmOnClick,
@@ -167,6 +169,13 @@ export function PrimaryModal({
     setIsVisible(true);
   }, []);
 
+  useEffect(() => {
+    if (animateClose) {
+      setIsVisible(false);
+      setTimeout(closeModal, 300);
+    }
+  }, [animateClose]);
+
   return (
     <div
       id={modalId}
@@ -229,9 +238,8 @@ export function PrimaryModal({
                     type={confirmOnClick ? "button" : "submit"}
                     onClick={
                       confirmOnClick &&
-                      (() => {
-                        setIsVisible(false);
-                        setTimeout(confirmOnClick, 300);
+                      ((e) => {
+                        confirmOnClick(e);
                       })
                     }
                     className="inline-flex w-full justify-center items-center sm:ml-3 sm:w-auto h-[44px]"

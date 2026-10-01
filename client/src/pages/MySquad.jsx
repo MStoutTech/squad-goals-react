@@ -198,6 +198,7 @@ function FilterAndSearch({
 
 function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [animateClose, setAnimateClose] = useState(false);
   const { showToast } = useContext(ToastContext);
   const { hasContacts, setHasContacts } = useContext(AuthContext);
 
@@ -226,13 +227,13 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
           setHasContacts(true);
         }
         fetchSquad();
-        closeModal();
+        setAnimateClose(true);
         showToast(`Contact  ${fullName} added!`, "success");
       }
       if (response.status === 409) {
         const messageResponse = await response.json();
         showToast(`${messageResponse.message}`, "error");
-        closeModal();
+        setAnimateClose(true);
       }
       if (response.status === 400) {
         const messageResponse = await response.json();
@@ -241,7 +242,7 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
       if (response.status === 500 || response.status === 403) {
         showToast(`Could not add contact. Refresh and try again.`, "error");
       }
-      setIsLoading(false);
+      setTimeout(() => setIsLoading(false), 300);
     } catch (err) {
       setIsLoading(false);
       showToast(
@@ -254,6 +255,7 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
     <PrimaryModal
       windowTitle="Add New Contact"
       closeModal={closeModal}
+      animateClose={animateClose}
       formId="add-contact-form"
       submitButtonText="ADD CONTACT"
       allowSubmit={squadTotal < 150}
@@ -324,6 +326,7 @@ function AddContactModal({ closeModal, fetchSquad, squadTotal }) {
 
 function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [animateClose, setAnimateClose] = useState(false);
   const { showToast } = useContext(ToastContext);
   const [selectedRoles, setSelectedRoles] = useState(
     friendshipRolesStart || {
@@ -405,13 +408,13 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
       });
       if (response.status === 200) {
         fetchSquad();
-        closeModal();
+        setAnimateClose(true);
         showToast("Friendship Roles Saved!", "success");
       }
       if (response.status === 500 || response.status === 403) {
         showToast(`Roles not saved. Refresh and try again.`, "error");
       }
-      setIsLoading(false);
+      setTimeout(() => setIsLoading(false), 300);
     } catch (err) {
       setIsLoading(false);
       showToast(
@@ -424,6 +427,7 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
     <PrimaryModal
       windowTitle="Set Friendship Roles"
       closeModal={closeModal}
+      animateClose={animateClose}
       formId="friendship-roles-form"
       submitButtonText="SAVE ROLES"
       isLoading={isLoading}
@@ -1453,6 +1457,7 @@ function FeaturedContact({
 
 function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [animateClose, setAnimateClose] = useState(false);
   const { showToast } = useContext(ToastContext);
   const [contactDetails, setContactDetails] = useState({
     firstName: featuredContact.firstName,
@@ -1601,7 +1606,7 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
 
       if (response.status === 200) {
         fetchSquad();
-        closeModal();
+        setAnimateClose(true);
         showToast("User details saved!", "success");
       }
       if (response.status === 400) {
@@ -1614,7 +1619,7 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
           "error",
         );
       }
-      setIsLoading(false);
+      setTimeout(() => setIsLoading(false), 300);
     } catch (err) {
       setIsLoading(false);
       showToast(
@@ -1642,6 +1647,7 @@ function EditContactModal({ featuredContact, tags, closeModal, fetchSquad }) {
     <PrimaryModal
       windowTitle="Edit Contact Details"
       closeModal={closeModal}
+      animateClose={animateClose}
       submitButtonText="SAVE DETAILS"
       confirmOnClick={saveUserDetails}
       isLoading={isLoading}

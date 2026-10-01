@@ -942,6 +942,7 @@ function CustomSelectionModal({
   setSelectedTopic,
 }) {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [animateClose, setAnimateClose] = useState(false);
 
   function startEvaluation() {
     if (!customGroup.length) {
@@ -951,7 +952,7 @@ function CustomSelectionModal({
     setShowErrorMessage(false);
     setQuestionnaireType("custom");
     setSelectedTopic("");
-    closeModal();
+    setAnimateClose(true);
   }
 
   const selectedList = customGroup.map((contact) => (
@@ -968,6 +969,7 @@ function CustomSelectionModal({
     <PrimaryModal
       windowTitle="Custom List Selection"
       closeModal={closeModal}
+      animateClose={animateClose}
       formId=""
       submitButtonText="START EVALUATION"
       outsideClick={closeModal}

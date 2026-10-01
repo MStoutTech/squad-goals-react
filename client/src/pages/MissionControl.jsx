@@ -877,6 +877,7 @@ function MissionDebriefButton({ openMissionDebrief, width }) {
 }
 function AddMissionModal({ closeModal, fetchMissions }) {
   const [selectedContact, setSelectedContact] = useState(null);
+  const [animateClose, setAnimateClose] = useState(false);
   const { showToast } = useContext(ToastContext);
   const [isLoading, setIsLoading] = useState(false);
   const contactSearchRef = useRef(null);
@@ -908,7 +909,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
       });
       if (response.status === 201) {
         fetchMissions();
-        closeModal();
+        setAnimateClose(true);
         showToast(
           `Scheduled new mission for ${selectedContact.firstName}`,
           "success",
@@ -924,7 +925,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
           "error",
         );
       }
-      setIsLoading(false);
+      setTimeout(() => setIsLoading(false), 300);
     } catch (err) {
       setIsLoading(false);
       showToast(
@@ -937,6 +938,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
     <PrimaryModal
       windowTitle="Add New Mission"
       closeModal={closeModal}
+      animateClose={animateClose}
       formId="add-mission-form"
       submitButtonText="ADD MISSION"
       isLoading={isLoading}
@@ -991,6 +993,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
 }
 function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [animateClose, setAnimateClose] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   async function completeMission(event) {
@@ -1044,6 +1047,7 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
     <PrimaryModal
       windowTitle="Mission Debrief"
       closeModal={closeModal}
+      animateClose={animateClose}
       formId="complete-mission-form"
       submitButtonText="COMPLETE MISSION"
       allowSubmit={!isLoading}
