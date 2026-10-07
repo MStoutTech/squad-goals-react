@@ -2,7 +2,7 @@ const Contact = require("../models/Contact");
 const Mission = require("../models/Mission");
 const User = require("../models/User")
 const HistoryNote = require("../models/HistoryNote");
-const { scheduleNextMission } = require("../utils/scheduleNextMission")
+const { scheduleNextMission, findOptimalMissionDay } = require("../utils/scheduleNextMission")
 const { updateUpcomingMission } = require("../utils/updateUpcomingMission") ;
 
 module.exports = {
@@ -222,29 +222,29 @@ const safeDate = new Date(Date.UTC(
       let updateStreak = user.stats.streak;
 
       const last = user.stats.lastCompletedDate
-  ? new Date(user.stats.lastCompletedDate)
-  : null;
+        ? new Date(user.stats.lastCompletedDate)
+        : null;
 
-if (last) last.setHours(0,0,0,0);
+      if (last) last.setHours(0,0,0,0);
 
-const diffDays = last
-  ? (today - last) / (1000 * 60 * 60 * 24)
-  : null;
+      const diffDays = last
+        ? (today - last) / (1000 * 60 * 60 * 24)
+        : null;
 
-// Update streak
-if (diffDays === 1) {
-  updateStreak += 1;
-} else if (diffDays === 0) {
-  // same day → no change
-} else {
-  updateStreak = 1;
-}
+      // Update streak
+      if (diffDays === 1) {
+        updateStreak += 1;
+      } else if (diffDays === 0) {
+      // same day → no change
+      } else {
+        updateStreak = 1;
+      }
 
-// Update longest
-updateLongestStreak = Math.max(
-  user.stats.longestStreak,
-  updateStreak
-);
+      // Update longest
+      updateLongestStreak = Math.max(
+        user.stats.longestStreak,
+        updateStreak
+      );
 
       const updateTotalCompleted = user.stats.totalCompleted + 1;
 
@@ -257,7 +257,7 @@ updateLongestStreak = Math.max(
           lastCompletedDate: today
         }}
       )
- await scheduleNextMission(req.user.id, req.body.debriefContactId);
+      await scheduleNextMission(req.user.id, req.body.    debriefContactId);
       res.status(200).json({message: "Mission complete!"});
     } catch (err) {
       console.log(err);
@@ -270,172 +270,17 @@ updateLongestStreak = Math.max(
         res.status(400).json({message: "Snooze failed. Missing contact"});
         return;
       }
-    //look at user's last mission complete date
-    const mission = await Mission.findOne({user: req.user.id, _id: req.params.id})
-      .populate("contact")
-      .lean();
+      //look at user's last mission complete date
+      const mission = await Mission.findOne({user: req.user.id, _id: req.params.id})
+        .populate("contact")
+        .lean();
+      let prevMission = mission.contact.lastContact ? new Date(mission.contact.lastContact): null;
 
-    const today =new Date();
-    let prevMission = mission.contact.lastContact ? new Date(mission.contact.lastContact): null;
+      const mostAvailableDay = await findOptimalMissionDay(prevMission, mission.contact, req.user.id)
 
-    let daysStart
-    let daysEnd
-
-switch(mission.contact.contactFrequency){
-	case "weekly":{
-		if(!prevMission){
-      prevMission = new Date()
-      prevMission.setDate(today.getDate() - today.getDay()-7)
-    }
-    
-    let startOfNextWeek = new Date(prevMission);
-		startOfNextWeek.setDate(prevMission.getDate() - prevMission.getDay() + 7);
-		startOfNextWeek.setHours(0,0,0,0);
-
-		let endOfNextWeek = new Date(startOfNextWeek);
-		endOfNextWeek.setDate(startOfNextWeek.getDate()+6);
-		endOfNextWeek.setHours(23,59,59,999);
-		
-    if(endOfNextWeek < today){
-      const newStart = new Date(startOfNextWeek);
-      newStart.setDate(newStart.getDate() + 7);
-
-      const newEnd = new Date(endOfNextWeek);
-      newEnd.setDate(newEnd.getDate() + 7)
-      
-      daysStart=newStart;
-      daysEnd=newEnd;
-    } else if (today >= startOfNextWeek){
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate()+1);
-      tomorrow.setHours(0,0,0,0);	
-      
-      daysStart=tomorrow;
-		    daysEnd=endOfNextWeek;
-    } else {
-      daysStart=startOfNextWeek;
-      daysEnd=endOfNextWeek;
-    }
-
-		break;
-	}
-	case "monthly":{
-    if(!prevMission){
-      prevMission = new Date(today.getFullYear(), today.getMonth()-1, today.getDay());
-    }
-
-		const startOfNextMonth = new Date(prevMission.getFullYear(), prevMission.getMonth() + 1, 1);
-		startOfNextMonth.setHours(0,0,0,0);
-
-		const endOfNextMonth = new Date(startOfNextMonth.getFullYear(), startOfNextMonth.getMonth()+1, 0)
-		endOfNextMonth.setHours(23,59,59,999);
-
-		    if(endOfNextMonth < today){
-          const newStart = new Date(startOfNextMonth.getFullYear(), startOfNextMonth.getMonth()+1, 1);
-
-          const newEnd = new Date(newStart.getFullYear(), newStart.getMonth()+1, 0)
-		  newEnd.setHours(23,59,59,999)
-      daysStart=newStart;
-      daysEnd=newEnd;
-    } else if (today >= startOfNextMonth){
-      	const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate()+1);
-      tomorrow.setHours(0,0,0,0);	
-      
-      daysStart=tomorrow;
-		    daysEnd=endOfNextMonth;
-    } else {
-      daysStart=startOfNextMonth;
-      daysEnd=endOfNextMonth;
-    }
-
-		break;
-    
-	}
-	case "quarterly":{
-        if(!prevMission){
-      prevMission = new Date(today.getFullYear(), today.getMonth()-3, today.getDay());
-    }
-
-		const startOfNextQuarter = new Date(prevMission.getFullYear(), Math.floor(prevMission.getMonth() / 3) * 3 + 3, 1)
-		startOfNextQuarter.setHours(0,0,0,0);
-
-		const endOfNextQuarter = new Date(startOfNextQuarter.getFullYear(), startOfNextQuarter.getMonth()+3, 0)
-		endOfNextQuarter.setHours(23,59,59,999);
-
-      if(endOfNextQuarter < today){
-      const newStart = new Date(startOfNextQuarter.getFullYear(), startOfNextQuarter.getMonth()+3, 1);
-
-
-          const newEnd = new Date(newStart.getFullYear(), newStart.getMonth()+3, 0)
-		  newEnd.setHours(23,59,59,999)
-      
-        daysStart=newStart;
-      daysEnd=newEnd;
-    } else if (today >= startOfNextQuarter){
-      	const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate()+1);
-      tomorrow.setHours(0,0,0,0);	
-      
-      daysStart=tomorrow;
-		    daysEnd=endOfNextQuarter;
-    } else {
-      daysStart=startOfNextQuarter;
-      daysEnd=endOfNextQuarter;
-    }
-
-		break;
-	}
-  default:
-      throw new Error("Invalid contact frequency");
-}
-
-
-if (!daysStart || !daysEnd || isNaN(daysStart) || isNaN(daysEnd)) {
-  throw new Error("Invalid date range");
-}
-
-const countDays = {}
-let safetyCounter = 0;
-const MAX_DAYS = 93;
-
-const current = new Date(daysStart);
-while (current <= daysEnd && safetyCounter < MAX_DAYS ) {
-  countDays[current.toLocaleDateString()] = 0;
-  
-  current.setDate(current.getDate() + 1);
-  safetyCounter++;
-}
-if (safetyCounter === MAX_DAYS) {
-  throw new Error("Loop exceeded safe limit");
-}
-const constraints ={$gte: daysStart, $lte: daysEnd}
-
-const scheduledMissions = await Mission.find({
-	user: req.user.id,
-	missionStatus:"new",
-	scheduledFor:constraints
-})
-
-scheduledMissions.forEach(mission => {
-	if (countDays[mission.scheduledFor.toLocaleDateString()] !== undefined){
-    countDays[mission.scheduledFor.toLocaleDateString()] += 1
-  }
-    })
-
-let leastMissions = Infinity;
-let mostAvailableDay = new Date();
-
-for (const day in countDays){
-	if (countDays[day] < leastMissions){
-		leastMissions = countDays[day];
-		mostAvailableDay = new Date(day);
-	};
-
-};
-//update mission, don't need to update contact's next mission because it is already tied to this mission's Id
-await Mission.findOneAndUpdate({user: req.user.id, _id: req.params.id}, {scheduledFor: mostAvailableDay})
-res.status(200).json({message: "Mission rescheduled!"});
+      //update mission, don't need to update contact's next mission because it is already tied to this mission's Id
+      await Mission.findOneAndUpdate({user: req.user.id, _id: req.params.id}, {scheduledFor: mostAvailableDay})
+      res.status(200).json({message: "Mission rescheduled!"});
     } catch (err) {
       console.log(err);
       res.status(500).json({message: "Request failed"});
