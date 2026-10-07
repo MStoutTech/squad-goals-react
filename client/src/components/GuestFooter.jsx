@@ -12,7 +12,7 @@ function FooterLink({ linkText, linkTo }) {
 
 function SocialMediaIcon({ link, iconClassName }) {
   return (
-    <a href={link}>
+    <a href={link} target="_blank" rel="noopener noreferrer">
       <li className="rounded-full bg-purple-300 text-(--c-violet-void) size-14 text-center p-4">
         <span className={`icon ${iconClassName}`}></span>
       </li>
