@@ -7,6 +7,7 @@
    "scripts": {
     "dev": "vite",
     "scss": "sass src/css/animations.scss src/css/animations.css --watch",
+    "prebuild": "sass src/css/animations.scss src/css/animations.css",
     "build": "vite build",
     "lint": "eslint src",
     "preview": "vite preview"

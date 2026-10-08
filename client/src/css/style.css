@@ -28,7 +28,7 @@ body {
 
 h1, h2, h3 {
     font-family: 'Georama', sans-serif;
-    font-weight: 900, bold;
+    font-weight: 900;
 }
 
 
@@ -166,7 +166,7 @@ button {
     }
 }
 
-//Glow buttons
+/*Glow buttons*/
 @-webkit-keyframes glow-pulse-walkthrough {
   0%, 100% {
     border-color: #BDFFF6;
