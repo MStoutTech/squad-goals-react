@@ -431,7 +431,7 @@ function RolesModal({ closeModal, fetchSquad, friendshipRolesStart }) {
       formId="friendship-roles-form"
       submitButtonText="SAVE ROLES"
       isLoading={isLoading}
-      outsideClick={closeModal}
+      outsideClickClose={true}
     >
       {/*form*/}
       <form id="friendship-roles-form" onSubmit={setFriendshipRoles}>

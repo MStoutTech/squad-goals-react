@@ -942,7 +942,7 @@ function AddMissionModal({ closeModal, fetchMissions }) {
       formId="add-mission-form"
       submitButtonText="ADD MISSION"
       isLoading={isLoading}
-      outsideClick={closeModal}
+      outsideClickClose={true}
     >
       {/*form*/}
       <form id="add-mission-form" onSubmit={addNewMission}>
@@ -993,7 +993,6 @@ function AddMissionModal({ closeModal, fetchMissions }) {
 }
 function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [animateClose, setAnimateClose] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   async function completeMission(event) {
@@ -1047,12 +1046,11 @@ function MissionDebriefModal({ closeModal, fetchMissions, featuredMission }) {
     <PrimaryModal
       windowTitle="Mission Debrief"
       closeModal={closeModal}
-      animateClose={animateClose}
       formId="complete-mission-form"
       submitButtonText="COMPLETE MISSION"
       allowSubmit={!isLoading}
       isLoading={isLoading}
-      outsideClick={isLoading ? () => {} : closeModal}
+      outsideClickClose={!isLoading}
       showConfirmation={showConfirmation}
       confirmationText="MISSION COMPLETE!"
       confirmationImg="/imgs/icons/star.png"

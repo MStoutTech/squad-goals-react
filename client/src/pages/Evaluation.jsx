@@ -972,7 +972,7 @@ function CustomSelectionModal({
       animateClose={animateClose}
       formId=""
       submitButtonText="START EVALUATION"
-      outsideClick={closeModal}
+      outsideClickClose={true}
       confirmOnClick={startEvaluation}
     >
       {customGroup.length < 15 ? (

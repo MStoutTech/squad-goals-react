@@ -83,7 +83,7 @@ export function ConfirmLogoutModal({ closeModal }) {
     <PrimaryModal
       windowTitle="Confirm Logout"
       closeModal={closeModal}
-      outsideClick={() => !isLoggingOut && closeModal()}
+      outsideClickClose={!isLoggingOut}
       isLoading={isLoggingOut}
       submitButtonText="Yes, Logout"
       confirmOnClick={() => {
@@ -109,7 +109,7 @@ export function PrimaryModal({
   confirmOnClick,
   allowSubmit = true,
   isLoading,
-  outsideClick,
+  outsideClickClose,
   showConfirmation,
   confirmationText,
   confirmationImg,
@@ -164,14 +164,18 @@ export function PrimaryModal({
     };
   }, [modalRef]);
 
+  function startClosingAnimation() {
+    setIsVisible(false);
+    setTimeout(closeModal, 300);
+  }
+
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
   useEffect(() => {
     if (animateClose) {
-      setIsVisible(false);
-      setTimeout(closeModal, 300);
+      startClosingAnimation();
     }
   }, [animateClose]);
 
@@ -183,7 +187,7 @@ export function PrimaryModal({
     >
       <div
         className={`${isVisible ? "opacity-100" : "opacity-0 translate-y-4"} fixed inset-0 bg-black/75 transition-opacity duration-300 ease-out`}
-        onClick={outsideClick}
+        onClick={outsideClickClose && startClosingAnimation}
       ></div>
 
       <div
@@ -193,12 +197,11 @@ export function PrimaryModal({
         {showConfirmation ? (
           <div
             className="z-50 bg-black/60 shadow-xl w-[100%]"
-            onClick={() => {
-              setIsVisible(false);
-              setTimeout(closeModal, 300);
-            }}
+            onClick={startClosingAnimation}
           >
-            <div className="bg-(--c-purple-tech-40) w-[100%] flex flex-col py-6 items-center">
+            <div
+              className={`${isVisible ? "opacity-100" : "opacity-0"} transition-all duration-300 ease-out bg-(--c-purple-tech-40) w-[100%] flex flex-col py-6 items-center`}
+            >
               <h1 className="my-3 text-3xl">{confirmationText}</h1>
               <img src={confirmationImg} alt="" className="w-[40px] block" />
             </div>
@@ -250,10 +253,7 @@ export function PrimaryModal({
                 )}
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsVisible(false);
-                    setTimeout(closeModal, 300);
-                  }}
+                  onClick={startClosingAnimation}
                   className="w-full sm:w-auto mt-3 sm:mt-0 inline-flex justify-center items-center h-[44px]"
                 >
                   <div className="px-3 py-2 text-sm font-semibold text-(--c-violet-void-40) shadow-xs inset-ring inset-ring-purple-300 hover:bg-(--c-violet-void-80) w-full sm:w-auto rounded-md bg-(--c-violet-void-60)">
