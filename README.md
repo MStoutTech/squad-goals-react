@@ -13,7 +13,7 @@ In the spirit of a CRM (Customer Relationship Management) app, Squad Goals seeks
 
 ![Missions screenshot/GIF placeholder]
 
-As the hero of your relationships, your daily missions are to reach out to your contacts. Every contact will always have a scheduled "next" missions that is either picked automatically by the scheduling algorithm, or set manually by you. When a mission is complete, the app immidiately schedules the next one.
+As the hero of your relationships, your daily missions are to reach out to your contacts. Every contact will always have a scheduled "next" missions that is either picked automatically by the scheduling algorithm, or set manually by you. When a mission is complete, the app immediately schedules the next one.
 
 The three friendship tiers have their own default contact frequency:
 
@@ -23,14 +23,14 @@ The three friendship tiers have their own default contact frequency:
 
 And there are two mission types, depending on how you are spending time with your contacts:
 
-- **Contact missions** : remote check-ins via text, call, social media. These have a countdown timer keeping you focused on the task at hand (hopefully a deterrant from disctracting feed scrolling)
+- **Contact missions** : remote check-ins via text, call, social media. These have a countdown timer keeping you focused on the task at hand (hopefully a deterrent from distracting feed scrolling)
 - **Field missions** : in-person meetups, these have no timer
 
-**Notable pattern:** The next mission scheduling algorith muses a layered set of rules in a priority order for setting the next mission.
+**Notable pattern:** The next mission scheduling algorithm uses a layered set of rules in a priority order for setting the next mission.
 
 1. **Birthday first** If the contact's birthday falls within the upcoming frequency window (this week, this month, or this quarter), the mission is scheduled on the birthday and no further logic is run.
 2. **Preferred days** If the contact has set preferred contact days of the week, only those specific days within the window are considered candidates. Otherwise, every day in the window is a candidate.
-3. **Load balancing** Among all the candidate days, the algorithm counds how many missions are already scheduled on each one, and picks whichever day currently has the fewest in order to spread out your missions, never over-loading the first day of the week, month, or quarter.
+3. **Load balancing** Among all the candidate days, the algorithm counts how many missions are already scheduled on each one, and picks whichever day currently has the fewest in order to spread out your missions, never over-loading the first day of the week, month, or quarter.
 
 Adding a mission will check for an upcoming mission with the status "new" and deletes it before scheduling the new mission. This way there is no silent doubling of scheduled outreach.
 
