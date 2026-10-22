@@ -192,5 +192,4 @@ This app uses server-side sessions (express-session) instead of stateless auth. 
 
 ### Dev Tooling
 
-- **nodemon** — auto-restarts the backend server on file changes during development (not used in production — the deployed backend runs via plain `node`)
 - **eslint** — linting for the client codebase
